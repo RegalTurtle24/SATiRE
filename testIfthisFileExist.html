@@ -7,19 +7,20 @@
 		.textBox {
 		}
 		</style>
-		<script>
-			// loading addEventListener upon pop up
-			window.onload = function () {
-				document.getElementById("input").addEventListener("click", takeUserInput, false)
-			}
-			function takeUserInput() {
-				alert("!COACH LEFT 4 DEAD 2!");
-			}
-		</script>
 	</head>
 	
 	<body>
-		<button id = "input">user input</button>
+		<button id = "input">do_not_press</button>
 	</body>
+	
+	<script>
+			// loading addEventListener upon pop up
+			window.onload = function () {
+				document.getElementById("input").addEventListener("click", takeUserInput);
+			}
+			function takeUserInput() {
+				alert("no");
+			}
+	</script>
 	
 </html>
