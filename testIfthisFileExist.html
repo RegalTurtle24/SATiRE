@@ -11,16 +11,33 @@
 	
 	<body>
 		<button id = "input">do_not_press</button>
+		<br>
+		<form id = "randomForm">
+			type:
+			<input type="text" id="type_text_box" size="20" value=""/>
+			<br><br><br>
+			<input type="button" onclick="submitText()" value="Submit"/>
+		</form>
+		<b id = "text?">?</b>
 	</body>
 	
 	<script>
-			// loading addEventListener upon pop up
-			window.onload = function () {
-				document.getElementById("input").addEventListener("click", takeUserInput);
-			}
-			function takeUserInput() {
-				alert("no");
-			}
+		// loading addEventListener upon pop up
+		window.onload = function () {
+			document.getElementById("input").addEventListener("click", takeUserInput);
+
+		}
+		//
+		function takeUserInput() {
+			alert("no");
+		}
+		// when press submit button this runs and send the code.
+		function submitText() {
+			let userString = document.getElementById("type_text_box").value;
+			document.getElementById("type_text_box").value = "";
+			alert(userString);
+		}
+		
 	</script>
 	
 </html>
