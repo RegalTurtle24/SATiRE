@@ -11,7 +11,7 @@ class DataSender
 	// for the constructor pass in a WebSocket 
 	constructor(dSocket) 
 	{
-		this.dSocket = dSocket;
+		//this.dSocket = dSocket;
 	}
 	
 	// purpose: sends to server and to what else it needs to be sent to
@@ -19,7 +19,7 @@ class DataSender
 	// output: the player 
 	sendToServer(data) 
 	{
-		dSocket.send(data);
+		//dSocket.send(data);
 	}
 }
 
@@ -34,7 +34,7 @@ class ChatDataSender extends DataSender
 	// for the constructor pass in a WebSocket and the chatBox
 	constructor(dSocket, chatBox) 
 	{
-		this.dSocket = dSocket;
+		//this.dSocket = dSocket;
 		this.chatBox = chatBox;
 	}
 	
@@ -43,7 +43,8 @@ class ChatDataSender extends DataSender
 	// output: the player 
 	sendToServer(data) 
 	{
-		dSocket.send(data);
+		//dSocket.send(data);
+		chatBox.retrieveChat(data);
 	}
 }
 
@@ -65,5 +66,10 @@ class ChatBox
 	retrieveChat(data) 
 	{
 		chatHistory.add(data);
+	}
+	
+	getChatHistory() 
+	{
+		return chatHistory;
 	}
 }

@@ -7,8 +7,17 @@
 
 <body>
 	wow: <input type="text" id="textBox0">
+	<br>
+	<p id="chatHistoryDisplay"></p>
 </body>
 	
-<script src = "inputs.js"></script>
+<script src = "inputs.js">
+	window.onload = function() {
+		let chatBox = new ChatBox();
+		let chatDataSender = new ChatDataSender(null, chatBox);
+		document.getElementById("chatHistoryDisplay").innerHTML = chatBox.getChatHistory();
+		chatDataSender.sendToServer("gaming");
+	}
+</script>
 
 </html>
