@@ -1,0 +1,8 @@
+{
+  "name": "Better Jackbox",
+  "version": "0.0.1",
+  "dependencies": {
+    "express": "^4.17.3",
+    "socket.io": "^4.4.1"
+  }
+}
