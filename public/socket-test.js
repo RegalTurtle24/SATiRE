@@ -1,6 +1,6 @@
 
 
-let socket = new WebSocket("ws://localhost:5000/ws");
+let socket = io(); //?????
 
 let i = 0;
 socket.addEventListener('open', function (event) {
