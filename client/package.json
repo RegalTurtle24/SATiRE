@@ -1,0 +1,7 @@
+{
+  "name": "Better Jackbox Client",
+  "version": "0.0.1",
+  "dependencies": {
+    "socket.io-client": "^4.4.1"
+  }
+}

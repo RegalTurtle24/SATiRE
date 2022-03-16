@@ -1,6 +1,4 @@
-
-
-let socket = io(); //?????
+const socket = io('http://localhost:8080');
 
 let i = 0;
 socket.addEventListener('open', function (event) {
