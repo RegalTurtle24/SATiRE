@@ -1,3 +1,9 @@
+// const socket = io('http://localhost:8080', {
+// 	extraHeaders: {
+	// 		"Access-Control-Allow-Origin" : "*"
+	// 	}
+	// });
+const io = require('socket.io-client');
 const socket = io('http://localhost:8080');
 
 let i = 0;
@@ -16,3 +22,5 @@ socket.addEventListener('open', function (event) {
 socket.addEventListener('message', function (event) {
 	socket.send("Message received!!!", event.data);
 });
+
+console.log('got to the end of socket-test.js');

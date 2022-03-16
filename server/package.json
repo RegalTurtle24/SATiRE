@@ -1,8 +1,12 @@
 {
   "name": "Better Jackbox Server",
   "version": "0.0.1",
+  "main": "index.js",
   "dependencies": {
     "express": "^4.17.3",
     "socket.io": "^4.4.1"
+  },
+  "devDependencies": {
+    "live-server": "^1.1.0"
   }
 }
