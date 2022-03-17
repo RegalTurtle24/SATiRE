@@ -1,8 +1,6 @@
-// const socket = io('http://localhost:8080', {
-// 	extraHeaders: {
-	// 		"Access-Control-Allow-Origin" : "*"
-	// 	}
-	// });
+console.log('reached start of socket-test.js');
+
+import {io} from 'socket.io-client'
 const io = require('socket.io-client');
 const socket = io('http://localhost:8080');
 
