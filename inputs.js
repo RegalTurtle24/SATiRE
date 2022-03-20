@@ -6,10 +6,10 @@
 // output: sends that data to the server
 class DataSender 
 {
-	let dSocket;
+	//let socket;
 	
 	// for the constructor pass in a WebSocket 
-	constructor(dSocket) 
+	constructor(socket) 
 	{
 		//this.dSocket = dSocket;
 	}
@@ -17,59 +17,30 @@ class DataSender
 	// purpose: sends to server and to what else it needs to be sent to
 	// input: what ever data the player inputted
 	// output: the player 
-	sendToServer(data) 
+	sendToServer(data, receptiant) 
 	{
-		//dSocket.send(data);
 	}
 }
 
-// purpose: retrieve inputted text and output it to the server and the chat box
-// input: the websocket and chat box 
-// output: any user inputs can be sent though websocket and to the chat box
-class ChatDataSender extends DataSender
+// purpose: A class that recieves data and calls a function based off of it
+// input: the function that wants to be called, a websocket
+// output: run recieveFunction
+class DataReciever
 {
-	let dSocket;
-	let chatBox;
+	//let socket;
+	// let recieveFunction;
 	
-	// for the constructor pass in a WebSocket and the chatBox
-	constructor(dSocket, chatBox) 
+	constructor(socket, recieveFunction) 
 	{
-		//this.dSocket = dSocket;
-		this.chatBox = chatBox;
+		// this.socket = socket
+		// this.recieveFunction = recieveFunction
 	}
 	
-	// purpose: sends to server and to what else it needs to be sent to
-	// input: what ever data the player inputted
-	// output: the player 
-	sendToServer(data) 
+	// purpose: run the recieveFunction function when data is sent though this method 
+	// input: data
+	// output: run recieveFunction;
+	recieveFromServer(data)
 	{
-		//dSocket.send(data);
-		chatBox.retrieveChat(data);
-	}
-}
-
-//purpose: a chat box that displays messages made by the player, and other players
-//input: create object
-//output: the ability to send data to the chat box and have it display in HTML.
-class ChatBox 
-{
-	let chatHistory;
-	
-	// the constructor creates a list which stores previous messages
-	// NOTE FOR PROGRAMMERS: you probably want to have a system to remove messages
-	// that were sent long enough ago that they no longer display
-	constructor() 
-	{
-		chatHistory = new Array();
-	}
-	
-	retrieveChat(data) 
-	{
-		chatHistory.add(data);
-	}
-	
-	getChatHistory() 
-	{
-		return chatHistory;
+		// recieveFunction(data);
 	}
 }
