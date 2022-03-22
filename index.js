@@ -1,5 +1,6 @@
 ﻿// The main server side script
-const port = 8080;
+const port = 8000;
+const globalRoom = 'GLOBAL';
 
 var express = require('express');
 express.json("Access-Control-Allow-Origin", "*");
@@ -37,16 +38,16 @@ var server = require('http').createServer(app).listen(port, function (error){
     console.log('Listening on port: ' + port);
 });
 
-var socket = require('socket.io');
+const { Server } = require("socket.io");
+const io = new Server(server);
 
-const io = socket(server, {
-    cors: {
-        origin: '*',
-        methods: ['GET', 'POST'],
-    }
+io.on('connection', function (socket) {
     
-});
-
-io.sockets.on('connection', function (socket) {
-    console.log('connected to client!!!');
+    console.log('Connected to client at socket id [' + socket.id + ']');
+    socket.emit('message', 'Only to client?');
+    io.emit('connection', 'New user has joined: [' + socket.id + ']');
+    
+    socket.on('message', (message) => {
+        console.log('Message received from client: ', + message);
+    });
 });
