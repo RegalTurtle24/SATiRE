@@ -28,12 +28,11 @@ class DataSender
 class DataReciever
 {
 	//let socket;
-	// let recieveFunction;
 	
 	constructor(socket, recieveFunction) 
 	{
 		// this.socket = socket
-		// this.recieveFunction = recieveFunction
+		this.recieveFunction = recieveFunction;
 	}
 	
 	// purpose: run the recieveFunction function when data is sent though this method 
@@ -41,6 +40,6 @@ class DataReciever
 	// output: run recieveFunction;
 	recieveFromServer(data)
 	{
-		// recieveFunction(data);
+		this.recieveFunction(data);
 	}
 }

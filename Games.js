@@ -3,7 +3,7 @@
 // purpose: GameMode class that is parent for all gamemodes
 // input: players that are going to play in the instance of a game
 // output: can retrieve the players in game
-Class GameMode
+class GameMode
 {
 	// let players;
 	
@@ -22,7 +22,7 @@ Class GameMode
 // purpose: Telephone class that is intialized when starting a game of telephone
 // input: the players that are playing the game
 // output: randomize the order of players and can return current player
-Class Telephone extends GameMode
+class Telephone extends GameMode
 {
 	// let players;
 	// let currPlayerIn;

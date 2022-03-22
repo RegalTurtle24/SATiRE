@@ -6,13 +6,27 @@
 </head>
 
 <body>
-	wow: <input type="text" id="textBox0">
+	this is test input: <button id="textBox0">bruh</button>
 	<br>
-	<p id="chatHistoryDisplay"></p>
 </body>
-	
-<script src = "inputs.js">
 
+
+<script src ="inputs.js"></script>
+	
+<script>
+	
+	window.onload = function() 
+	{
+		var gam = new DataReciever(null, func);
+		//dataReciever.recieveFromServer("wow");
+		document.getElementById("textBox0").addEventListener("click", function(){gam.recieveFromServer(1)});
+	}
+	
+	function func(data) 
+	{
+			alert("gaming");
+	}
 </script>
+
 
 </html>
