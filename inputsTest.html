@@ -17,9 +17,9 @@
 	
 	window.onload = function() 
 	{
-		var gam = new DataReciever(null, func);
+		var gam = new DataReciever(null, func, 1);
 		//dataReciever.recieveFromServer("wow");
-		document.getElementById("textBox0").addEventListener("click", function(){gam.recieveFromServer(1)});
+		document.getElementById("textBox0").addEventListener("click", function(){gam.recieveFromServer(1, 1)});
 	}
 	
 	function func(data) 

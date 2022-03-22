@@ -9,9 +9,10 @@ class DataSender
 	//let socket;
 	
 	// for the constructor pass in a WebSocket 
-	constructor(socket) 
+	constructor(socket, tag) 
 	{
 		//this.dSocket = dSocket;
+		//this.tag = tag;
 	}
 	
 	// purpose: sends to server and to what else it needs to be sent to
@@ -19,6 +20,7 @@ class DataSender
 	// output: the player 
 	sendToServer(data, receptiant) 
 	{
+		
 	}
 }
 
@@ -29,17 +31,21 @@ class DataReciever
 {
 	//let socket;
 	
-	constructor(socket, recieveFunction) 
+	constructor(socket, recieveFunction, tag) 
 	{
 		// this.socket = socket
 		this.recieveFunction = recieveFunction;
+		this.tag = tag;
 	}
 	
 	// purpose: run the recieveFunction function when data is sent though this method 
 	// input: data
 	// output: run recieveFunction;
-	recieveFromServer(data)
+	recieveFromServer(data, tag)
 	{
-		this.recieveFunction(data);
+		if (tag === this.tag) // if the data has the wrong tag, and doesn't use it.
+		{
+			this.recieveFunction(data);
+		}
 	}
 }
