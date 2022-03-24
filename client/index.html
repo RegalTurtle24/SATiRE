@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<title>Better Jackbox (testing)</title>>
 	<script src="/socket.io/socket.io.js"></script>
-	<script src="./client/socket-test.js" type="module"></script>
+	<script src="./client/socket-backend.js" type="module"></script>
 	<link rel="stylesheet" href="./client/example.css">
 </head>
 
@@ -12,9 +12,11 @@
 	<h1>ok buddy</h1>
 	<p id="sample">Test text test text</p>
 	<form>
-		ioutgyuifuf
-		<submit></submit>
+		<label for="message">Enter message to send to server:</label>
+		<input type="text" id="textBox">
+		<button type="button" id="submit">Send</button>
 	</form>
+	<h2 id="chat">[Last Chat Message]</h2>
 </body>
 
 </html>

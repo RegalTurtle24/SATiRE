@@ -50,4 +50,9 @@ io.on('connection', function (socket) {
     socket.on('message', (message) => {
         console.log('Message received from client: ', + message);
     });
+
+    socket.on('chat-message', (message) => {
+        console.log('Relaying chat message: [' + message + ']');
+        socket.broadcast.emit('chat-message', message);
+    })
 });
