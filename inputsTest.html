@@ -8,10 +8,12 @@
 <body>
 	this is test input: <button id="textBox0">bruh</button>
 	<br>
+	this is gamemode test: <button id='textBox1'>stop</button>
 </body>
 
 
 <script src ="inputs.js"></script>
+<script src ="Games.js"></script>
 	
 <script>
 	
@@ -20,11 +22,21 @@
 		var gam = new DataReciever(null, func, 1);
 		//dataReciever.recieveFromServer("wow");
 		document.getElementById("textBox0").addEventListener("click", function(){gam.recieveFromServer(1, 1)});
+		
+		// gamemode variables
+		var ray = ["Vivek", "Bob", "Sofia"];
+		var mode = new Telephone(ray);
+		document.getElementById("textBox1").addEventListener("click", function(){test(mode)});
 	}
 	
 	function func(data) 
 	{
 			alert("gaming");
+	}
+	
+	function test(mode) 
+	{
+		alert(mode.returnCurrentPlayer);
 	}
 </script>
 

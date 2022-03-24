@@ -5,11 +5,11 @@
 // output: can retrieve the players in game
 class GameMode
 {
-	// let players;
 	
 	constructor(players) 
 	{
-		// this.players = players;
+		// players should be stored in an array
+		this.players = players;
 	}
 	
 	// return players, used by GameMode subclasses
@@ -24,36 +24,35 @@ class GameMode
 // output: randomize the order of players and can return current player
 class Telephone extends GameMode
 {
-	// let players;
-	// let currPlayerIn;
 	
 	constructor(players) 
 	{
-		// this.players = players;
+		this.players = players;
+		this.currPlayerIn = 0;
 		// randomizePlayers();
 	}
 	
 	// return players, used by GameMode subclasses
 	returnPlayers() 
 	{
-		// return players;
+		return this.players;
 	}
 	
 	// set current player index to next player
 	// will be run any time a game message is sent by a client.
 	nextPlayer() 
 	{
-		// if (currPlayerIn < players.length - 1) {
-			// currPlayerIn += 1;
-		//} else {
-			// currPlayerIn = 0;
-		//}
+		if (currPlayerIn < players.length - 1) {
+			currPlayerIn += 1;
+		} else {
+			currPlayerIn = 0;
+		}
 	}
 	
 	// return the current player
 	returnCurrentPlayer() 
 	{
-		// return players[currPlayerIn];
+		return players[this.currPlayerIn];
 	}
 	
 	// randomize the order of players.
