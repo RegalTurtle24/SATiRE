@@ -27,6 +27,7 @@ class Telephone extends GameMode
 	
 	constructor(players) 
 	{
+		super()
 		this.players = players;
 		this.currPlayerIn = 0;
 		// keep track off if the game returned to first player
@@ -44,10 +45,10 @@ class Telephone extends GameMode
 	// will be run any time a game message is sent by a client.
 	nextPlayer() 
 	{
-		if (currPlayerIn < players.length - 1) {
-			currPlayerIn += 1;
+		if (this.currPlayerIn < this.players.length - 1) {
+			this.currPlayerIn += 1;
 		} else { // if return to the first player the game has been completed
-			currPlayerIn = 0;
+			this.currPlayerIn = 0;
 			this.isFinish = true;
 		}
 	}
@@ -57,13 +58,13 @@ class Telephone extends GameMode
 	// recieving "50" the game just started, when recieving "0" the game has ended.
 	WordLimOfCurr()
 	{
-		if (currPlayerIn === 0) {
-			if (isFinish) {
+		if (this.currPlayerIn === 0) {
+			if (this.isFinish) {
 				return 0; // know that the game ended.
 			} else {
 				return 50;
 			} 
-		} else if (currPlayerIn % 2 === 1) {
+		} else if (this.currPlayerIn % 2 === 1) {
 			return 
 		} else {
 			return 
@@ -73,11 +74,11 @@ class Telephone extends GameMode
 	// return the current player
 	returnCurrentPlayer() 
 	{
-		return players[this.currPlayerIn];
+		return this.players[this.currPlayerIn];
 	}
 	
 	// randomize the order of players.
-	#randomizePlayers() 
+	randomizePlayers() 
 	{
 		// take the players array and create a second array of same size
 		// for each player in the first array (loops though)

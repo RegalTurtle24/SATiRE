@@ -8,7 +8,7 @@
 <body>
 	this is test input: <button id="textBox0">bruh</button>
 	<br>
-	this is gamemode test: <button id='textBox1'>stop</button>
+	this is gamemode test: <button id="textBox1">stop</button>
 </body>
 
 
@@ -27,6 +27,7 @@
 		var ray = ["Vivek", "Bob", "Sofia"];
 		var mode = new Telephone(ray);
 		document.getElementById("textBox1").addEventListener("click", function(){test(mode)});
+		mode.nextPlayer();
 	}
 	
 	function func(data) 
@@ -36,7 +37,7 @@
 	
 	function test(mode) 
 	{
-		alert(mode.returnCurrentPlayer);
+		alert(mode.returnCurrentPlayer());
 	}
 </script>
 
