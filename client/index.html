@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Better Jackbox (testing)</title>>
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="./client/socket-backend.js" type="module"></script>
+	<link rel="stylesheet" href="./client/example.css">
+</head>
+
+<body>
+	<h1>ok buddy</h1>
+	<p id="sample">Test text test text</p>
+	<form>
+		<label for="message">Enter message to send to server:</label>
+		<input type="text" id="textBox">
+		<button type="button" id="submit">Send</button>
+	</form>
+	<form>
+		<label for="message">Join a room:</label>
+		<input type="text" id="roomJoinBox">
+		<button type="button" id="roomJoinSubmit">Submit</button>
+		<button type="button" id="leaveRoom">Leave Room</button>
+	</form>
+	<h2 id="chat">[Last Chat Message]</h2>
+	<h2 id="rooms">No current rooms</h2>
+</body>
+
+</html>

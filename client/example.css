@@ -1,0 +1,10 @@
+@charset "utf-8";
+/* A default style sheet until we come up with a better one */
+
+p {
+	border: 20 medium #FD2024;
+	width: 300;
+	height: auto;
+	color: #360E7F;
+	background-color: #D38183;
+}
