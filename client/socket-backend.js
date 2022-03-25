@@ -24,7 +24,7 @@ function submitMessage()
 {
 	var message = chatTextBox.value;
 	socket.emit('chat-message', message);
-	console.log("Sent chat message: " + message);
+	chatTextBox.value = '';
 }
 var chatBox = document.getElementById('chat');
 function updateChat(message)
@@ -41,7 +41,7 @@ function submitJoinRoomReq()
 {
 	var message = roomJoinBox.value;
 	socket.emit('join-req', message);
-	console.log("Sent join req: " + message);
+	roomJoinBox.value = '';
 }
 var joinedRooms = document.getElementById('rooms');
 function updateRooms(data)
