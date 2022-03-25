@@ -17,6 +17,12 @@ class GameMode
 	{
 		
 	}
+	
+	// it's open that the server runs this method when ever it recieves information from a player indicating
+	// that they have ended their turn. 
+	whenPlayerTurnEnd() {
+		
+	}
 }
 
 // purpose: Telephone class that is intialized when starting a game of telephone
@@ -41,6 +47,7 @@ class Telephone extends GameMode
 		return this.players;
 	}
 	
+	
 	// set current player index to next player
 	// will be run any time a game message is sent by a client.
 	nextPlayer() 
@@ -53,10 +60,19 @@ class Telephone extends GameMode
 		}
 	}
 	
+	// it's open that the server runs this method when ever it recieves information from a player indicating
+	// that they have ended their turn. In the case of telephone it's when the player sends a message
+	whenPlayerTurnEnd() 
+	{
+		this.nextPlayer();
+		// what ever is going to message to player (probably server data sender)
+		// needs to send wordLimOfCurr() to current player
+	}
+	
 	// return the character limit for the current player of the game
 	// the HTML page recievering this information from the server should know that when
 	// recieving "50" the game just started, when recieving "0" the game has ended.
-	WordLimOfCurr()
+	wordLimOfCurr()
 	{
 		if (this.currPlayerIn === 0) {
 			if (this.isFinish) {
