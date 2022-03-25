@@ -131,13 +131,14 @@ roomReqReceiver = new DataReceiver('join-req', null, (socket, message) => {
     str2 = str2.substring(22, str2.length - 2)
     socket.emit('rooms-req', str2);
 });
-roomLeaveReceiver = new DataReceiver('leave-rooms', (socket, message) => {
+roomLeaveReceiver = new DataReceiver('leave-rooms', null, (socket, message) => {
     socket.rooms.forEach(function (value) {
         socket.leave(value);
     })
     socket.emit('rooms-req', "");
 })
 
+// Whenever a new client connects:
 io.on('connection', function (socket) {
     
     console.log('Connected to client at socket id [' + socket.id + ']');
