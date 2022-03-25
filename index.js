@@ -5,7 +5,6 @@ var express = require('express');
 express.json("Access-Control-Allow-Origin", "*");
 
 var mime = require('mime-types'); 
-const { hasUncaughtExceptionCaptureCallback } = require('process');
 
 var app = express();
 app.get('/', function (req, res) { // Sends the basic webpage if GET not speficied
