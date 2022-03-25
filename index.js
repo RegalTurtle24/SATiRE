@@ -85,7 +85,7 @@ class DataReceiver {
         this.socketList = [];
         this.addSockets(sockets);
     }
-
+  
     /**
      * Converts a namespace into an array of sockets if it isn't already
      * @returns the array version of "sockets"
@@ -102,7 +102,6 @@ class DataReceiver {
     {
         if (sockets == null) return;
         sockets = this.getSocketArray(sockets);
-        
         sockets.forEach((socket) => {
             // Only adds it if it isn't already added
             if (!this.socketList.includes(socket))
