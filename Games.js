@@ -29,6 +29,8 @@ class Telephone extends GameMode
 	{
 		this.players = players;
 		this.currPlayerIn = 0;
+		// keep track off if the game returned to first player
+		this.isFinish = false;
 		// randomizePlayers();
 	}
 	
@@ -44,8 +46,27 @@ class Telephone extends GameMode
 	{
 		if (currPlayerIn < players.length - 1) {
 			currPlayerIn += 1;
-		} else {
+		} else { // if return to the first player the game has been completed
 			currPlayerIn = 0;
+			this.isFinish = true;
+		}
+	}
+	
+	// return the character limit for the current player of the game
+	// the HTML page recievering this information from the server should know that when
+	// recieving "50" the game just started, when recieving "0" the game has ended.
+	WordLimOfCurr()
+	{
+		if (currPlayerIn === 0) {
+			if (isFinish) {
+				return 0; // know that the game ended.
+			} else {
+				return 50;
+			} 
+		} else if (currPlayerIn % 2 === 1) {
+			return 
+		} else {
+			return 
 		}
 	}
 	
