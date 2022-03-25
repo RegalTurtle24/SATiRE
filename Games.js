@@ -65,9 +65,9 @@ class Telephone extends GameMode
 				return 50;
 			} 
 		} else if (this.currPlayerIn % 2 === 1) {
-			return 
+			return 15;
 		} else {
-			return 
+			return 30;
 		}
 	}
 	
