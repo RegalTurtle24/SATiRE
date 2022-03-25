@@ -6,6 +6,7 @@ var express = require('express');
 express.json("Access-Control-Allow-Origin", "*");
 
 var mime = require('mime-types'); 
+const { hasUncaughtExceptionCaptureCallback } = require('process');
 
 var app = express();
 app.get('/', function (req, res) { // Sends the basic webpage if GET not speficied
@@ -38,21 +39,96 @@ var server = require('http').createServer(app).listen(port, function (error){
     console.log('Listening on port: ' + port);
 });
 
-const { Server } = require("socket.io");
+const { Server, Socket, Namespace } = require("socket.io");
 const io = new Server(server);
+
+class DataSender {
+    constructor(tag, defaultRecipients, ...args)
+    {
+        this.tag = tag;
+        this.args = args;
+        this.defaultRecipients = defaultRecipients;
+    }
+
+    sendTo(recipients)
+    {
+        recipients.emit(tag, ...args);
+    }
+
+    // Sends the data to all default recipients
+    send()
+    {
+        this.sendTo(defaultRecipients);
+    }
+}
+
+class DataReceiver {
+    constructor(tag, sockets, callback)
+    {
+        this.tag = tag;
+        this.callback = callback;
+        this.socketList = [];
+        this.addSockets(sockets);
+    }
+
+    // Converts a namespace into an array of sockets if it isn't already
+    #getSocketArray(sockets)
+    {
+        if (sockets instanceof Namespace) return sockets.fetchSockets();
+        if (sockets instanceof Socket) return [sockets];
+        if (Array.isArray(sockets)) return sockets;
+        throw new Error("Unrecognized type: " + sockets.constructor.name);
+    }
+
+    addSockets(sockets)
+    {
+        if (sockets == null) return;
+        sockets = this.#getSocketArray(sockets);
+
+        // Only adds it if it isn't already added
+        sockets.forEach((socket) => {
+            if (!this.socketList.includes(socket))
+            {
+                this.socketList.push(socket);
+                socket.on(this.tag, (...args) => {
+                    this.callback(socket, ...args);
+                })
+            }
+        })
+    }
+
+    // Removes a socket from the receiver (returns true if successful)
+    remove(socket)
+    {
+        var index = this.socketList.indexOf(socket);
+        if (index === -1) return false;
+        this.socketList.splice(index);
+        return true;
+    }
+
+    removeAll()
+    {
+        for (var i = this.socketList.length - 1; i >= 0; i--)
+        {
+            this.remove(socketList.at(i));
+        }
+    }
+}
+
+chatReceiver = new DataReceiver('chat-message', null, (socket, message) => {
+    console.log('Relaying chat message: [' + message + ']');
+    socket.broadcast.emit('chat-message', message);
+});
 
 io.on('connection', function (socket) {
     
     console.log('Connected to client at socket id [' + socket.id + ']');
-    socket.emit('message', 'Only to client?');
-    io.emit('connection', 'New user has joined: [' + socket.id + ']');
+    socket.emit('connection', 'Hello client with id [' + socket.id + ']')
+    socket.broadcast.emit('message', 'New user has joined: [' + socket.id + ']');
     
-    socket.on('message', (message) => {
-        console.log('Message received from client: ', + message);
+    chatReceiver.addSockets(socket);
+    socket.on('disconnect', (reason) => {
+        chatReceiver.remove(reason);
+        console.log('Disconnected from client at socket id [' + socket.id + ']');
     });
-
-    socket.on('chat-message', (message) => {
-        console.log('Relaying chat message: [' + message + ']');
-        socket.broadcast.emit('chat-message', message);
-    })
 });
