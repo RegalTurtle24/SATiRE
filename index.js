@@ -1,6 +1,5 @@
 ﻿// The main server side script
 const port = 8000;
-const globalRoom = 'GLOBAL';
 
 var express = require('express');
 express.json("Access-Control-Allow-Origin", "*");
@@ -44,7 +43,6 @@ const io = new Server(server);
 io.on('connection', function (socket) {
     
     console.log('Connected to client at socket id [' + socket.id + ']');
-    socket.emit('message', 'Only to client?');
     io.emit('connection', 'New user has joined: [' + socket.id + ']');
     
     socket.on('message', (message) => {
@@ -53,6 +51,28 @@ io.on('connection', function (socket) {
 
     socket.on('chat-message', (message) => {
         console.log('Relaying chat message: [' + message + ']');
-        socket.broadcast.emit('chat-message', message);
+        socket.rooms.forEach(function (value) {
+            socket.to(value).emit('chat-message', String(message));
+        })
+    })
+
+    socket.on('join-req', (message) => {
+        console.log('Joining Room: [' + message + ']');
+        socket.join(message);
+        console.log(socket.rooms);
+        let str2 = "";
+        socket.rooms.forEach(function (value) {
+            str2 = str2 + value + ", ";
+        })
+        str2 = str2.substring(22, str2.length - 2)
+        console.log(str2);
+        socket.emit('rooms-req', str2);
+    })
+
+    socket.on('leave-rooms', (message) => {
+        socket.rooms.forEach(function (value) {
+            socket.leave(value);
+        })
+        socket.emit('rooms-req', "");
     })
 });
