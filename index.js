@@ -161,7 +161,9 @@ roomReqReceiver = new DataReceiver('join-req', null, (socket, message) => {
 // For when a client requests to leave a room:
 roomLeaveReceiver = new DataReceiver('leave-rooms', null, (socket, message) => {
     socket.rooms.forEach(function (value) {
-        socket.leave(value);
+        if(socket.id != value){
+            socket.leave(value);
+        }
     })
     socket.emit('rooms-req', "");
 })
