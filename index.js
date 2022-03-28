@@ -148,9 +148,12 @@ chatReceiver = new DataReceiver('chat-message', null, (socket, message) => {
 });
 // For when a client requests to join a room:
 roomReqReceiver = new DataReceiver('join-req', null, (socket, message) => {
+    if(str.trim().length === 0)
+    {
+        return;
+    }
     console.log('Joining Room: [' + message + ']');
     socket.join(message);
-    console.log(socket.rooms);
     let str2 = "";
     socket.rooms.forEach(function (value) {
         str2 = str2 + value + ", ";
