@@ -1,3 +1,5 @@
+const socket = require("socket.io-client") // import client socket library
+
 // classes to deal with different type of input the player sends to server
 // includes text or images
 
@@ -6,12 +8,10 @@
 // output: sends that data to the server
 class DataSender 
 {
-	//let socket;
-	
+
 	// for the constructor pass in a WebSocket 
 	constructor(socket, tag) 
 	{
-		//this.dSocket = dSocket;
 		this.tag = tag;
 	}
 	
@@ -22,6 +22,7 @@ class DataSender
 	{
 		// what ever code needs to be done to send the data with tag to receptiant
 		// requires websocket
+		receptiant.emit(this.tag, ...data);
 	}
 }
 
@@ -30,11 +31,13 @@ class DataSender
 // output: run recieveFunction
 class DataReciever
 {
-	//let socket;
-	
+
+	// tag: something signify the type of data the dataReciever receives 
+	// socket: socket the reciever recieves data from
+	// recieveFunction: the method that is run when data is recieved
 	constructor(socket, recieveFunction, tag) 
 	{
-		// this.socket = socket
+		this.socket = socket
 		this.recieveFunction = recieveFunction;
 		this.tag = tag;
 	}
