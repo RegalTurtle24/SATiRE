@@ -11,7 +11,7 @@ class DataSender
 	// for the constructor pass in a WebSocket 
 	constructor(socket, tag) 
 	{
-		//this.dSocket = dSocket;
+		this.socket = socket;
 		this.tag = tag;
 	}
 	
@@ -20,8 +20,7 @@ class DataSender
 	// output: the player 
 	sendToServer(data, receptiant) 
 	{
-		// what ever code needs to be done to send the data with tag to receptiant
-		// requires websocket
+		
 	}
 }
 

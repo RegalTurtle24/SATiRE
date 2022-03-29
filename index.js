@@ -1,44 +1,62 @@
 ﻿// The main server side script
+
 const port = 8000;
-
-var express = require('express');
-express.json("Access-Control-Allow-Origin", "*");
-
-var mime = require('mime-types'); 
-
-var app = express();
-app.get('/', function (req, res) { // Sends the basic webpage if GET not speficied
-    SendFile('/client/index.html', res);
-});
-app.get('/client/*', function (req, res) { // If a client file is asked for, give it and specify the correct MIME type
-    SendFile(req.url, res);
-});
-
-function SendFile(fileName, res)
+const { Server, Socket, Namespace } = require("socket.io");
+var io;
+// Server initialization
 {
-    var mimeType = mime.lookup(fileName);
-    res.setHeader('Content-Type', mimeType);
-    res.sendFile(__dirname + fileName, function (error) {
-        if (error)
-        {
+
+    var express = require('express');
+    express.json("Access-Control-Allow-Origin", "*");
+    
+    var mime = require('mime-types'); 
+    
+    var app = express();
+    app.get('/', function (req, res) { // Sends the basic webpage if GET not speficied
+        SendFile('/client/index.html', res);
+    });
+    app.get('/client/*', function (req, res) { // If a client file is asked for, give it and specify the correct MIME type
+        SendFile(req.url, res);
+    });
+    
+    function SendFile(fileName, res)
+    {
+        var mimeType = mime.lookup(fileName);
+        res.setHeader('Content-Type', mimeType);
+        res.sendFile(__dirname + fileName, function (error) {
+            if (error)
+            {
+                console.log(error);
+            }
+            else
+            {
+                console.log('Sent file: ' + fileName + ' successfully')
+            }
+        })
+    }
+    
+    var server = require('http').createServer(app).listen(port, function (error){
+        if (error){
             console.log(error);
         }
-        else
-        {
-            console.log('Sent file: ' + fileName + ' successfully')
-        }
-    })
+        console.log('Listening on port: ' + port);
+    });
+    
+    io = new Server(server);
 }
 
-var server = require('http').createServer(app).listen(port, function (error){
-    if (error){
-        console.log(error);
-    }
-    console.log('Listening on port: ' + port);
-});
-
-const { Server, Socket, Namespace } = require("socket.io");
-const io = new Server(server);
+  
+/**
+ * Converts a namespace into an array of sockets if it isn't already
+ * @returns the array version of "sockets"
+ */
+function getSocketArray(sockets)
+{
+    if (sockets instanceof Namespace) return sockets.fetchSockets();
+    if (sockets instanceof Socket) return [sockets];
+    if (Array.isArray(sockets)) return sockets;
+    throw new Error("Unrecognized type: " + sockets.constructor.name);
+}
 
 /**
  * An object that handles sending a set tagged message to arbitrary client sockets
@@ -53,12 +71,13 @@ class DataSender {
     {
         this.tag = tag;
         this.args = args;
-        this.defaultRecipients = defaultRecipients;
+        this.defaultRecipients;
     }
 
     sendTo(recipients)
     {
-        recipients.emit(tag, ...args);
+        getSocketArray(recipients)
+            .forEach((recipient) => recipient.emit(tag, ...args));
     }
 
     // Sends the data to all default recipients
@@ -85,23 +104,11 @@ class DataReceiver {
         this.socketList = [];
         this.addSockets(sockets);
     }
-  
-    /**
-     * Converts a namespace into an array of sockets if it isn't already
-     * @returns the array version of "sockets"
-     */
-    getSocketArray(sockets)
-    {
-        if (sockets instanceof Namespace) return sockets.fetchSockets();
-        if (sockets instanceof Socket) return [sockets];
-        if (Array.isArray(sockets)) return sockets;
-        throw new Error("Unrecognized type: " + sockets.constructor.name);
-    }
 
     addSockets(sockets)
     {
         if (sockets == null) return;
-        sockets = this.getSocketArray(sockets);
+        sockets = getSocketArray(sockets);
         sockets.forEach((socket) => {
             // Only adds it if it isn't already added
             if (!this.socketList.includes(socket))
@@ -166,8 +173,158 @@ roomLeaveReceiver = new DataReceiver('leave-rooms', null, (socket, message) => {
         }
     })
     socket.emit('rooms-req', "");
-})
+});
 
+class Player
+{
+    constructor(id, name)
+    {
+        this.id = id;
+        this.name = name;
+    }
+
+    emit()
+    {
+        io.in()
+    }
+}
+
+// purpose: GameMode class that is parent for all gamemodes
+// input: players that are going to play in the instance of a game
+// output: can retrieve the players in game
+class GameMode
+{
+	constructor(players) 
+	{
+		// players should be stored in an array
+		this.players = players;
+	}
+	
+	// return players, used by GameMode subclasses
+	returnPlayers() 
+	{
+		return this.players
+	}
+	
+	// it's open that the server runs this method when ever it recieves information from a player indicating
+	// that they have ended their turn. 
+	whenPlayerTurnEnd()
+    {
+		
+	}
+}
+
+// purpose: Telephone class that is intialized when starting a game of telephone
+// input: the players that are playing the game
+// output: randomize the order of players and can return current player
+class Telephone extends GameMode
+{
+	constructor(room, players) 
+	{
+		super(randomizePlayers(players));
+        this.room = room;
+		this.currPlayerIn = 0;
+        this.messageChain = [];
+		// keep track off if the game returned to first player
+		this.isFinish = false;
+
+        this.InitSender = new DataSender('telephone-init', [...io.to(this.players.id)], [...this.players.name]);
+        this.InitSender.send();
+
+        this.CallReceiver = new DataReceiver('telephone-call', null, (socket, message) => {
+            // Double check that the word the client sent is legal
+            charLimit = this.wordLimOfCurr(); 
+            if (message.length > charLimit)
+            {
+                // Tell the client to try again
+                socket.emit('telephone-message-error', this.charLimit);
+                return;
+            }
+
+            this.messageChain.push(message);
+            this.nextPlayer();
+            // If the chain is ended, inform all players that the game has ended and
+            // show everybody the progressiom of the messages
+            if (this.isFinish)
+            {
+                socket.in(room).emit('telephone-game-end', this.messageChain);
+            }
+
+            // Inform all players that the turn has ended
+            socket.in(room).emit('telephone-turn-end', currentPlayer());
+            // Only tell the next player the previous message
+            socket.emit('telephone-your-turn', message, this.wordLimOfCurr());
+        })
+	}
+	
+	// return players, used by GameMode subclasses
+	returnPlayers() 
+	{
+		return this.players;
+	}
+	
+	
+	// set current player index to next player
+	// will be run any time a game message is sent by a client.
+	nextPlayer() 
+	{
+		if (this.currPlayerIn < this.players.length - 1) {
+			this.currPlayerIn += 1;
+		} else { // if return to the first player the game has been completed
+			this.currPlayerIn = 0;
+			this.isFinish = true;
+		}
+	}
+	
+	// it's open that the server runs this method when ever it recieves information from a player indicating
+	// that they have ended their turn. In the case of telephone it's when the player sends a message
+	whenPlayerTurnEnd() 
+	{
+		this.nextPlayer();
+		// what ever is going to message to player (probably server data sender)
+		// needs to send wordLimOfCurr() to current player
+	}
+	
+	// return the character limit for the current player of the game
+	// the HTML page recievering this information from the server should know that when
+	// recieving "50" the game just started, when recieving "0" the game has ended.
+	wordLimOfCurr()
+	{
+		if (this.currPlayerIn === 0) {
+			if (this.isFinish) {
+				return 0; // know that the game ended.
+			} else {
+				return 50;
+			} 
+		} else if (this.currPlayerIn % 2 === 1) {
+			return 15;
+		} else {
+			return 30;
+		}
+	}
+	
+	// return the current player
+	currentPlayer() 
+	{
+		return this.players[this.currPlayerIn];
+	}
+	
+	// randomize the order of players.
+	randomizePlayers(players) 
+	{
+        return players
+		// take the players array and create a second array of same size
+		// for each player in the first array (loops though)
+		// will choose a random number 0 <= n < size of array
+		//if the spot isn't taken, then takes it.
+		// if the spot is taken adds 1 and checks again (loop with previous step)
+			// remeber to return to beginning if hit end of array. stop if hit original spot.
+	}
+}
+
+
+
+var i = 1;
 // Whenever a new client connects:
 io.on('connection', function (socket) {
     // Log info and inform other clients that the connection was successful

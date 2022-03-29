@@ -1,7 +1,7 @@
 {
   "name": "Better Jackbox",
   "version": "0.0.1",
-  "main": "indes.js",
+  "main": "index.js",
   "dependencies": {
     "express": "^4.17.3",
     "mime-types": "^2.1.35",
