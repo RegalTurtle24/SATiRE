@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Untitled Document</title>
+</head>
+<body>
+	
+	Samuel Having fun here
+	<br>
+	<br>
+	<br>
+	Text recieved from previous person: <b id="recieve"> __________________ </b>
+	<br>
+	<br>
+	type message to send to next person (length 15 to 30): <input id="sentText" type="text" minlenght="15" maxlength="30" size="30">
+	
+</body>
+	
+<script src="inputs.js"></script>
+<script>
+	
+	// intialization of data receivers and data senders
+	windows.onload() 
+	{
+		// the data receiver that makes sure the previous player's message is displayed
+		var previousReceiver = new DataReciever(null, recieveFromPrevious,"telephoneCall") // need to figure out socket
+		
+		// the data sender that send your typed message
+		// if I remeber thys you have a method to this enter maddness 
+	}
+	
+	// functions that are run by the data recievers
+	function recieveFromPrevious(phrase) 
+	{
+		document.getElementById("recieve").innerHTML = phrase;
+	}
+	
+</script>
+	
+</html>

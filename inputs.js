@@ -37,7 +37,7 @@ class DataReciever
 	// recieveFunction: the method that is run when data is recieved
 	constructor(socket, recieveFunction, tag) 
 	{
-		this.socket = socket
+		//this.socket = socket
 		this.recieveFunction = recieveFunction;
 		this.tag = tag;
 	}
