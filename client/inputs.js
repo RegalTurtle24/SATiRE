@@ -12,6 +12,7 @@ class DataSender
 	// for the constructor pass in a WebSocket 
 	constructor(socket, tag) 
 	{
+		this.socket = socket;
 		this.tag = tag;
 	}
 	
