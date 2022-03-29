@@ -196,6 +196,8 @@ class GameMode
 {
 	constructor(players) 
 	{
+        if (players == null)
+            throw Error("Cannot start game with zero players");
 		// players should be stored in an array
 		this.players = players;
 	}
@@ -204,13 +206,6 @@ class GameMode
 	returnPlayers() 
 	{
 		return this.players
-	}
-	
-	// it's open that the server runs this method when ever it recieves information from a player indicating
-	// that they have ended their turn. 
-	whenPlayerTurnEnd()
-    {
-		
 	}
 }
 
@@ -231,10 +226,10 @@ class Telephone extends GameMode
         this.InitSender = new DataSender('telephone-init', [...io.to(this.players.id)], [...this.players.name]);
         this.InitSender.send();
 
-        this.CallReceiver = new DataReceiver('telephone-call', null, (socket, message) => {
+        this.CallReceiver = new DataReceiver('telephone-call', players[0].id, (socket, message) => {
             // Double check that the word the client sent is legal
             charLimit = this.wordLimOfCurr(); 
-            if (message.length > charLimit)
+            if (message instanceof string && message.length > charLimit)
             {
                 // Tell the client to try again
                 socket.emit('telephone-message-error', this.charLimit);
@@ -242,18 +237,22 @@ class Telephone extends GameMode
             }
 
             this.messageChain.push(message);
+            this.CallReceiver.remove(socket);
             this.nextPlayer();
+            this.CallReceiver.addSockets(io.to(this.currentPlayer().id));
             // If the chain is ended, inform all players that the game has ended and
             // show everybody the progressiom of the messages
             if (this.isFinish)
             {
                 socket.in(room).emit('telephone-game-end', this.messageChain);
+                this.CallReceiver.removeAll();
+                return;
             }
 
             // Inform all players that the turn has ended
-            socket.in(room).emit('telephone-turn-end', currentPlayer());
+            io.in(room).emit('telephone-turn-end', this.currentPlayer().name);
             // Only tell the next player the previous message
-            socket.emit('telephone-your-turn', message, this.wordLimOfCurr());
+            io.to(this.currentPlayer().id).emit('telephone-your-turn', message, this.wordLimOfCurr());
         })
 	}
 	
@@ -309,17 +308,18 @@ class Telephone extends GameMode
 		return this.players[this.currPlayerIn];
 	}
 	
-	// randomize the order of players.
+	// randomizes the order of players.
 	randomizePlayers(players) 
 	{
-        return players
-		// take the players array and create a second array of same size
-		// for each player in the first array (loops though)
-		// will choose a random number 0 <= n < size of array
-		//if the spot isn't taken, then takes it.
-		// if the spot is taken adds 1 and checks again (loop with previous step)
-			// remeber to return to beginning if hit end of array. stop if hit original spot.
-	}
+        playersCopy = [...players];
+        newPlayers = [ ];
+        while (newPlayers.length < players.length)
+        {
+            newPlayers.push(newPlayers.splice(Math.random() * newPlayers.length)[0]);
+        }
+
+        return newPlayers;
+    }
 }
 
 
