@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Untitled Document</title>
+</head>
+<body>
+	
+	Samuel Having fun here
+	<br>
+	next player: <b id="prevPlayer"> __________________ </b>
+	<br>
+	<br>
+	Text recieved from previous person: <b id="recieve"> __________________ </b>
+	<br>
+	<br>
+	type message to send to next person (length 15 to 30):
+	<form id="sentText">
+		<input id="sendTextT" type="text" minlenght="15" maxlength="30" size="30"/>
+		<br>
+		<input id="sendTextButton" type="button" value="Submit"/>
+	</form>
+	
+</body>
+	
+<script src="inputs.js"></script>
+<script>
+	
+	// intialization of data receivers and data senders
+	windows.onload() 
+	{
+		// the data receiver that makes sure the previous player's message is displayed
+		var previousReceiver = new DataReciever(null, recieveFromPrevious,"telephone-call") // need to 
+		var nextSend = new DataSender(null, "telephone-call");
+		//figure out socket
+		
+		// add something later, this is just a placeholder for receiver value from server
+		var serverInfoNextPlayer = new DataReciever(null, ) 
+		
+		// the data sender that send your typed message
+		// when you hit the submit button it send the text to the next player
+		// if I remeber thys you have a method to this enter maddness 
+		document.getElementById("sendTextButton").addEventListener("click", function(){nextSend.sendToServer(document.getElementById("sendTextT").value, null)});
+	}
+	
+	// functions that are run by the data recievers
+	function recieveFromPrevious(phrase) 
+	{
+		document.getElementById("recieve").innerHTML = phrase;
+	}
+	
+	function howIsPreviousPlayer(player)
+	{
+		// this assumes player is stored as string
+		document.getElementById("prevPlayer").innerHTML = player;
+	}
+	
+	
+</script>
+	
+</html>
