@@ -227,7 +227,7 @@ let chatReceiver = new DataReceiver('chat-message', null, null, (socket, message
 });
 // For when a client requests to join a room:
 let roomReqReceiver = new DataReceiver('join-req', null, null, (socket, message) => {
-    if(str.trim().length === 0)
+    if(message.trim().length === 0)
     {
         return;
     }
