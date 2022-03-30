@@ -227,7 +227,7 @@ let chatReceiver = new DataReceiver('chat-message', null, null, (socket, message
 });
 // For when a client requests to join a room:
 let roomReqReceiver = new DataReceiver('join-req', null, null, (socket, message) => {
-    if(str.trim().length === 0)
+    if(message.trim().length === 0)
     {
         return;
     }
@@ -290,7 +290,7 @@ class GameMode
     
     constructor(players, room) 
 	{
-        if (allCurrentGames.find((item) => item != null))
+        if (allCurrentGames.find((item) => item.room == room))
         {
             // Don't start the game if a game is already running in that room
             console.log("Couldn't start Game in room [" + room + "], there's one already running");
@@ -344,7 +344,7 @@ class Telephone extends GameMode
 
         this.message = "PLACEHOLDER PROMPT: say something, idk";
         this.yourTurnSender = new DataSender('telephone-your-turn', [], this.message, this.charLimit);
-        this.yourTurnSender.sendTo(getSocket(this.currentPlayer().id));
+        this.yourTurnSender.sendTo(playerSockets[0] /*getSocket(this.currentPlayer().id)*/);
 
         this.CallReceiver = new DataReceiver('telephone-call', this, allSockets,
                 (socket, mes) => {
