@@ -349,6 +349,7 @@ class Telephone extends GameMode
         this.CallReceiver = new DataReceiver('telephone-call', this, allSockets,
                 (socket, mes) => {
             this.message = mes;
+            this.yourTurnSender.args[0] = this.message;
             if (socket.id != this.currentPlayer().id)
             {
                 console.log("Just received a call from someone who shouldn't be calling: " + this.message);
@@ -357,7 +358,8 @@ class Telephone extends GameMode
             console.log("Just received a call: " + this.message);
             
             // Double check that the word the client sent is legal
-            this.charLimit = this.wordLimOfCurr(); 
+            this.charLimit = this.wordLimOfCurr();
+            this.yourTurnSender.args[1] = this.charLimit;
             if (this.message.length > this.charLimit)
             {
                 // Tell the client to try again
@@ -370,6 +372,8 @@ class Telephone extends GameMode
             this.messageChain.push(this.message);
             this.CallReceiver.remove(socket);
             this.nextPlayer();
+            this.charLimit = this.wordLimOfCurr();
+            this.yourTurnSender.args[1] = this.charLimit;
             // this.CallReceiver.addSockets(getSocket(this.currentPlayer().id));
             
             // If the chain is ended, inform all players that the game has ended and
