@@ -1,5 +1,3 @@
-const socket = require("socket.io-client") // import client socket library
-
 // classes to deal with different type of input the player sends to server
 // includes text or images
 
