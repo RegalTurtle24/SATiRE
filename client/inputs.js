@@ -6,21 +6,19 @@
 // output: sends that data to the server
 class DataSender 
 {
-	//let socket;
-	
 	// for the constructor pass in a WebSocket 
-	constructor(socket, tag) 
+	constructor(tag, getData) 
 	{
-		this.socket = socket;
 		this.tag = tag;
+		this.getData = getData;
 	}
 	
 	// purpose: sends to server and to what else it needs to be sent to
-	// input: what ever data the player inputted
-	// output: the player 
-	sendToServer(data, receptiant) 
+	sendToServer()
 	{
-		
+		// what ever code needs to be done to send the data with tag to receptiant
+		// requires websocket
+		socket.emit(this.tag, ...this.getData());
 	}
 }
 
@@ -29,23 +27,39 @@ class DataSender
 // output: run recieveFunction
 class DataReciever
 {
-	//let socket;
-	
-	constructor(socket, recieveFunction, tag) 
+	static GLOBAL = 'GLOBAL';
+	static LOCAL_GAME = 'GAME';
+	static #localGameReceivers = [];
+	static closeAllLocalGameReceivers()
 	{
-		// this.socket = socket
-		this.recieveFunction = recieveFunction;
-		this.tag = tag;
-	}
-	
-	// purpose: run the recieveFunction function when data is sent though this method 
-	// input: data
-	// output: run recieveFunction;
-	recieveFromServer(data, tag) // this class might need to be changed to accommodate how the websocket works. 
-	{
-		if (tag === this.tag) // if the data has the wrong tag, and doesn't use it.
+		for (var i = this.#localGameReceivers.length - 1; i >= 0; i--)
 		{
-			this.recieveFunction(data);
+			this.#localGameReceivers[i].remove();
+			this.#localGameReceivers.pop();
 		}
 	}
+
+	// tag: something signify the type of data the dataReciever receives 
+	// recieveFunction: the method that is run when data is recieved
+	constructor(tag, type, recieveFunction) 
+	{
+		this.tag = tag;
+		this.type = type;
+		if (this.type === DataReciever.LOCAL_GAME)
+		{
+			DataReciever.#localGameReceivers.push(this);
+		}
+		this.recieveFunction = recieveFunction;
+
+		socket.on(this.tag, this.recieveFunction)
+	}
+	
+	/**
+	 * Removes this DataReceiver's associated listners from the global websocket
+	 */
+	remove()
+	{
+		socket.off(this.tag, this.recieveFunction);
+	}
 }
+
