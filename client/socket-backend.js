@@ -1,16 +1,38 @@
+
+
+
+/// INITIALIZE VARS
+
+
+
 var socket = null;
 var chatEnabled = true;
 var allowedToChangeRoom = true;
 var playerName = "PLACEHOLDER_NAME";
 var joinedRoom = "";
 
+
+
+
+
+
+
+
 function initializeSocket()
 {
+
+
+
 	socket = io();
 	chatEnabled = true;
+	currentlyPlayingGame = false;
 	playerName = "PLACEHOLDER_NAME";
 	joinedRoom = "";
 	
+
+
+
+
 	socket.on('connection', function (event, defaultName) {
 		console.log("Socket connected, initial message: \"" + event + "\"");
 		
@@ -31,33 +53,55 @@ function initializeSocket()
 		})
 	})
 	
+
+
+	// Finds the text field with the current name
 	var nameLabel = document.getElementById('nameLabel');
+
+
+	// CREATE NAME
+
+	
 	var nameBox = document.getElementById('nameBox');
 	var nameSumbit = document.getElementById('nameSubmit');
+
 	nameSumbit.addEventListener('click', (event) => {
 		var requestedName = nameBox.value;
 		socket.emit('name-req', requestedName);
+		nameBox.value = '';
 	});
-	function updateName(newName)
-	{
-		playerName = newName;
-		nameLabel.textContent = '(Current name: ' + newName + ')';
-	}
-	
+
+	addSubmitToEnter(nameBox, nameSubmit);
+
 	var chatTextBox = document.getElementById('textBox');
 	var chatSubmitButton = document.getElementById('submit');
+
 	chatSubmitButton.addEventListener('click', submitMessage);
-	addSubmitToEnter(chatTextBox, chatSubmitButton)
+
+	addSubmitToEnter(chatTextBox, chatSubmitButton);
 	
+
+
+
+
+
+
 	function submitMessage()
 	{
 		if (chatEnabled)
 		{
 			var message = chatTextBox.value;
 			socket.emit('chat-message', message);
+			chatTextBox.value = '';
 			console.log("Sent chat message: " + message);
 		}
 	}
+	
+
+
+
+
+
 	var chatBox = document.getElementById('chat');
 	function updateChat(name, message)
 	{
@@ -67,11 +111,22 @@ function initializeSocket()
 		}
 	}
 	
+
+
+
+
+
+
 	var roomJoinBox = document.getElementById('roomJoinBox');
 	var roomJoinSubmit = document.getElementById('roomJoinSubmit');
 	roomJoinSubmit.addEventListener('click', submitJoinRoomReq);
 	addSubmitToEnter(roomJoinBox, roomJoinSubmit)
 	
+
+
+
+
+
 	function submitJoinRoomReq()
 	{
 		if (allowedToChangeRoom)
@@ -81,6 +136,13 @@ function initializeSocket()
 			console.log("Sent join req: " + message);
 		}
 	}
+
+
+
+
+
+
+
 	var joinedRoomsText = document.getElementById('rooms');
 	function updateRooms(data)
 	{
@@ -93,6 +155,12 @@ function initializeSocket()
 		}
 	}
 	
+
+
+
+
+
+
 	function addSubmitToEnter(textBox, button)
 	{
 		// https://www.w3schools.com/howto/howto_js_trigger_button_enter.asp
@@ -106,6 +174,13 @@ function initializeSocket()
 	  });
 	}
 	
+
+
+
+
+
+
+
 	var roomLeaveButton = document.getElementById('leaveRoom');
 	roomLeaveButton.addEventListener('click', leaveRooms);
 	function leaveRooms()
@@ -113,5 +188,15 @@ function initializeSocket()
 		socket.emit('leave-rooms');
 	}
 
+
+
+	// Updates the internal and external
+	function updateName(newName)
+	{
+		playerName = newName;
+		nameLabel.textContent = '(Current name: ' + newName + ')';
+	}
+
+	// Call to game-logic.js, starts up the logic for starting a game
 	gameLogicInit();
 }
