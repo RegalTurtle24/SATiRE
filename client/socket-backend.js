@@ -57,21 +57,18 @@ function initializeSocket()
 		socket.onAny((tag, data) => {
 			console.log('Message from server: tag: \"' + tag + '\", data: ' + data);
 		});
-		socket.on('chat-message', (name, data) => {
+		
+		chatMessageReciever = new DataReciever('chat-message', 'BACKEND-LISTENER', (name, data) => {
 			chatFieldUpdater.update(name, data);
-		});
-		socket.on('rooms-req', (rooms) => {
+		})
+		roomChangeReciever = new DataReciever('rooms-req', 'BACKEND-LISTENER', (rooms) => {
 			joinedRoomsTextUpdater.update(rooms);
 			console.log('Recieved rooms-req, ' + rooms);
 		})
-		socket.on('name-change', (name) => {
+		nameChangeReciever = new DataReciever('name-change', 'BACKEND-LISTENER', (name) => {
 			console.log('Name successfully changed to: ' + name);
 			nameLabelUpdater.update(name);
 		})
-		// nameChangeReciever = new DataReciever('name-change', 'BACKEND-LISTENER', (name) => {
-		// 	console.log('Name successfully changed to: ' + name);
-		// 	nameLabelUpdater.update(name);
-		// })
 	})
 
 
@@ -158,7 +155,7 @@ function initializeSocket()
 		{
 			var message = joinFieldListener.textField.value;
 			socket.emit('join-req', message);
-			joinFieldListener.textBox.value = '';
+			joinFieldListener.textField.value = '';
 			console.log("Sent join req: " + message);
 		}
 	})
