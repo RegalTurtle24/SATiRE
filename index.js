@@ -335,14 +335,14 @@ class Telephone extends GameMode
 
         let playerSockets = [];
         let playerNames = [];
+        let mode = "telephone";
         this.players.forEach((item) => {
             playerSockets.push(getSocket(item.id));
             playerNames.push(item.name);
         })
 		
 		// sent to gameLogic, lets it know the game started
-		let mode = "telephone";
-        this.InitSender = new DataSender('telephone-init', playerSockets, playerNames, mode);
+        this.InitSender = new DataSender('game-init', playerSockets, playerNames /*, mode*/);
         this.InitSender.send();
 
         this.message = "PLACEHOLDER PROMPT: say something, idk";

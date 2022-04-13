@@ -18,16 +18,15 @@ function gameLogicInit()
     
     var playerOrder = document.getElementById('chat');
     
-	// --------------------- This is the place -------------------------//
-	let initReceiver = new DataReciever('game-init', DataReciever.LOCAL_GAME, (playerNames, mode) => {
-        if (mode === "telephone") 
-		{
-			ClientSideTelephone.startGame(playerNames); // <-- needs to contiune abstracting
-		}
+	// runs gamemode when recieve that gamemode
+	let initReceiver = new DataReciever('game-init', DataReciever.LOCAL_GAME, (playerNames/*, mode*/) => {
+        //if (mode === "telephone") 
+		//{
+		ClientSideTelephone.startGame(playerNames); 
+		//}
         setPlayersText(playerNames, 0);
         console.log('Telephone game data initialized');
     })
-	// -----------------------------------------------------------------//
     
     // Helper functions
     function setPlayersText(players, playerIndex)
