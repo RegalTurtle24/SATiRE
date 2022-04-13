@@ -51,22 +51,27 @@ function initializeSocket()
 
 	socket.on('connection', function (event, defaultName) {
 		console.log("Socket connected, initial message: \"" + event + "\"");
+
+		nameLabelUpdater.update(defaultName);
 		
 		socket.onAny((tag, data) => {
 			console.log('Message from server: tag: \"' + tag + '\", data: ' + data);
 		});
 		socket.on('chat-message', (name, data) => {
-			updateChat(name, data);
+			chatFieldUpdater.update(name, data);
 		});
 		socket.on('rooms-req', (rooms) => {
-			updateRooms(rooms);
+			joinedRoomsTextUpdater.update(rooms);
 			console.log('Recieved rooms-req, ' + rooms);
 		})
-		updateName(defaultName);
 		socket.on('name-change', (name) => {
 			console.log('Name successfully changed to: ' + name);
-			updateName(name);
+			nameLabelUpdater.update(name);
 		})
+		// nameChangeReciever = new DataReciever('name-change', 'BACKEND-LISTENER', (name) => {
+		// 	console.log('Name successfully changed to: ' + name);
+		// 	nameLabelUpdater.update(name);
+		// })
 	})
 
 
@@ -91,7 +96,20 @@ function initializeSocket()
 		}
 	}
 
+	class ChangingTextField
+	{
+		constructor(textFieldID, updateFunction)
+		{
+			this.textField = document.getElementById(textFieldID);
+			this.update = updateFunction;
+		}
 
+		update(...args)
+		{
+			this.args = args;
+			this.update(this.args);
+		}
+	}
 
 
 
@@ -111,35 +129,36 @@ function initializeSocket()
 
 	//////////////////////////////////////////////////////////////////////////////
 	///                                                                        ///
-	///                  CREATION OF LISTENERS ON FIELDS                       ///
+	///                 CREATION OF LISTENERS ON TEXTBOXES                     ///
 	///                                                                        ///
 	//////////////////////////////////////////////////////////////////////////////
 
 	// For the name changer
-	nameField = new TextFieldAndButton('nameBox', 'nameSubmit', () => {
-		var requestedName = nameField.textField.value;
+	nameFieldListener = new TextFieldAndButton('nameBox', 'nameSubmit', () => {
+		var requestedName = nameFieldListener.textField.value;
 		socket.emit('name-req', requestedName);
-		nameField.textField.value = '';
+		nameFieldListener.textField.value = '';
 	})
 
 	// For the chat feature
-	chatField = new TextFieldAndButton('textBox', 'submit', () => {
+	chatFieldListener = new TextFieldAndButton('textBox', 'submit', () => {
 		if (chatEnabled)
 		{
-			var message = chatField.textField.value;
+			var message = chatFieldListener.textField.value;
 			socket.emit('chat-message', message);
-			chatField.textField.value = '';
+			chatFieldListener.textField.value = '';
 			console.log("Sent chat message: " + message);
 		}
 	})
 
 	// For the join box
-	joinField = new TextFieldAndButton('roomJoinBox', 'roomJoinSubmit', () => {
+	joinFieldListener = new TextFieldAndButton('roomJoinBox', 'roomJoinSubmit', () => {
+		console.log('testing');
 		if (allowedToChangeRoom)
 		{
-			var message = joinField.textBox.value;
+			var message = joinFieldListener.textField.value;
 			socket.emit('join-req', message);
-			joinField.textBox.value = '';
+			joinFieldListener.textBox.value = '';
 			console.log("Sent join req: " + message);
 		}
 	})
@@ -160,33 +179,28 @@ function initializeSocket()
 	///                                                                        ///
 	//////////////////////////////////////////////////////////////////////////////
 
-	var chatBox = document.getElementById('chat');
-	function updateChat(name, message)
-	{
+	var chatFieldUpdater = new ChangingTextField('chat', (requestedName, message) => {
 		if (chatEnabled)
 		{
-			chatBox.textContent = '[' + name + ']' + message;
+			chatFieldUpdater.textField.textContent = '[' + requestedName + '] ' + message;
 		}
-	}
+	})
 
-	var joinedRoomsText = document.getElementById('rooms');
-	function updateRooms(data)
-	{
+	var joinedRoomsTextUpdater = new ChangingTextField('rooms', (data) => {
 		joinedRoom = data;
 		if (data === "")
 		{
-			joinedRoomsText.textContent = "No current rooms";
+			console.log('hello world');
+			joinedRoomsTextUpdater.textField.textContent = "No current rooms";
 		} else {
-			joinedRoomsText.textContent = data;
+			joinedRoomsTextUpdater.textField.textContent = data;
 		}
-	}
+	})
 
-	var nameLabel = document.getElementById('nameLabel');
-	function updateName(newName)
-	{
+	var nameLabelUpdater = new ChangingTextField('nameLabel', (newName) => {
 		playerName = newName;
-		nameLabel.textContent = '(Current name: ' + newName + ')';
-	}
+		nameLabelUpdater.textField.textContent = '(Current name: ' + newName + ')';
+	})
 	
 
 
