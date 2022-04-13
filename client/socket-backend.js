@@ -1,6 +1,3 @@
-
-
-
 //////////////////////////////////////////////////////////////////////////////
 ///                                                                        ///
 ///                        DECLARATION OF GLOBALS                          ///
@@ -12,13 +9,6 @@ var chatEnabled = true;
 var allowedToChangeRoom = true;
 var playerName = "PLACEHOLDER_NAME";
 var joinedRoom = "";
-
-
-
-
-
-
-
 
 function initializeSocket()
 {
@@ -35,14 +25,6 @@ function initializeSocket()
 	playerName = "PLACEHOLDER_NAME";
 	joinedRoom = "";
 	
-
-
-
-
-
-
-	/// CHANGE SOCKET LISTENERS TO DATA RECIEVERS!!!!
-
 	//////////////////////////////////////////////////////////////////////////////
 	///                                                                        ///
 	///                          SOCKET LISTENERS                              ///
@@ -57,7 +39,7 @@ function initializeSocket()
 		socket.onAny((tag, data) => {
 			console.log('Message from server: tag: \"' + tag + '\", data: ' + data);
 		});
-		
+
 		chatMessageReciever = new DataReciever('chat-message', 'BACKEND-LISTENER', (name, data) => {
 			chatFieldUpdater.update(name, data);
 		})
@@ -70,9 +52,6 @@ function initializeSocket()
 			nameLabelUpdater.update(name);
 		})
 	})
-
-
-
 
 	//////////////////////////////////////////////////////////////////////////////
 	///                                                                        ///
@@ -107,22 +86,6 @@ function initializeSocket()
 			this.update(this.args);
 		}
 	}
-
-
-
-
-
-
-
-
-
-
-
-	
-
-
-	
-
 
 	//////////////////////////////////////////////////////////////////////////////
 	///                                                                        ///
@@ -160,16 +123,6 @@ function initializeSocket()
 		}
 	})
 
-
-
-
-
-
-
-
-	// THESE 3 ARE THE SAME!!!!
-	// ABSTRACT!!!!
-
 	//////////////////////////////////////////////////////////////////////////////
 	///                                                                        ///
 	///             TEXT FIELDS THAT CHANGE AND THEIR UPDATES                  ///
@@ -199,20 +152,6 @@ function initializeSocket()
 		nameLabelUpdater.textField.textContent = '(Current name: ' + newName + ')';
 	})
 	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	//////////////////////////////////////////////////////////////////////////////
 	///                                                                        ///
 	///                           HELPER METHODS                               ///
@@ -232,24 +171,6 @@ function initializeSocket()
 	  });
 	}
 	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	//////////////////////////////////////////////////////////////////////////////
 	///                                                                        ///
 	///                           OTHER LISTENERS                              ///
@@ -260,21 +181,6 @@ function initializeSocket()
 	roomLeaveButton.addEventListener('click', () => {
 		socket.emit('leave-rooms');
 	});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     //////////////////////////////////////////////////////////////////////////////
 	///                                                                        ///
