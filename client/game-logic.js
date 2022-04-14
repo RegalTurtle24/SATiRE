@@ -54,6 +54,7 @@ function gameLogicInit()
 
         // Constants for special message policies
         const ALLOWED = 'ALLOWED';
+        const REQUIRED = 'REQUIRED';
         const EXCLUSIVE = 'EXCLUSIVE';
         class CharPolicy
         {
@@ -62,8 +63,9 @@ function gameLogicInit()
              * @param {*} characters The character(s) that this policy polices
              * @param {*} policy The allowance of the preceding characters (use the constants)
              * @param {*} count The maximum/minimum count for the character, exclusive (-1 means not counted)
+             * @param {*} caseSensitive If it cares whether the characters are upper/lower case (defaults to false)
              */
-            constructor(characters, policy, count = -1)
+            constructor(characters, policy, count = -1, caseSensitive = false)
             {
                 if (characters instanceof String)
                     characters = [ characters ];
@@ -76,12 +78,16 @@ function gameLogicInit()
                         case ALLOWED:
                             count = -1; // Maximum (w/ special case)
                             break;
+                        case REQUIRED:
+                            count = 1; // Minimum
+                            break;
                         case EXCLUSIVE:
                             count = 0; // Minimum
                             break;
                     }
                 }
                 this.count = count;
+                this.caseSensitive = caseSensitive;
             }
 
             /**
@@ -96,7 +102,8 @@ function gameLogicInit()
                     return null;
                     
                 // Test the string
-                var out = this.scanString(string);
+                let testString = this.caseSensitive ? string : string.toLowerCase();
+                var out = this.scanString(testString);
                 let passes = out[0];
                 let occurrences = out[1];
 
@@ -106,30 +113,44 @@ function gameLogicInit()
                     case ALLOWED:
                         if (occurrences > this.count)
                         {
-                            return (occurrences - this.count) + ' too many occurrences of ' + getCharacterList();
+                            return (occurrences - this.count) + ' too many occurrences of ' + this.getCharacterList();
+                        }
+                        return null;
+                    case REQUIRED:
+                        if (occurrences < this.count)
+                        {
+                            return 'Minimum  of ' + this.count + ' ' + this.getCharacterList() +
+                                ' not met. Missing ' + (this.count - occurrences);
                         }
                         return null;
                     case EXCLUSIVE:
                         if (occurrences < this.count)
                         {
-                            return 'Minimum  of ' + this.count + ' ' + getCharacterList() +
+                            return 'Minimum  of ' + this.count + ' ' + this.getCharacterList() +
                                 ' not met. Missing ' + (this.count - occurrences);
                         }
                         for (let i = 0; i < passes.length; i++)
                         {
-                            if (!item)
+                            if (!passes[i])
                             {
                                 let badString = '';
                                 for (let j = i; j < passes.length; j++)
                                 {
+                                    // If the bad string is too long, just shorten it
+                                    if (j - i >= 6)
+                                    {
+                                        badString += '...'
+                                        break;
+                                    }
+
                                     if (!passes[j])
                                     {
-                                        badString += this.characters[j];
+                                        badString += string[j];
                                     } 
                                     else
                                         break;
                                 }
-                                return 'Detected use of non-permitted characters. First occurance: ' + badString;
+                                return 'Detected use of non-permitted characters. First occurance: "' + badString + '"';
                             }
                         }
                         return null;
@@ -147,7 +168,7 @@ function gameLogicInit()
                 this.characters.forEach((char) => {
                     for (let i = 0; i <= string.length - char.length; i++)
                     {
-                        if (string.substring(i, i + char.length))
+                        if (string.substring(i, i + char.length) === char)
                         {
                             for (let j = i; j < i + char.length; j++)
                             {
@@ -157,6 +178,7 @@ function gameLogicInit()
                         }
                     }
                 });
+                return [passes, occurrences];
             }
 
             /**
@@ -169,7 +191,7 @@ function gameLogicInit()
                 {
                     if (i != 0)
                     {
-                        if (i === i - this.characters.length - 1)
+                        if (i === this.characters.length - 1)
                         {
                             allChars += ', or ';
                         }
@@ -178,8 +200,9 @@ function gameLogicInit()
                             allChars += ', ';
                         }
                     }
-                    allChars + '"' + this.characters[i] + '"'
+                    allChars += '"' + this.characters[i] + '"'
                 }
+                return allChars;
             }
         }
 
@@ -284,9 +307,11 @@ function gameLogicInit()
             myTurn = true;
             charMax = characterLimit;
             
-            // Debug rules ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            charMin = 30;
-            policies = [new CharPolicy(['e', ALLOWED, 3])];
+            // Debug rules for testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            charMin = 5;
+            policies = [new CharPolicy(['a', 'e', 'i', 'o', 'u'], ALLOWED, 6),
+                new CharPolicy(['1984'], ALLOWED, 0),
+                new CharPolicy(['bazinga'], REQUIRED, 1, true)];
             
             // Displays the previous player's message to the user
             playerMessage.textContent = "Decipher this message and pass it on: [" + message + "] in [" +
