@@ -113,7 +113,6 @@ function initializeSocket()
 
 	// For the join box
 	joinFieldListener = new TextFieldAndButton('roomJoinBox', 'roomJoinSubmit', () => {
-		console.log('testing');
 		if (allowedToChangeRoom)
 		{
 			var message = joinFieldListener.textField.value;
@@ -179,7 +178,10 @@ function initializeSocket()
 
 	var roomLeaveButton = document.getElementById('leaveRoom');
 	roomLeaveButton.addEventListener('click', () => {
-		socket.emit('leave-rooms');
+		if(allowedToChangeRoom)
+		{
+			socket.emit('leave-rooms');
+		}
 	});
 
     //////////////////////////////////////////////////////////////////////////////
