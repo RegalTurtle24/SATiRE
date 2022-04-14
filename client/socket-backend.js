@@ -63,7 +63,7 @@ function initializeSocket()
 	{
 		if (chatEnabled)
 		{
-			chatBox.textContent = '[' + name + ']' + message;
+			chatBox.textContent = '[' + name + '] ' + message;
 		}
 	}
 	
