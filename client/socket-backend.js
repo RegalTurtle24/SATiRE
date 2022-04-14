@@ -1,3 +1,9 @@
+//////////////////////////////////////////////////////////////////////////////
+///                                                                        ///
+///                        DECLARATION OF GLOBALS                          ///
+///                                                                        ///
+//////////////////////////////////////////////////////////////////////////////
+
 var socket = null;
 var chatEnabled = true;
 var allowedToChangeRoom = true;
@@ -6,93 +12,152 @@ var joinedRoom = "";
 
 function initializeSocket()
 {
+
+	//////////////////////////////////////////////////////////////////////////////
+	///                                                                        ///
+	///                        INITIALIZE GLOBAL VARS                          ///
+	///                                                                        ///
+	//////////////////////////////////////////////////////////////////////////////
+
 	socket = io();
 	chatEnabled = true;
+	currentlyPlayingGame = false;
 	playerName = "PLACEHOLDER_NAME";
 	joinedRoom = "";
 	
+	//////////////////////////////////////////////////////////////////////////////
+	///                                                                        ///
+	///                          SOCKET LISTENERS                              ///
+	///                                                                        ///
+	//////////////////////////////////////////////////////////////////////////////
+
 	socket.on('connection', function (event, defaultName) {
 		console.log("Socket connected, initial message: \"" + event + "\"");
+
+		nameLabelUpdater.update(defaultName);
 		
 		socket.onAny((tag, data) => {
 			console.log('Message from server: tag: \"' + tag + '\", data: ' + data);
 		});
-		socket.on('chat-message', (name, data) => {
-			updateChat(name, data);
-		});
-		socket.on('rooms-req', (rooms) => {
-			updateRooms(rooms);
+
+		chatMessageReciever = new DataReciever('chat-message', 'BACKEND-LISTENER', (name, data) => {
+			chatFieldUpdater.update(name, data);
+		})
+		roomChangeReciever = new DataReciever('rooms-req', 'BACKEND-LISTENER', (rooms) => {
+			joinedRoomsTextUpdater.update(rooms);
 			console.log('Recieved rooms-req, ' + rooms);
 		})
-		updateName(defaultName);
-		socket.on('name-change', (name) => {
+		nameChangeReciever = new DataReciever('name-change', 'BACKEND-LISTENER', (name) => {
 			console.log('Name successfully changed to: ' + name);
-			updateName(name);
+			nameLabelUpdater.update(name);
 		})
 	})
-	
-	var nameLabel = document.getElementById('nameLabel');
-	var nameBox = document.getElementById('nameBox');
-	var nameSumbit = document.getElementById('nameSubmit');
-	nameSumbit.addEventListener('click', (event) => {
-		var requestedName = nameBox.value;
-		socket.emit('name-req', requestedName);
-	});
-	function updateName(newName)
+
+	//////////////////////////////////////////////////////////////////////////////
+	///                                                                        ///
+	///                           HELPER CLASSES                               ///
+	///                                                                        ///
+	//////////////////////////////////////////////////////////////////////////////
+
+	class TextFieldAndButton
 	{
-		playerName = newName;
-		nameLabel.textContent = '(Current name: ' + newName + ')';
+		constructor(textBoxID, buttonID, onClickMethod)
+		{
+			this.textField = document.getElementById(textBoxID);
+			this.submitButton = document.getElementById(buttonID);
+
+			this.submitButton.addEventListener('click', onClickMethod);
+
+			addSubmitToEnter(this.textField, this.submitButton);
+		}
 	}
-	
-	var chatTextBox = document.getElementById('textBox');
-	var chatSubmitButton = document.getElementById('submit');
-	chatSubmitButton.addEventListener('click', submitMessage);
-	addSubmitToEnter(chatTextBox, chatSubmitButton)
-	
-	function submitMessage()
+
+	class ChangingTextField
 	{
+		constructor(textFieldID, updateFunction)
+		{
+			this.textField = document.getElementById(textFieldID);
+			this.update = updateFunction;
+		}
+
+		update(...args)
+		{
+			this.args = args;
+			this.update(this.args);
+		}
+	}
+
+	//////////////////////////////////////////////////////////////////////////////
+	///                                                                        ///
+	///                 CREATION OF LISTENERS ON TEXTBOXES                     ///
+	///                                                                        ///
+	//////////////////////////////////////////////////////////////////////////////
+
+	// For the name changer
+	nameFieldListener = new TextFieldAndButton('nameBox', 'nameSubmit', () => {
+		var requestedName = nameFieldListener.textField.value;
+		socket.emit('name-req', requestedName);
+		nameFieldListener.textField.value = '';
+	})
+
+	// For the chat feature
+	chatFieldListener = new TextFieldAndButton('textBox', 'submit', () => {
 		if (chatEnabled)
 		{
-			var message = chatTextBox.value;
+			var message = chatFieldListener.textField.value;
 			socket.emit('chat-message', message);
+			chatFieldListener.textField.value = '';
 			console.log("Sent chat message: " + message);
 		}
-	}
-	var chatBox = document.getElementById('chat');
-	function updateChat(name, message)
-	{
-		if (chatEnabled)
-		{
-			chatBox.textContent = '[' + name + '] ' + message;
-		}
-	}
-	
-	var roomJoinBox = document.getElementById('roomJoinBox');
-	var roomJoinSubmit = document.getElementById('roomJoinSubmit');
-	roomJoinSubmit.addEventListener('click', submitJoinRoomReq);
-	addSubmitToEnter(roomJoinBox, roomJoinSubmit)
-	
-	function submitJoinRoomReq()
-	{
+	})
+
+	// For the join box
+	joinFieldListener = new TextFieldAndButton('roomJoinBox', 'roomJoinSubmit', () => {
+		console.log('testing');
 		if (allowedToChangeRoom)
 		{
-			var message = roomJoinBox.value;
+			var message = joinFieldListener.textField.value;
 			socket.emit('join-req', message);
+			joinFieldListener.textField.value = '';
 			console.log("Sent join req: " + message);
 		}
-	}
-	var joinedRoomsText = document.getElementById('rooms');
-	function updateRooms(data)
-	{
+	})
+
+	//////////////////////////////////////////////////////////////////////////////
+	///                                                                        ///
+	///             TEXT FIELDS THAT CHANGE AND THEIR UPDATES                  ///
+	///                                                                        ///
+	//////////////////////////////////////////////////////////////////////////////
+
+	var chatFieldUpdater = new ChangingTextField('chat', (requestedName, message) => {
+		if (chatEnabled)
+		{
+			chatFieldUpdater.textField.textContent = '[' + requestedName + '] ' + message;
+		}
+	})
+
+	var joinedRoomsTextUpdater = new ChangingTextField('rooms', (data) => {
 		joinedRoom = data;
 		if (data === "")
 		{
-			joinedRoomsText.textContent = "No current rooms";
+			console.log('hello world');
+			joinedRoomsTextUpdater.textField.textContent = "No current rooms";
 		} else {
-			joinedRoomsText.textContent = data;
+			joinedRoomsTextUpdater.textField.textContent = data;
 		}
-	}
+	})
+
+	var nameLabelUpdater = new ChangingTextField('nameLabel', (newName) => {
+		playerName = newName;
+		nameLabelUpdater.textField.textContent = '(Current name: ' + newName + ')';
+	})
 	
+	//////////////////////////////////////////////////////////////////////////////
+	///                                                                        ///
+	///                           HELPER METHODS                               ///
+	///                                                                        ///
+	//////////////////////////////////////////////////////////////////////////////	
+
 	function addSubmitToEnter(textBox, button)
 	{
 		// https://www.w3schools.com/howto/howto_js_trigger_button_enter.asp
@@ -106,12 +171,23 @@ function initializeSocket()
 	  });
 	}
 	
-	var roomLeaveButton = document.getElementById('leaveRoom');
-	roomLeaveButton.addEventListener('click', leaveRooms);
-	function leaveRooms()
-	{
-		socket.emit('leave-rooms');
-	}
+	//////////////////////////////////////////////////////////////////////////////
+	///                                                                        ///
+	///                           OTHER LISTENERS                              ///
+	///                                                                        ///
+	//////////////////////////////////////////////////////////////////////////////
 
+	var roomLeaveButton = document.getElementById('leaveRoom');
+	roomLeaveButton.addEventListener('click', () => {
+		socket.emit('leave-rooms');
+	});
+
+    //////////////////////////////////////////////////////////////////////////////
+	///                                                                        ///
+	///                        STARTING OTHER LOGIC                            ///
+	///                                                                        ///
+	//////////////////////////////////////////////////////////////////////////////
+
+	// Call to game-logic.js, starts up the logic for starting a game
 	gameLogicInit();
 }
