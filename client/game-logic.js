@@ -49,4 +49,5 @@ function gameLogicInit()
         if (isCurrent) return '[' + name + ']';
         return name;
 	}
+
 }

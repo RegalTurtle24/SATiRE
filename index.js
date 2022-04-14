@@ -231,6 +231,18 @@ let roomReqReceiver = new DataReceiver('join-req', null, null, (socket, message)
     {
         return;
     }
+    // Disallows joining other people's id's
+    let valid = true;
+    allSockets.forEach((item) => {
+        if (item.id == message)
+        {
+            valid = false;
+        }
+    })
+    if (!valid) 
+        return;
+    
+    // If it made it to this point, it is a valid room
     console.log('Joining Room: [' + message + ']');
     // Leaves all other rooms
     socket.rooms.forEach((value) => {
