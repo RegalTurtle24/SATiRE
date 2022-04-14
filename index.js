@@ -342,7 +342,7 @@ class Telephone extends GameMode
         })
 		
 		// sent to gameLogic, lets it know the game started
-        this.InitSender = new DataSender('game-init', playerSockets, playerNames /*, mode*/);
+        this.InitSender = new DataSender('game-init', playerSockets, playerNames , mode);
         this.InitSender.send();
 
         this.message = "PLACEHOLDER PROMPT: say something, idk";

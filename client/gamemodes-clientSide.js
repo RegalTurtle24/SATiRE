@@ -2,12 +2,15 @@
 // each class must include a startGame function.
 
 class ClientSideTelephone {
-	
+
+
+    constructor() { }
+
 	// purpose: a method that sets up data Recievers which handles the client side game logic for 
 	// telephone.
 	// inputs: An array with the list of players
 	// outputs: creates data Senders for the html page, so players can submit information 
-	function startGame(players) 
+	startGame(players) 
 	{
 		chatEnabled = false;
         allowedToChangeRoom = false;
@@ -100,7 +103,7 @@ class ClientSideTelephone {
 	}
 	
 	// reenables chat, allow player to change room, and removes dataRecievers established by telephone
-	function endGame()
+	endGame()
     {
         chatEnabled = true;
         allowedToChangeRoom = true;
