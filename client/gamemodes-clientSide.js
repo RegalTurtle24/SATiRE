@@ -13,6 +13,7 @@ class ClientSideTelephone {
 	startGame(players) 
 	{
 		chatEnabled = false;
+        currentlyPlayingGame = true;
         allowedToChangeRoom = false;
 
         // Variable setup/HTML integration
@@ -99,13 +100,13 @@ class ClientSideTelephone {
 
             console.log('The game of telephone in room has ended :)');
         })
-		
 	}
 	
 	// reenables chat, allow player to change room, and removes dataRecievers established by telephone
 	endGame()
     {
         chatEnabled = true;
+        currentlyPlayingGame = false;
         allowedToChangeRoom = true;
         DataReciever.closeAllLocalGameReceivers();
     }
