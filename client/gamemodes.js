@@ -261,10 +261,12 @@ class ClientSideTelephone {
 
             console.log('The current turn has ended');
         })
-        let callErrorReceiver = new DataReciever('telephone-message-error', DataReciever.LOCAL_GAME, (newCharMax) => {
+        let callErrorReceiver = new DataReciever('telephone-message-error', DataReciever.LOCAL_GAME,
+                (newCharMin, newCharMax) => {
             myTurn = true; // They aren't getting off that easily...
 
             // Diplays an error message to the user
+            charMin = newCharMin;
             charMax = newCharMax;
             let userMessage = 'Telephone call not accepted.';
             if (lastSentCall.length > charMax)
@@ -274,21 +276,29 @@ class ClientSideTelephone {
             alert(userMessage);
         })
         let yourTurnReceiver = new DataReciever('telephone-your-turn', DataReciever.LOCAL_GAME,
-                (message, characterLimit) => {
+                (message, characterMin, characterMax, policyArgs) => {
             myTurn = true;
-            charMax = characterLimit;
+            charMin = characterMin;
+            charMax = characterMax;
             
+            policies = [];
+            if (policyArgs != null)
+            {
+                policyArgs.forEach((args) => {
+                    policies.push(new CharPolicy(...args));
+                })
+            }
+
             // Debug rules for testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            charMin = 5;
-            policies = [new CharPolicy(['a', 'e', 'i', 'o', 'u'], ALLOWED, 6),
-                new CharPolicy(['1984'], ALLOWED, 0),
-                new CharPolicy(['bazinga'], REQUIRED, 1, true)];
+            // policies = [new CharPolicy(['a', 'e', 'i', 'o', 'u'], ALLOWED, 6),
+            //     new CharPolicy(['1984'], ALLOWED, 0),
+            //     new CharPolicy(['bazinga'], REQUIRED, 1, true)];
             
             // Displays the previous player's message to the user
-            playerMessage.textContent = "Decipher this message and pass it on: [" + message + "] in [" +
-                characterLimit + "] characters or less";
+            playerMessage.textContent = "Decipher this message and pass it on: [" + message + "] between [" +
+                characterMin + "] and [" + characterMax + "] characters";
             
-            console.log("It's your turn now! Previous message: [" + message + "], character limit: [" + characterLimit + "]");
+            console.log("It's your turn now! Previous message: [" + message + "], character domain: [" + characterLimit + "]");
         })
         let gameEndReceiver = new DataReciever('telephone-game-end', DataReciever.LOCAL_GAME, (messageChain) => {
             // Reveals to the user the results of the game

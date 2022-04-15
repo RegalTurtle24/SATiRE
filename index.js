@@ -337,12 +337,12 @@ class GameMode
 // output: randomize the order of players and can return current player
 class Telephone extends GameMode
 {
-	constructor(players, room) 
+	constructor(players, room, charPolicies = null) 
 	{
 		super(players, room);
+        this.charPolicies = charPolicies;
 		this.currPlayerIn = 0;
         this.messageChain = [];
-        this.charLimit = this.wordLimOfCurr();
 		this.isFinish = false;
 
         let playerSockets = [];
@@ -358,7 +358,7 @@ class Telephone extends GameMode
         this.InitSender.send();
 
         this.message = "PLACEHOLDER PROMPT: say something, idk";
-        this.yourTurnSender = new DataSender('telephone-your-turn', [], this.message, this.charLimit);
+        this.yourTurnSender = new DataSender('telephone-your-turn', [], this.message, this.getCharMin, this.getCharMax, this.charPolicies);
         this.yourTurnSender.sendTo(playerSockets[0] /*getSocket(this.currentPlayer().id)*/);
 
         this.CallReceiver = new DataReceiver('telephone-call', this, allSockets,
@@ -373,22 +373,27 @@ class Telephone extends GameMode
             console.log("Just received a call: " + this.message);
             
             // Double check that the word the client sent is legal
-            this.charLimit = this.wordLimOfCurr();
-            this.yourTurnSender.args[1] = this.charLimit;
-            if (this.message.length > this.charLimit)
+            let min = this.getCharMin();
+            let max = this.getCharMax();
+            this.yourTurnSender.args[1] = min;
+            this.yourTurnSender.args[2] = max;
+            if (this.message.length > max || this.message.length < min)
             {
                 // Tell the client to try again
-                socket.emit('telephone-message-error', this.charLimit);
+                socket.emit('telephone-message-error', min, max);
                 console.log("Last telephone call was invalid. Message: [" + this.message +
-                    "], character limit: " + this.charLimit);
+                    "], character domain: [" + min + ', ' + max + ']');
                 return;
             }
 
             this.messageChain.push(this.message);
             this.CallReceiver.remove(socket);
             this.nextPlayer();
-            this.charLimit = this.wordLimOfCurr();
-            this.yourTurnSender.args[1] = this.charLimit;
+            // Refreshes the character domain
+            min = this.getCharMin();
+            max = this.getCharMax();
+            this.yourTurnSender.args[1] = min;
+            this.yourTurnSender.args[2] = max;
             // this.CallReceiver.addSockets(getSocket(this.currentPlayer().id));
             
             // If the chain is ended, inform all players that the game has ended and
@@ -434,25 +439,28 @@ class Telephone extends GameMode
 	whenPlayerTurnEnd() 
 	{
 		this.nextPlayer();
-		// what ever is going to message to player (probably server data sender)
-		// needs to send wordLimOfCurr() to current player
 	}
+
+    getCharMin()
+    {
+        return 1;
+    }
 	
-	// return the character limit for the current player of the game
-	// the HTML page recievering this information from the server should know that when
-	// recieving "50" the game just started, when recieving "0" the game has ended.
-	wordLimOfCurr()
+	/**
+     *  @returns the character limit for the current player of the game
+	*/
+    getCharMax()
 	{
 		if (this.currPlayerIn === 0) {
 			if (this.isFinish) {
 				return 0; // know that the game ended.
 			} else {
-				return 50;
+				return 32;
 			} 
 		} else if (this.currPlayerIn % 2 === 1) {
-			return 15;
+			return 8;
 		} else {
-			return 30;
+			return 16;
 		}
 	}
 	
