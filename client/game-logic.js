@@ -1,4 +1,6 @@
 var playerOrder;
+/** The current game (if one is running) */
+var game = null;
 
 function gameLogicInit()
 {
@@ -14,7 +16,13 @@ function gameLogicInit()
             alert("Can't start game without a room selected");
             return;
         }
-        socket.emit('telephone-start', joinedRoom);
+        
+        //Debug rules for testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        policies = [new CharPolicy(['a', 'e', 'i', 'o', 'u'], CharPolicy.ALLOWED, 6),
+            new CharPolicy(['1984'], CharPolicy.ALLOWED, 0),
+            new CharPolicy(['bazinga'], CharPolicy.REQUIRED, 1, true)];
+        
+        socket.emit('telephone-start', joinedRoom, policies, testPolicy);
     });
     
     playerOrder = document.getElementById('chat');
@@ -23,7 +31,7 @@ function gameLogicInit()
 	let initReceiver = new DataReciever('game-init', DataReciever.LOCAL_GAME, (playerNames, mode) => {
         if (mode === "telephone") 
 		{
-            let game = new ClientSideTelephone();
+            game = new ClientSideTelephone();
             game.startGame(playerNames);
             console.log('Telephone game data initialized');
 		}
