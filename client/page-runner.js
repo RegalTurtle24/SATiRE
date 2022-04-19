@@ -1,4 +1,4 @@
-const pages = document.querySelectorAll(".pageone");
+const pages = document.querySelectorAll(".page");
 const translateAmount = 100; 
 let translate = 0;
 
@@ -8,4 +8,5 @@ slide = (direction) => {
       
   pages.forEach(
     pages => (pages.style.transform = `translateX(${translate}%)`)
+  );
 }
