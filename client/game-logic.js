@@ -2,6 +2,25 @@ var playerOrder;
 /** The current game (if one is running) */
 var game = null;
 
+// purpose:
+// input:
+// ouput:
+class GameStartButton 
+{
+	constructor(buttonID, emitMessage) 
+	{
+		this.box = document.getElementById(buttonID);
+		this.box.addEventListener('click', (event) => {
+			if (joinedRoom == '') 
+			{
+				alert("Can't start game without a room selected");
+            	return;
+			}
+			socket.emit(emitMessage, joinedRoom);
+		});
+	}
+}
+
 function gameLogicInit()
 {
     console.log('game logic init is running');
