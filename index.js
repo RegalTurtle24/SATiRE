@@ -16,14 +16,24 @@ var io;
     app.get('/', function (req, res) { // Sends the basic webpage if GET not speficied
         SendFile('/client/index.html', res);
     });
-    app.get('/client/*', function (req, res) { // If a client file is asked for, give it and specify the correct MIME type
-        SendFile(req.url, res);
+    app.get('/*', function (req, res) { // If a client file is asked for, give it and specify the correct MIME type
+        // Connect to the correct dir of the file hierarchy
+        var url = req.url;
+        if (url.length > 0 && !url.endsWith('socket.io.js'))
+        {
+            url = url.replace('/', '/client/');
+            console.log('fileName: ' + req.url + ', url: ' + url);
+        }
+
+        SendFile(url, res);
     });
     
     function SendFile(fileName, res)
     {
+        // Sniff the MIME
         var mimeType = mime.lookup(fileName);
         res.setHeader('Content-Type', mimeType);
+
         res.sendFile(__dirname + fileName, function (error) {
             if (error)
             {
@@ -227,20 +237,34 @@ let chatReceiver = new DataReceiver('chat-message', null, null, (socket, message
 });
 // For when a client requests to join a room:
 let roomReqReceiver = new DataReceiver('join-req', null, null, (socket, message) => {
-    if(message.trim().length === 0)
+    let error = null;
+    message = message.trim();
+    if (message.length === 0)
     {
-        return;
+        error = 'Cannot join a room without a name';
     }
     // Disallows joining other people's id's
-    let valid = true;
     allSockets.forEach((item) => {
         if (item.id == message)
         {
-            valid = false;
+            error = "Sorry, that room is already someone's id.";
         }
     })
-    if (!valid) 
+    // Disallows joining a room with a game currently running
+    allCurrentGames.forEach((item) => {
+        console.log(item.room);
+        if (item.room == message)
+        {
+            error = "Sorry, room [" + message + "] already has a game running. Please wait until it has ended.";
+        }
+    })
+    
+    if (error != null)
+    {
+        socket.emit('error-display', error);
+        console.log('Join room request refused: [' + message + ']');
         return;
+    }
     
     // If it made it to this point, it is a valid room
     console.log('Joining Room: [' + message + ']');
@@ -271,15 +295,19 @@ let roomLeaveReceiver = new DataReceiver('leave-rooms', null, null, (socket) => 
 // For when a client wants to start a game of telephone in their room:
 let startTelephoneReceiver = new DataReceiver('telephone-start', null, null,
         (socket, room, charPolicies, policyTester) => {
-    // let players = [];
-    // console.log(io.rooms);
-    // console.log('~~~~~~~~~~~~~~~~~~~~~~~~~');
-    // console.log(getAllSockets(room, socket));
-    // console.log('~~~~~~~~~~~~~~~~~~~~~~~~~');
-    // getSocketsInRoom(room).forEach((socket) => {
-    //     players.push(getPlayer(socket.id));
-    // })
-    new Telephone(allPlayers, room, charPolicies, policyTester);
+    try
+    {
+        let players = [];
+        getSocketsInRoom(room).forEach((socket) => {
+            players.push(getPlayer(socket.id));
+        })
+        new Telephone(players, room, charPolicies, policyTester);
+    }
+    catch (error)
+    {
+        console.log('Something went wrong when starting a game: ' + error);
+        socket.emit('error-display', 'Failed to start requested game');
+    }
 });
 
 const allCurrentGames = [];
