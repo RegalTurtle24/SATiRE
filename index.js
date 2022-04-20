@@ -222,7 +222,11 @@ let nameReceiver = new DataReceiver('name-req', null, null, (socket, newName) =>
             nameInUse = true;
         }
     })
-    if (nameInUse) return;
+    if (nameInUse)
+    {
+        socket.emit('error-display', 'Failed to change name: \"' + '\" is already in use');
+        return;
+    }
     let player = getPlayer(socket.id);
     console.log('Player with id [' + socket.id + '] changed name from [' + player.name + '] to [' + newName + ']');
     player.name = newName;
@@ -230,10 +234,17 @@ let nameReceiver = new DataReceiver('name-req', null, null, (socket, newName) =>
 });
 // For handling passing chat messages between clients:
 let chatReceiver = new DataReceiver('chat-message', null, null, (socket, message) => {
-    console.log('Relaying chat message: [' + message + ']');
-    socket.rooms.forEach(function (value) {
-        socket.to(value).emit('chat-message', getPlayer(socket.id).name, message);
-    })
+    try
+    {
+        console.log('Relaying chat message: [' + message + ']');
+        socket.rooms.forEach(function (value) {
+            socket.to(value).emit('chat-message', getPlayer(socket.id).name, message);
+        })
+    }
+    catch (error)
+    {
+        socket.emit('error-display', 'Failed to send chat message');
+    }
 });
 // For when a client requests to join a room:
 let roomReqReceiver = new DataReceiver('join-req', null, null, (socket, message) => {
