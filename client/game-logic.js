@@ -2,24 +2,38 @@ var playerOrder;
 /** The current game (if one is running) */
 var game = null;
 
-// purpose:
-// input:
-// ouput:
+// purpose: A template for all start game buttons.
+// input: ID of button that starts game, and emit message 
+// ouput: emits the emit message, and the room to the server.
 class GameStartButton 
 {
-	constructor(buttonID, emitMessage) 
+	constructor(buttonID, emitMessage /*, runFunction, args...*/) 
 	{
 		this.box = document.getElementById(buttonID);
+		// this.args[] = args...
+		// runFunction()
 		this.box.addEventListener('click', (event) => {
 			if (joinedRoom == '') 
 			{
 				alert("Can't start game without a room selected");
             	return;
 			}
-			socket.emit(emitMessage, joinedRoom);
+			socket.emit(emitMessage, joinedRoom /*, this.args[]*/);
 		});
 	}
 }
+
+/*
+	the telephone game functions is going to call the args[] which in it's policies
+	------------------------------------
+	new GameStartButton('startGame', 'telephone_start', func(), policies, testPolicy)
+	
+	func()
+ 	{
+ 		creates text.button 
+		than used this.args[0], which I think should be policies.
+ 	}
+*/
 
 function gameLogicInit()
 {
