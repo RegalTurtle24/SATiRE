@@ -262,7 +262,6 @@ let roomReqReceiver = new DataReceiver('join-req', null, null, (socket, message)
     })
     // Disallows joining a room with a game currently running
     allCurrentGames.forEach((item) => {
-        console.log(item.room);
         if (item.room == message)
         {
             error = "Sorry, room [" + message + "] already has a game running. Please wait until it has ended.";
