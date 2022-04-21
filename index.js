@@ -270,16 +270,9 @@ let roomLeaveReceiver = new DataReceiver('leave-rooms', null, null, (socket) => 
 });
 // For when a client wants to start a game of telephone in their room:
 let startTelephoneReceiver = new DataReceiver('telephone-start', null, null,
-        (socket, room, charPolicies, policyTester) => {
-    // let players = [];
-    // console.log(io.rooms);
-    // console.log('~~~~~~~~~~~~~~~~~~~~~~~~~');
-    // console.log(getAllSockets(room, socket));
-    // console.log('~~~~~~~~~~~~~~~~~~~~~~~~~');
-    // getSocketsInRoom(room).forEach((socket) => {
-    //     players.push(getPlayer(socket.id));
-    // })
-    new Telephone(allPlayers, room, charPolicies, policyTester);
+        (socket, room, policiesAndTester) => {
+            new Telephone(allPlayers, room, policiesAndTester[0], policiesAndTester[1]);
+            // policiesAndTester contains char policies and the policy tester respectively
 });
 
 const allCurrentGames = [];

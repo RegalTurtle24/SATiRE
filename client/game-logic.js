@@ -2,9 +2,10 @@ var playerOrder;
 /** The current game (if one is running) */
 var game = null;
 
-// purpose:
-// input:
-// output: 
+// purpose: this is an abstractable button used for buttons that start game modes
+// input: the HTML ID of the button, the message the button should emit, any other information the gamemode needs
+// output: adds event listener to the HTML button, and allows for the message and other information to be send when 
+// hitting that button
 class GameStartButton {
 
 	constructor(buttonID, emitMessage, other) {
@@ -18,29 +19,33 @@ class GameStartButton {
 				return;
 			}
 
-			socket.emit(emitMessage, joinedRoom, this.other, testPolicy);
+			socket.emit(emitMessage, joinedRoom, this.other);
 		});
 	}
 }
 
+// purpose: A class that handles starting gamemode or applying settings to gamemodes.
 function gameLogicInit() {
 	console.log('game logic init is running');
 
-	// ------- Telephone ------------- //
+	// ------------------------------- Telephone --------------------------- //
 	//Debug rules for testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	policies = [new CharPolicy(['a', 'e', 'i', 'o', 'u'], CharPolicy.ALLOWED, 6),
-			new CharPolicy(['1984'], CharPolicy.ALLOWED, 0)];
+		new CharPolicy(['1984'], CharPolicy.ALLOWED, 0)];
 
-	document.getElementById('require').addEventListener('click', (event) => {
+	document.getElementById('telerequire').addEventListener('click', (reqfunc) => {
 		var phrase = document.getElementById("restrictBox").value;
-		policies.push(new CharPolicy([phrase], CharPolicy.REQUIRED, 1, true));
+		var telephoneNumberLimit = document.getElementById("teleNumLimit").value;
+		policies.push(new CharPolicy([phrase], CharPolicy.REQUIRED, telephoneNumberLimit, true));
 	});
-	document.getElementById('ban').addEventListener('click', (event) => {
+	document.getElementById('telelimit').addEventListener('click', (banfunc) => {
 		var phrase = document.getElementById("restrictBox").value;
-		policies.push(new CharPolicy([phrase], CharPolicy.ALLOWED, 0));
+		var telephoneNumberLimit = document.getElementById("teleNumLimit").value;
+		policies.push(new CharPolicy([phrase], CharPolicy.ALLOWED, telephoneNumberLimit, false));
 	});
 
-	var startGameButton = new GameStartButton('startGame', 'telephone-start', policies)
+	var startGameButton = new GameStartButton('startGame', 'telephone-start', [policies, testPolicy])
+	// ---------------------------------------------------------------------//
 
 
     playerOrder = document.getElementById('chat');
