@@ -6,10 +6,7 @@ slide = (direction) => {
 
   direction === "next" ? translate -= translateAmount : translate += translateAmount;
       
-  console.log(pages);
   pages.forEach(
-    pages => {pages.style .transform = `translateX(${translate}%)`;
-    console.log("lololol");}
+    pages => (pages.style.transform = `translateX(${translate}%)`)
   );
-  console.log("This works");
 }

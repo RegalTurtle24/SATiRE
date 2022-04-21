@@ -58,15 +58,15 @@ input{
 }
 
 .two{
-  	background-color: dodgerblue;
+  	background: dodgerblue;
 }
 
 .three{
-  	background-color: indigo;
+  	background: indigo;
 }
 
 .four{
-  	background-color: limegreen;
+  	background: limegreen;
 }
 
 .five{

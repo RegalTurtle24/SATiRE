@@ -12,7 +12,6 @@ class GameStartButton {
 		this.box = document.getElementById(buttonID);
 		// a parameter that could be used to define anything not used in the code. 
 		this.other = other;
-
 		this.box.addEventListener('click', (event) => {
 			if (joinedRoom == '') {
 				alert("Can't start game without a room selected");
@@ -20,10 +19,10 @@ class GameStartButton {
 			}
 
 			socket.emit(emitMessage, joinedRoom, this.other);
+
 		});
 	}
 }
-
 // purpose: A class that handles starting gamemode or applying settings to gamemodes.
 function gameLogicInit() {
 	console.log('game logic init is running');
@@ -46,7 +45,6 @@ function gameLogicInit() {
 
 	var startGameButton = new GameStartButton('startGame', 'telephone-start', [policies, testPolicy])
 	// ---------------------------------------------------------------------//
-
 
     playerOrder = document.getElementById('chat');
     
