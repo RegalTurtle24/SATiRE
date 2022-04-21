@@ -2,62 +2,53 @@ var playerOrder;
 /** The current game (if one is running) */
 var game = null;
 
-// purpose: A template for all start game buttons.
-// input: ID of button that starts game, and emit message 
-// ouput: emits the emit message, and the room to the server.
-class GameStartButton 
-{
-	constructor(buttonID, emitMessage /*, runFunction, args...*/) 
-	{
+// purpose: this is an abstractable button used for buttons that start game modes
+// input: the HTML ID of the button, the message the button should emit, any other information the gamemode needs
+// output: adds event listener to the HTML button, and allows for the message and other information to be send when 
+// hitting that button
+class GameStartButton {
+
+	constructor(buttonID, emitMessage, other) {
 		this.box = document.getElementById(buttonID);
-		// this.args[] = args...
-		// runFunction()
+		// a parameter that could be used to define anything not used in the code. 
+		this.other = other;
 		this.box.addEventListener('click', (event) => {
-			if (joinedRoom == '') 
-			{
+			if (joinedRoom == '') {
 				alert("Can't start game without a room selected");
-            	return;
+				return;
 			}
-			socket.emit(emitMessage, joinedRoom /*, this.args[]*/);
+
+			socket.emit(emitMessage, joinedRoom, this.other);
+
 		});
 	}
 }
+// purpose: A class that handles starting gamemode or applying settings to gamemodes.
+function gameLogicInit() {
+	console.log('game logic init is running');
 
-/*
-	the telephone game functions is going to call the args[] which in it's policies
-	------------------------------------
-	new GameStartButton('startGame', 'telephone_start', func(), policies, testPolicy)
-	
-	func()
- 	{
- 		creates text.button 
-		than used this.args[0], which I think should be policies.
- 	}
-*/
+	// ------------------------------- Telephone --------------------------- //
+	//Debug rules for testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	policies = [new CharPolicy(['a', 'e', 'i', 'o', 'u'], CharPolicy.ALLOWED, 6),
+		new CharPolicy(['1984'], CharPolicy.ALLOWED, 0)];
 
-function gameLogicInit()
-{
-    console.log('game logic init is running');
-	
-	// attach event listener to the gamemode start buttons
-	// so far this just adds it to telephone start game 
-	// will need to be its on method or class so we have mutiple buttons
-    var startGameButton = document.getElementById('startGame');
-    startGameButton.addEventListener('click', (event) => {
-        if (joinedRoom == '')
-        {
-            alert("Can't start game without a room selected");
-            return;
+	// purpose: for apply custom character policies within telephone
+	class policyButton {
+		constructor(ButtonID, policyType) {
+			document.getElementById(ButtonID).addEventListener('click', (reqfunc) => {
+				var phrase = document.getElementById("restrictBox").value;
+				var telephoneNumberLimit = document.getElementById("teleNumLimit").value;
+				policies.push(new CharPolicy([phrase], policyType, telephoneNumberLimit, true));
+			});
         }
-        
-        //Debug rules for testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        policies = [new CharPolicy(['a', 'e', 'i', 'o', 'u'], CharPolicy.ALLOWED, 6),
-            new CharPolicy(['1984'], CharPolicy.ALLOWED, 0),
-            new CharPolicy(['bazinga'], CharPolicy.REQUIRED, 1, true)];
-        
-        socket.emit('telephone-start', joinedRoom, policies, testPolicy);
-    });
-    
+	}
+
+	var limitButton = new policyButton('telerequire', CharPolicy.REQUIRED);
+	var requireButton = new policyButton('telelimit', CharPolicy.ALLOWED);
+
+	var startGameButton = new GameStartButton('startGame', 'telephone-start', [policies, testPolicy])
+	// ---------------------------------------------------------------------//
+
     playerOrder = document.getElementById('chat');
     
 	// runs gamemode when recieve that gamemode
