@@ -282,8 +282,10 @@ class ClientSideTelephone
             // }
             
             // Displays the previous player's message to the user
-            this.playerMessage.textContent = "Decipher this message and pass it on: [" + message + "] between [" +
-                characterMin + "] and [" + characterMax + "] characters";
+            this.playerMessage.textContent = (this.playerIndex == 0 ?
+                "Start the telephone chain by responding to this prompt: \"" :
+                "Decipher this message and pass it on: \"")
+                + message + "\" in [" + characterMin + "] to [" + characterMax + "] characters";
             
             console.log("It's your turn now! Previous message: [" + message +
                 "], character domain: [" + this.charMin + ', ' + this.charMax + "]");
