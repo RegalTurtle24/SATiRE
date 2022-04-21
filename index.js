@@ -22,7 +22,6 @@ var io;
         if (url.length > 0 && !url.endsWith('socket.io.js'))
         {
             url = url.replace('/', '/client/');
-            console.log('fileName: ' + req.url + ', url: ' + url);
         }
 
         SendFile(url, res);
@@ -208,7 +207,7 @@ class DataReceiver {
     {
         for (var i = this.socketList.length - 1; i >= 0; i--)
         {
-            this.remove(socketList.at(i));
+            this.remove(this.socketList.at(i));
         }
     }
 }
@@ -320,6 +319,22 @@ let startTelephoneReceiver = new DataReceiver('telephone-start', null, null,
         socket.emit('error-display', 'Failed to start requested game');
     }
 });
+let disconnectReceiver = new DataReceiver('disconnect', null, null, (socket, reason) => {
+    lostPlayer = getPlayer(socket.id);
+    if (lostPlayer != null)
+    {
+        lostPlayer.remove();
+    }
+    chatReceiver.remove(socket);
+    allSockets.splice(allSockets.indexOf(socket));
+    console.log('Disconnected from client at socket id [' + socket.id + '] for reason [' + reason + ']');
+    allCurrentGames.forEach((game) => {
+        if (game.players.includes(lostPlayer))
+        {
+            game.forceEndGame('player \"' + lostPlayer.name + '\" was disconnected for reason [' + reason + ']')
+        }
+    })
+})
 
 const allCurrentGames = [];
 // purpose: GameMode class that is parent for all gamemodes
@@ -354,6 +369,8 @@ class GameMode
 		this.players = players;
         this.dataReceivers = [];
         allCurrentGames.push(this);
+
+        this.onEnd = [];
 	}
 	
 	// return players, used by GameMode subclasses
@@ -365,10 +382,26 @@ class GameMode
     // Ends the current game 
     endGame()
     {
+        this.onEnd.forEach((item) => item());
         this.dataReceivers.forEach((item) => {
             item.removeAll();
         })
         allCurrentGames.splice(allCurrentGames.indexOf(this));
+    }
+
+    /**
+     * Abruptly ends a game, in case of emergencies
+     * @param {*} reason The reason that is given to the clients 
+     */
+    forceEndGame(reason)
+    {
+        getSocketsInRoom(this.room).forEach((socket) => {
+            if (socket != null)
+            {
+                socket.emit('error-display', 'Game has ended. ' + reason);
+            }
+        })
+        this.endGame();
     }
 }
 
@@ -380,6 +413,7 @@ class Telephone extends GameMode
 	constructor(players, room, charPolicies = null, policyTester = () => null) 
 	{
 		super(players, room);
+        this.onEnd.push(() => this.endTelephone(room));
         this.charPolicies = charPolicies;
         this.policyTester = policyTester;
 		this.currPlayerIn = 0;
@@ -459,9 +493,7 @@ class Telephone extends GameMode
             // show everybody the progressiom of the messages
             if (this.isFinish)
             {
-                getSocketsInRoom(room).forEach((item) => item.emit('telephone-game-end', this.messageChain));
-                this.callReceiver.removeAll();
-                console.log("Game of telephone in room [" + room + "] has ended");
+                this.endTelephone(this.room);
                 return;
             }
 
@@ -647,6 +679,17 @@ class Telephone extends GameMode
                 return null;
         }
     }
+
+    /**
+     * Wraps up and completes a game of telephone 
+     * @param {*} room Because of weird scope stuff, just enter the room id of this game here
+     */
+    endTelephone(room)
+    {
+        getSocketsInRoom(room).forEach((item) => item.emit('telephone-game-end', this.messageChain));
+        this.callReceiver.removeAll();
+        console.log("Game of telephone in room [" + room + "] has ended");
+    }
 }
 
 
@@ -672,14 +715,5 @@ io.on('connection', function (socket)
     roomReqReceiver.addSockets(socket);
     roomLeaveReceiver.addSockets(socket);
     startTelephoneReceiver.addSockets(socket);
-    socket.on('disconnect', (reason) => {
-        allSockets.splice(allSockets.indexOf(socket));
-        chatReceiver.remove(socket);
-        lostPlayer = getPlayer(socket.id);
-        if (lostPlayer != null)
-        {
-            lostPlayer.remove();
-        }
-        console.log('Disconnected from client at socket id [' + socket.id + '] for reason [' + reason + ']');
-    });
+    disconnectReceiver.addSockets(socket);
 });
