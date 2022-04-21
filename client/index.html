@@ -4,11 +4,11 @@
 		<meta charset="utf-8">
 		<title>Better Jackbox (testing)</title>
 		<script src="/socket.io/socket.io.js"></script>
-		<script src="./client/socket-backend.js"></script>
-		<script src="./client/inputs.js"></script>
-		<script src="./client/game-logic.js"></script>
-		<script src="./client/gamemodes.js"></script>
-		<link rel="stylesheet" href="./client/example.css">
+		<script src="./socket-backend.js"></script>
+		<script src="./inputs.js"></script>
+		<script src="./game-logic.js"></script>
+		<script src="./gamemodes.js"></script>
+		<link rel="stylesheet" href="./example.css">
 	</head>
 
 	<div class="container">
@@ -31,6 +31,7 @@
 							<button type="button" id="submit">Send</button>
 							<label id="messageErrorBox"></label>
 						</form>
+
 						<form>
 							<label for="message">Join a room:</label>
 							<input type="text" id="roomJoinBox">
@@ -40,6 +41,15 @@
 						<h2 id="chat">[Last Chat Message]</h2>
 						<h2 id="rooms">No current rooms</h2>
 						<button type="button" id="startGame">Start Telephone Game in Room</button>
+
+						<form>
+							<label for="message">telephone player settings:</label>
+							<input type="text" id="restrictBox">
+							<input type="number" id="teleNumLimit" min="0" max="10">
+							<button type="button" id="telelimit">limit</button>
+							<button type="button" id="telerequire">require</button>
+						</form>
+
 					</body>
 				</div>
 			</div>
@@ -81,5 +91,5 @@
 		</div>
 	</div>
 
-	<script src="./client/page-runner.js"></script>
+	<script src="./page-runner.js"></script>
 </html>
