@@ -37,7 +37,7 @@ input{
 
 .pages {
   	display: flex;
-	width: 500%;
+	width: 900%;
 	box-sizing: border-box;
 }
 
@@ -71,4 +71,24 @@ input{
 
 .five{
   	background: teal;
+}
+
+.six{
+	
+	background: #B8F120;
+}
+
+.seven{
+	
+	background: pink;
+}
+
+.eight{
+	
+	background: aqua;
+}
+
+.nine{
+	
+	background: lime;
 }
