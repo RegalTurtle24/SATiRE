@@ -219,14 +219,24 @@ class ClientSideTelephone
 
             return [true, message, 'Message is acceptable'];
         }
-        function updateCharacterCount(messageErrorBox, min, max, policies)
+        /** Informs the user on the stats/validity of their call as currently typed out */
+        function updateCharacterCount(telephoneGame)
         {
-            let output = validateCall(game.callBox.value, min, max, policies);
-            messageErrorBox.textContent = 'Character Count: [' + getStringLength(output[1]) + '] - ' + output[2];
+            if (telephoneGame.myTurn)
+            {
+                let output = validateCall(game.callBox.value, telephoneGame.charMin, telephoneGame.charMax,
+                    telephoneGame.policies);
+                telephoneGame.messageErrorBox.textContent = 'Character Count: [' + getStringLength(output[1]) +
+                    '] - ' + output[2];
+            }
+            else
+            {
+                // Can't check a message if you don't know what to check it by
+                telephoneGame.messageErrorBox.textContent = '';
+            }
         }
-        this.callBox.addEventListener('input', () => updateCharacterCount(this.messageErrorBox, this.charMin,
-            this.charMax, this.policies));
-        updateCharacterCount(this.messageErrorBox, this.charMin, this.charMax, this.policies);
+        this.callBox.addEventListener('input', () => updateCharacterCount(this));
+        updateCharacterCount(this);
 
         // Passing the call on in the telephone chain
         function submitCall(callBox)
@@ -273,13 +283,8 @@ class ClientSideTelephone
             this.charMax = characterMax;
             
             this.policies = charPolicies;
-            // this.policies = [];
-            // if (policyArgs != null)
-            // {
-            //     policyArgs.forEach((args) => {
-            //         this.policies.push(new CharPolicy(...args));
-            //     })
-            // }
+            
+            updateCharacterCount(this);
             
             // Displays the previous player's message to the user
             this.playerMessage.textContent = (this.playerIndex == 0 ?
@@ -306,8 +311,7 @@ class ClientSideTelephone
             this.messageErrorBox.textContent = "";
 
             this.callSubmit.removeEventListener('click', () => { submitCall(this.callBox); this.myTurn = false; });
-            this.callBox.removeEventListener('input', () => updateCharacterCount(this.messageErrorBox, this.charMin,
-                this.charMax, this.policies));
+            this.callBox.removeEventListener('input', () => updateCharacterCount(this));
 
             this.endGame();
             
