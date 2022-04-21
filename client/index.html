@@ -1,40 +1,95 @@
 <!doctype html>
 <html>
-<head>
-	<meta charset="utf-8">
-	<title>Better Jackbox (testing)</title>>
-	<script src="/socket.io/socket.io.js"></script>
-	<script src="./client/socket-backend.js"></script>
-	<script src="./client/inputs.js"></script>
-	<script src="./client/game-logic.js"></script>
-	<script src="./client/gamemodes.js"></script>
-	<link rel="stylesheet" href="./client/example.css">
-</head>
+	<head>
+		<meta charset="utf-8">
+		<title>Better Jackbox (testing)</title>
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="./socket-backend.js"></script>
+		<script src="./inputs.js"></script>
+		<script src="./game-logic.js"></script>
+		<script src="./gamemodes.js"></script>
+		<link rel="stylesheet" href="./example.css">
+	</head>
 
-<body onload="initializeSocket()">
-	<h1 id="title">Better Jackbox</h1>
-	<p id="subtitle">Test text test text</p>
-	<label for="message" id="nameLabel">(Current name: NAME_HERE)</label>
-	<form>
-		<label for="message">Change your name:</label>
-		<input type="text" id="nameBox">
-		<button type="button" id="nameSubmit">Confirm</button>
-	</form>
-	<form>
-		<label for="message">Enter message to send to server:</label>
-		<input type="text" id="textBox">
-		<button type="button" id="submit">Send</button>
-		<label id="messageErrorBox"></label>
-	</form>
-	<form>
-		<label for="message">Join a room:</label>
-		<input type="text" id="roomJoinBox">
-		<button type="button" id="roomJoinSubmit">Submit</button>
-		<button type="button" id="leaveRoom">Leave Room</button>
-	</form>
-	<h2 id="chat">[Last Chat Message]</h2>
-	<h2 id="rooms">No current rooms</h2>
-	<button type="button" id="startGame">Start Telephone Game in Room</button>
-</body>
+	<div class="container">
+		<div class="pages">
+			<div class="page one">
+				<h1>SATIRE</h1>
+				<button onClick="slide('next')">Next</button>
+				<div>
+					<body onload="initializeSocket()">
+						<p id="subtitle">Telephone messages here</p>
+						<label for="message" id="nameLabel">(Current name: NAME_HERE)</label>
+						<form>
+							<label for="message">Change your name:</label>
+							<input type="text" id="nameBox">
+							<button type="button" id="nameSubmit">Confirm</button>
+						</form>
+						<form>
+							<label for="message">Enter message to send to server:</label>
+							<input type="text" id="textBox">
+							<button type="button" id="submit">Send</button>
+							<label id="messageErrorBox"></label>
+						</form>
 
+						<form>
+							<label for="message">Join a room:</label>
+							<input type="text" id="roomJoinBox">
+							<button type="button" id="roomJoinSubmit">Submit</button>
+							<button type="button" id="leaveRoom">Leave Room</button>
+						</form>
+						<h2 id="chat">[Last Chat Message]</h2>
+						<h2 id="rooms">No current rooms</h2>
+						<button type="button" id="startGame">Start Telephone Game in Room</button>
+
+						<form>
+							<label for="message">telephone player settings:</label>
+							<input type="text" id="restrictBox">
+							<input type="number" id="teleNumLimit" min="0" max="10">
+							<button type="button" id="telelimit">limit</button>
+							<button type="button" id="telerequire">require</button>
+						</form>
+
+					</body>
+				</div>
+			</div>
+
+
+			<div class="page two">
+				<h1>PAGE 2</h1>
+				<div>
+					<button onClick="slide('prev')">Previous</button>
+					<button onClick="slide('next')">Next</button>
+				</div>
+			</div>
+
+
+			<div class="page three">
+				<h1>PAGE 3</h1>
+				<div>
+					<button onClick="slide('prev')">Previous</button>
+					<button onClick="slide('next')">Next</button>
+				</div>
+			</div>
+
+
+			<div class="page four">
+				<h1>PAGE 4</h1>
+				<div>
+					<button onClick="slide('prev')">Previous</button>
+					<button onClick="slide('next')">Next</button>
+				</div>
+			</div>
+
+
+			<div class="page five">
+				<h1>PAGE 5</h1>
+				<div>
+					<button onClick="slide('prev')">Previous</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="./page-runner.js"></script>
 </html>

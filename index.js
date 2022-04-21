@@ -16,14 +16,24 @@ var io;
     app.get('/', function (req, res) { // Sends the basic webpage if GET not speficied
         SendFile('/client/index.html', res);
     });
-    app.get('/client/*', function (req, res) { // If a client file is asked for, give it and specify the correct MIME type
-        SendFile(req.url, res);
+    app.get('/*', function (req, res) { // If a client file is asked for, give it and specify the correct MIME type
+        // Connect to the correct dir of the file hierarchy
+        var url = req.url;
+        if (url.length > 0 && !url.endsWith('socket.io.js'))
+        {
+            url = url.replace('/', '/client/');
+            console.log('fileName: ' + req.url + ', url: ' + url);
+        }
+
+        SendFile(url, res);
     });
     
     function SendFile(fileName, res)
     {
+        // Sniff the MIME
         var mimeType = mime.lookup(fileName);
         res.setHeader('Content-Type', mimeType);
+
         res.sendFile(__dirname + fileName, function (error) {
             if (error)
             {
@@ -227,20 +237,33 @@ let chatReceiver = new DataReceiver('chat-message', null, null, (socket, message
 });
 // For when a client requests to join a room:
 let roomReqReceiver = new DataReceiver('join-req', null, null, (socket, message) => {
-    if(message.trim().length === 0)
+    message = message.trim();
+    if (message.length === 0)
     {
         return;
     }
     // Disallows joining other people's id's
-    let valid = true;
+    let error = null;
     allSockets.forEach((item) => {
         if (item.id == message)
         {
-            valid = false;
+            error = "Sorry, that room is already someone's id.";
         }
     })
-    if (!valid) 
+    // Disallows joining a room with a game currently running
+    allCurrentGames.forEach((item) => {
+        if (item.room == message)
+        {
+            error = "Sorry, room [" + message + "] already has a game running. Please wait until it's ended.";
+        }
+    })
+    
+    if (error != null)
+    {
+        socket.emit('error-display', error);
+        console.log('Join room request refused: [' + message + ']');
         return;
+    }
     
     // If it made it to this point, it is a valid room
     console.log('Joining Room: [' + message + ']');
@@ -269,16 +292,10 @@ let roomLeaveReceiver = new DataReceiver('leave-rooms', null, null, (socket) => 
     socket.emit('rooms-req', "");
 });
 // For when a client wants to start a game of telephone in their room:
-let startTelephoneReceiver = new DataReceiver('telephone-start', null, null, (socket, room) => {
-    // let players = [];
-    // console.log(io.rooms);
-    // console.log('~~~~~~~~~~~~~~~~~~~~~~~~~');
-    // console.log(getAllSockets(room, socket));
-    // console.log('~~~~~~~~~~~~~~~~~~~~~~~~~');
-    // getSocketsInRoom(room).forEach((socket) => {
-    //     players.push(getPlayer(socket.id));
-    // })
-    new Telephone(allPlayers, room);
+let startTelephoneReceiver = new DataReceiver('telephone-start', null, null,
+        (socket, room, policiesAndTester) => {
+            new Telephone(allPlayers, room, policiesAndTester[0], policiesAndTester[1]);
+            // policiesAndTester contains char policies and the policy tester respectively
 });
 
 const allCurrentGames = [];
@@ -337,10 +354,11 @@ class GameMode
 // output: randomize the order of players and can return current player
 class Telephone extends GameMode
 {
-	constructor(players, room, charPolicies = null) 
+	constructor(players, room, charPolicies = null, policyTester = () => null) 
 	{
 		super(players, room);
         this.charPolicies = charPolicies;
+        this.policyTester = policyTester;
 		this.currPlayerIn = 0;
         this.messageChain = [];
 		this.isFinish = false;
@@ -358,12 +376,13 @@ class Telephone extends GameMode
         this.InitSender.send();
 
         this.message = "PLACEHOLDER PROMPT: say something, idk";
-        this.yourTurnSender = new DataSender('telephone-your-turn', [], this.message, this.getCharMin, this.getCharMax, this.charPolicies);
+        this.yourTurnSender = new DataSender('telephone-your-turn', [], this.message,
+            this.getCharMin(), this.getCharMax(), this.charPolicies);
         this.yourTurnSender.sendTo(playerSockets[0] /*getSocket(this.currentPlayer().id)*/);
 
-        this.CallReceiver = new DataReceiver('telephone-call', this, allSockets,
+        this.callReceiver = new DataReceiver('telephone-call', this, allSockets,
                 (socket, mes) => {
-            this.message = mes;
+            this.message = mes.trim();
             this.yourTurnSender.args[0] = this.message;
             if (socket.id != this.currentPlayer().id)
             {
@@ -375,33 +394,50 @@ class Telephone extends GameMode
             // Double check that the word the client sent is legal
             let min = this.getCharMin();
             let max = this.getCharMax();
-            this.yourTurnSender.args[1] = min;
-            this.yourTurnSender.args[2] = max;
-            if (this.message.length > max || this.message.length < min)
+            let error = null;
+            if (this.message.length < min)
             {
-                // Tell the client to try again
-                socket.emit('telephone-message-error', min, max);
-                console.log("Last telephone call was invalid. Message: [" + this.message +
-                    "], character domain: [" + min + ', ' + max + ']');
+                let dif = min - length;
+                error = 'Message is ' + dif + ' character' + (dif !== 1 ? 's' : '') + ' too short';
+            }
+            else if (this.message.length > max)
+            {
+                let dif = length - max;
+                error = 'Message is ' + dif + ' character' + (dif !== 1 ? 's' : '') + ' too long.'; 
+            }
+            else if (this.charPolicies != null)
+            {
+                this.charPolicies.forEach((policy) => {
+                    error = this.testPolicy(policy, this.message);
+                    if (error != null)
+                    {
+                        return;
+                    }
+                });
+            }
+            if (error != null)
+            {
+                socket.emit('telephone-message-error', error);
                 return;
             }
 
+            // The message passes if it makes it to here
             this.messageChain.push(this.message);
-            this.CallReceiver.remove(socket);
+            this.callReceiver.remove(socket);
             this.nextPlayer();
             // Refreshes the character domain
             min = this.getCharMin();
             max = this.getCharMax();
             this.yourTurnSender.args[1] = min;
             this.yourTurnSender.args[2] = max;
-            // this.CallReceiver.addSockets(getSocket(this.currentPlayer().id));
+            // this.callReceiver.addSockets(getSocket(this.currentPlayer().id));
             
             // If the chain is ended, inform all players that the game has ended and
             // show everybody the progressiom of the messages
             if (this.isFinish)
             {
                 getSocketsInRoom(room).forEach((item) => item.emit('telephone-game-end', this.messageChain));
-                this.CallReceiver.removeAll();
+                this.callReceiver.removeAll();
                 console.log("Game of telephone in room [" + room + "] has ended");
                 return;
             }
@@ -469,6 +505,125 @@ class Telephone extends GameMode
 	{
 		return this.players[this.currPlayerIn];
 	}
+
+    /**
+     * Tests an artbitrary string against the policy
+     * @param {*} string The string that is tested against the policy
+     * @returns {*} The error message to be sent to the user (null if passes) 
+     */
+    testPolicy(charPol, string)
+    {
+        const ALLOWED = 'ALLOWED';
+        const REQUIRED = 'REQUIRED';
+        const EXCLUSIVE = 'EXCLUSIVE';
+
+        /**
+         * Scans a string for this policy's given characters
+         * @returns [char-by-char passes array, number of total occurrences] 
+         */
+        function scanString(characters, string)
+        {
+            let passes = Array(string.length).fill(false); // Make it a boolean array of default falses??????
+            let occurrences = 0;
+            characters.forEach((char) => {
+                for (let i = 0; i <= string.length - char.length; i++)
+                {
+                    if (string.substring(i, i + char.length) === char)
+                    {
+                        for (let j = i; j < i + char.length; j++)
+                        {
+                            passes[j] = true;
+                        }
+                        occurrences++;
+                    }
+                }
+            });
+            return [passes, occurrences];
+        }
+
+        /**
+         * @returns String containing a grammatically correct list of all policed characters
+         */
+        function getCharacterList(characters)
+        {
+            let allChars = '';
+            for (let i = 0; i < characters.length; i++)
+            {
+                if (i != 0)
+                {
+                    if (i === characters.length - 1)
+                    {
+                        allChars += ', or ';
+                    }
+                    else
+                    {
+                        allChars += ', ';
+                    }
+                }
+                allChars += '"' + characters[i] + '"'
+            }
+            return allChars;
+        }
+
+        // Special case for bypassing logic
+        if (charPol.policy === ALLOWED && charPol.count === -1)
+            return null;
+            
+        // Test the string
+        let testString = charPol.caseSensitive ? string : string.toLowerCase();
+        var out = scanString(charPol.characters, testString);
+        let passes = out[0];
+        let occurrences = out[1];
+
+        // Interprets the results based on given policy
+        switch (charPol.policy)
+        {
+            case ALLOWED:
+                if (occurrences > charPol.count)
+                {
+                    return (occurrences - charPol.count) + ' too many occurrences of ' + getCharacterList(charPol.characters);
+                }
+                return null;
+            case REQUIRED:
+                if (occurrences < charPol.count)
+                {
+                    return 'Minimum  of ' + charPol.count + ' ' + getCharacterList(charPol.characters) +
+                        ' not met. Missing ' + (charPol.count - occurrences);
+                }
+                return null;
+            case EXCLUSIVE:
+                if (occurrences < charPol.count)
+                {
+                    return 'Minimum  of ' + charPol.count + ' ' + getCharacterList(charPol.characters) +
+                        ' not met. Missing ' + (charPol.count - occurrences);
+                }
+                for (let i = 0; i < passes.length; i++)
+                {
+                    if (!passes[i])
+                    {
+                        let badString = '';
+                        for (let j = i; j < passes.length; j++)
+                        {
+                            // If the bad string is too long, just shorten it
+                            if (j - i >= 6)
+                            {
+                                badString += '...'
+                                break;
+                            }
+
+                            if (!passes[j])
+                            {
+                                badString += string[j];
+                            } 
+                            else
+                                break;
+                        }
+                        return 'Detected use of non-permitted characters. First occurance: "' + badString + '"';
+                    }
+                }
+                return null;
+        }
+    }
 }
 
 
