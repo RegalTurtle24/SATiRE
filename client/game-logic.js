@@ -32,16 +32,19 @@ function gameLogicInit() {
 	policies = [new CharPolicy(['a', 'e', 'i', 'o', 'u'], CharPolicy.ALLOWED, 6),
 		new CharPolicy(['1984'], CharPolicy.ALLOWED, 0)];
 
-	document.getElementById('telerequire').addEventListener('click', (reqfunc) => {
-		var phrase = document.getElementById("restrictBox").value;
-		var telephoneNumberLimit = document.getElementById("teleNumLimit").value;
-		policies.push(new CharPolicy([phrase], CharPolicy.REQUIRED, telephoneNumberLimit, true));
-	});
-	document.getElementById('telelimit').addEventListener('click', (banfunc) => {
-		var phrase = document.getElementById("restrictBox").value;
-		var telephoneNumberLimit = document.getElementById("teleNumLimit").value;
-		policies.push(new CharPolicy([phrase], CharPolicy.ALLOWED, telephoneNumberLimit, false));
-	});
+	// purpose: for apply custom character policies within telephone
+	class policyButton {
+		constructor(ButtonID, policyType) {
+			document.getElementById(ButtonID).addEventListener('click', (reqfunc) => {
+				var phrase = document.getElementById("restrictBox").value;
+				var telephoneNumberLimit = document.getElementById("teleNumLimit").value;
+				policies.push(new CharPolicy([phrase], policyType, telephoneNumberLimit, true));
+			});
+        }
+	}
+
+	var limitButton = new policyButton('telerequire', CharPolicy.REQUIRED);
+	var requireButton = new policyButton('telelimit', CharPolicy.ALLOWED);
 
 	var startGameButton = new GameStartButton('startGame', 'telephone-start', [policies, testPolicy])
 	// ---------------------------------------------------------------------//
