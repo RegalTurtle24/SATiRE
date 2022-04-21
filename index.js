@@ -303,14 +303,15 @@ let roomLeaveReceiver = new DataReceiver('leave-rooms', null, null, (socket) => 
 });
 // For when a client wants to start a game of telephone in their room:
 let startTelephoneReceiver = new DataReceiver('telephone-start', null, null,
-        (socket, room, charPolicies, policyTester) => {
+        (socket, room, policiesAndTester) => {
     try
     {
         let players = [];
         getSocketsInRoom(room).forEach((socket) => {
             players.push(getPlayer(socket.id));
         })
-        new Telephone(players, room, charPolicies, policyTester);
+        new Telephone(players, room, policiesAndTester[0], policiesAndTester[1]);
+        // policiesAndTester contains char policies and the policy tester respectively
     }
     catch (error)
     {
