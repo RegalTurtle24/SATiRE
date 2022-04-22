@@ -88,6 +88,9 @@ function gameLogicInit() {
 		}
 		return params;
 	});
+	// __________________________________________________________________________//
+
+
 
     playerOrder = document.getElementById('chat');
     

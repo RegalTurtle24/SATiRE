@@ -415,8 +415,15 @@ class Telephone extends GameMode
 	{
 		super(players, room);
         this.onEnd.push(() => this.endTelephone(room));
+
+        // the character policy for phrase sent in the game
         this.charPolicies = charPolicies;
+        this.isRandomPolicy = true;
+        this.currentCharPolicies = null;
+        this.randomizeCharacterPolicy();
         this.policyTester = policyTester;
+       
+
 		this.currPlayerIn = 0;
         this.messageChain = [];
 		this.isFinish = false;
@@ -437,9 +444,13 @@ class Telephone extends GameMode
             prompt = "Start the telephone chain with a your own secret message!";
         this.message = prompt;
         this.yourTurnSender = new DataSender('telephone-your-turn', [], this.message,
-            this.getCharMin(), this.getCharMax(), this.charPolicies);
+            this.getCharMin(), this.getCharMax(), this.currentCharPolicies);
         this.yourTurnSender.sendTo(playerSockets[0] /*getSocket(this.currentPlayer().id)*/);
 
+
+        // callReciever handles when a player send a message to another player on the server 
+        // I.E when a new turn starts. If your dealing with code that updates turn to turn, here's 
+        // where you want to look.
         this.callReceiver = new DataReceiver('telephone-call', this, allSockets,
                 (socket, mes) => {
             this.message = mes.trim();
@@ -455,6 +466,7 @@ class Telephone extends GameMode
             let min = this.getCharMin();
             let max = this.getCharMax();
             let error = null;
+                    // error messages that are sent to player
             if (this.message.length < min)
             {
                 let dif = min - length;
@@ -465,9 +477,10 @@ class Telephone extends GameMode
                 let dif = length - max;
                 error = 'Message is ' + dif + ' character' + (dif !== 1 ? 's' : '') + ' too long.'; 
             }
-            else if (this.charPolicies != null)
+
+            else if (this.currentCharPolicies != null)
             {
-                this.charPolicies.forEach((policy) => {
+                this.currentCharPolicies.forEach((policy) => {
                     error = this.testPolicy(policy, this.message);
                     if (error != null)
                     {
@@ -499,7 +512,8 @@ class Telephone extends GameMode
                 this.endTelephone(this.room);
                 return;
             }
-
+            // randomize restriction
+            this.randomizeCharacterPolicy()
             // Inform all players that the turn has ended
             getSocketsInRoom(room).forEach((item) => item.emit('telephone-turn-end', this.currentPlayer().name));
             // Only tell the next player the previous message
@@ -507,8 +521,8 @@ class Telephone extends GameMode
         })
 
         console.log('Telephone game initialized in room [' + room + ']');
-	}
-	
+    }
+
 	// return players, used by GameMode subclasses
 	returnPlayers() 
 	{
@@ -563,6 +577,20 @@ class Telephone extends GameMode
 	{
 		return this.players[this.currPlayerIn];
 	}
+
+    randomizeCharacterPolicy() {
+        // choose one random policy if it exist in charPolicies list, assign it to current policies.
+        // pick a second random policy, check if it contradicts and if it does mark that it's incompatable 
+        // and choose the another policy. 
+        // if the setting is not on random policy, it will just set to charPolicy
+        if (!this.isRandomPolicy) {
+            this.currentCharPolicies = this.charPolicies;
+        } else if (this.charPolicies != null) {
+            this.currentCharPolicies = new Array();
+            let index = Math.trunc(Math.random() * this.charPolicies.length);
+            this.currentCharPolicies.push(this.charPolicies[index]);
+        }
+    }
 
     /**
      * Tests an artbitrary string against the policy
