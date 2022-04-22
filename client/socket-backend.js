@@ -40,16 +40,19 @@ function initializeSocket()
 			console.log('Message from server: tag: \"' + tag + '\", data: ' + data);
 		});
 
-		chatMessageReciever = new DataReciever('chat-message', 'BACKEND-LISTENER', (name, data) => {
+		chatMessageReciever = new DataReciever('chat-message', DataReciever.BACKEND, (name, data) => {
 			chatFieldUpdater.update(name, data);
 		})
-		roomChangeReciever = new DataReciever('rooms-req', 'BACKEND-LISTENER', (rooms) => {
+		roomChangeReciever = new DataReciever('rooms-req', DataReciever.BACKEND, (rooms) => {
 			joinedRoomsTextUpdater.update(rooms);
 			console.log('Recieved rooms-req, ' + rooms);
 		})
-		nameChangeReciever = new DataReciever('name-change', 'BACKEND-LISTENER', (name) => {
+		nameChangeReciever = new DataReciever('name-change', DataReciever.BACKEND, (name) => {
 			console.log('Name successfully changed to: ' + name);
 			nameLabelUpdater.update(name);
+		})
+		errorReciever = new DataReciever('error-display', DataReciever.BACKEND, (error) => {
+			alert(error);
 		})
 	})
 
