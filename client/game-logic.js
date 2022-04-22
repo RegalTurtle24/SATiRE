@@ -8,29 +8,34 @@ var game = null;
 // hitting that button
 class GameStartButton {
 
-	constructor(buttonID, emitMessage, other) {
+	constructor(buttonID, emitMessage, getOtherParameters) {
 		this.box = document.getElementById(buttonID);
 		// a parameter that could be used to define anything not used in the code. 
-		this.other = other;
+		this.getOtherParameters = getOtherParameters;
 		this.box.addEventListener('click', (event) => {
 			if (joinedRoom == '') {
 				alert("Can't start game without a room selected");
 				return;
 			}
 
-			socket.emit(emitMessage, joinedRoom, this.other);
+			let other = null;
+			if (this.getOtherParameters() != null)
+			{
+				other = this.getOtherParameters();
+			}
 
+			socket.emit(emitMessage, joinedRoom, other);
 		});
 	}
 }
+
 // purpose: A class that handles starting gamemode or applying settings to gamemodes.
 function gameLogicInit() {
 	console.log('game logic init is running');
 
 	// ------------------------------- Telephone --------------------------- //
-	//Debug rules for testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	policies = [new CharPolicy(['a', 'e', 'i', 'o', 'u'], CharPolicy.ALLOWED, 6),
-		new CharPolicy(['1984'], CharPolicy.ALLOWED, 0)];
+	policies = [];
+	prompts = null;
 
 	// purpose: for apply custom character policies within telephone
 	class policyButton {
@@ -42,12 +47,47 @@ function gameLogicInit() {
 			});
         }
 	}
+	class PrompFileInput {
+		/**
+		 * Makes a button prompt the user in a popup when pressed
+		 * @param {*} id the ID of the button
+		 * @param {*} inputHandler the function that handles user text input once it has been submitted
+		 */
+		constructor(id, inputHandler)
+		{
+			this.fileSelector = document.getElementById(id);
+			this.fileSelector.addEventListener('change', (event) => {
+				inputHandler(this.fileSelector.files[0]);
+			})
+		}
+	} 
 
 	var limitButton = new policyButton('telerequire', CharPolicy.REQUIRED);
 	var requireButton = new policyButton('telelimit', CharPolicy.ALLOWED);
 
-	var startGameButton = new GameStartButton('startGame', 'telephone-start', [policies, testPolicy])
-	// ---------------------------------------------------------------------//
+	var promptInput = new PrompFileInput('teleprompt', (file) => {
+		if (file == null)
+		{
+			this.prompts = null;
+			return;
+		}
+		fr = new FileReader();
+		fr.onload = () => {
+			prompts = fr.result.split('\n');
+		}
+		fr.readAsText(file);
+	});
+
+	var startGameButton = new GameStartButton('startGame', 'telephone-start', () => {
+		let params = [policies, testPolicy, prompts];
+		// Randomly picks a prompt
+		if (params[2] != null)
+		{
+			let index = Math.trunc(Math.random() * params[2].length);
+			params[2] = params[2][index];
+		}
+		return params;
+	});
 
     playerOrder = document.getElementById('chat');
     

@@ -303,15 +303,16 @@ let roomLeaveReceiver = new DataReceiver('leave-rooms', null, null, (socket) => 
 });
 // For when a client wants to start a game of telephone in their room:
 let startTelephoneReceiver = new DataReceiver('telephone-start', null, null,
-        (socket, room, policiesAndTester) => {
+        (socket, room, other) => {
     try
     {
         let players = [];
         getSocketsInRoom(room).forEach((socket) => {
             players.push(getPlayer(socket.id));
         })
-        new Telephone(players, room, policiesAndTester[0], policiesAndTester[1]);
-        // policiesAndTester contains char policies and the policy tester respectively
+        console.log(other);
+        new Telephone(players, room, other[0], other[1], other[2]);
+        // other contains char policies, the policy tester, and a prompt respectively
     }
     catch (error)
     {
@@ -410,7 +411,7 @@ class GameMode
 // output: randomize the order of players and can return current player
 class Telephone extends GameMode
 {
-	constructor(players, room, charPolicies = null, policyTester = () => null) 
+	constructor(players, room, charPolicies = null, policyTester = () => null, prompt = null) 
 	{
 		super(players, room);
         this.onEnd.push(() => this.endTelephone(room));
@@ -432,7 +433,9 @@ class Telephone extends GameMode
         this.InitSender = new DataSender('game-init', playerSockets, playerNames , mode);
         this.InitSender.send();
 
-        this.message = "PLACEHOLDER PROMPT: say something, idk";
+        if (prompt == null)
+            prompt = "Start the telephone chain with a your own secret message!";
+        this.message = prompt;
         this.yourTurnSender = new DataSender('telephone-your-turn', [], this.message,
             this.getCharMin(), this.getCharMax(), this.charPolicies);
         this.yourTurnSender.sendTo(playerSockets[0] /*getSocket(this.currentPlayer().id)*/);
