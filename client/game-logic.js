@@ -18,12 +18,10 @@ class GameStartButton {
 				return;
 			}
 
-			let other = this.getOtherParameters();
-			// Randomly picks a prompt
-			if (other[2] != null)
+			let other = null;
+			if (this.getOtherParameters() != null)
 			{
-				let index = Math.trunc(Math.random() * other[2].length);
-				other[2] = other[2][index];
+				other = this.getOtherParameters();
 			}
 
 			socket.emit(emitMessage, joinedRoom, other);
@@ -81,7 +79,14 @@ function gameLogicInit() {
 	});
 
 	var startGameButton = new GameStartButton('startGame', 'telephone-start', () => {
-		return [policies, testPolicy, prompts];
+		let params = [policies, testPolicy, prompts];
+		// Randomly picks a prompt
+		if (params[2] != null)
+		{
+			let index = Math.trunc(Math.random() * params[2].length);
+			params[2] = params[2][index];
+		}
+		return params;
 	});
 
     playerOrder = document.getElementById('chat');
