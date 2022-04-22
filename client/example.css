@@ -9,6 +9,9 @@
   	font-family: 'Montserrat', sans-serif;
 }
 
+chat{
+	align-items: right;
+}
 button{
   	padding: 8px;
   	/*width: 100px;*/
@@ -37,7 +40,7 @@ input{
 
 .pages {
   	display: flex;
-	width: 500%;
+	width: 600%;
 	box-sizing: border-box;
 }
 
@@ -71,4 +74,8 @@ input{
 
 .five{
   	background: teal;
+}
+
+.six{
+	background: #EF09D1; 
 }
