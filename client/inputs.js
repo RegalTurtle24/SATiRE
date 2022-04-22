@@ -27,6 +27,7 @@ class DataSender
 // output: run recieveFunction
 class DataReciever
 {
+	static BACKEND = 'BACKEND';
 	static GLOBAL = 'GLOBAL';
 	static LOCAL_GAME = 'GAME';
 	static #localGameReceivers = [];
