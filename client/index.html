@@ -13,69 +13,73 @@
 
 	<div class="container">
 		<div class="pages">
+			
 			<div class="page one">
-				<h1>SATIRE</h1>
-				<button onClick="slide('next')">Next</button>
-				<div>
+				
+				<h1>SATiRE</h1>
+				<h2>by Sam, Ankita, Thys, Reed, Elle</h2>
+<div>
 					<body onload="initializeSocket()">
-						<p id="subtitle">Telephone messages here</p>
+</body>
+					<button onClick="slide('next')">Continue</button>
+				</div>
+			</div>
+			
+			<div class="page two">
+				<h1>Customize Name</h1>
+				
+				<div>
+					
+						
 						<label for="message" id="nameLabel">(Current name: NAME_HERE)</label>
 						<form>
 							<label for="message">Change your name:</label>
 							<input type="text" id="nameBox">
 							<button type="button" id="nameSubmit">Confirm</button>
 						</form>
+						
+						<button onClick="slide('prev')">Previous</button>
+					<button onClick="slide('next')">Next</button>
+
+					
+				</div>
+			</div>
+
+
+<div class="page three">
+				<h1>Join a Room</h1>
+  <div>
 						<form>
+							<label for="message">Enter Room Code:</label>
+							<input type="text" id="roomJoinBox">
+							<button type="button" id="roomJoinSubmit">Submit</button>
+							<button type="button" id="leaveRoom">Leave Room</button>
+							<h2 id="rooms">No current rooms</h2>
+						</form>
+						
+					<button onClick="slide('prev')">Previous</button>
+					<button onClick="slide('next')">Next</button>
+  </div>
+			</div>
+
+
+			<div class="page four">
+				<h1>Your Room</h1>
+				<div>
+				  <form>
 							<label for="message">Enter message to send to server:</label>
 							<input type="text" id="textBox">
 							<button type="button" id="submit">Send</button>
 							<label id="messageErrorBox"></label>
 						</form>
 
-						<form>
-							<label for="message">Join a room:</label>
-							<input type="text" id="roomJoinBox">
-							<button type="button" id="roomJoinSubmit">Submit</button>
-							<button type="button" id="leaveRoom">Leave Room</button>
-						</form>
+						
 						<h2 id="chat">[Last Chat Message]</h2>
-						<h2 id="rooms">No current rooms</h2>
-						<button type="button" id="startGame">Start Telephone Game in Room</button>
+						<h3>Select a Game:</h3>
+						<button onClick="slide('next')">Telephone Game</button>
+						
 
-						<form>
-							<label for="message">telephone player settings:</label>
-							<input type="text" id="restrictBox">
-							<input type="number" id="teleNumLimit" min="0" max="10">
-							<button type="button" id="telelimit">limit</button>
-							<button type="button" id="telerequire">require</button>
-						</form>
-
-					</body>
-				</div>
-			</div>
-
-
-			<div class="page two">
-				<h1>PAGE 2</h1>
-				<div>
-					<button onClick="slide('prev')">Previous</button>
-					<button onClick="slide('next')">Next</button>
-				</div>
-			</div>
-
-
-			<div class="page three">
-				<h1>PAGE 3</h1>
-				<div>
-					<button onClick="slide('prev')">Previous</button>
-					<button onClick="slide('next')">Next</button>
-				</div>
-			</div>
-
-
-			<div class="page four">
-				<h1>PAGE 4</h1>
-				<div>
+						
 					<button onClick="slide('prev')">Previous</button>
 					<button onClick="slide('next')">Next</button>
 				</div>
@@ -83,8 +87,28 @@
 
 
 			<div class="page five">
-				<h1>PAGE 5</h1>
+				<h1>Telephone Game</h1>
 				<div>
+					<form>
+							<label for="message">Player settings:</label>
+							<input type="text" id="restrictBox">
+							<input type="number" id="teleNumLimit" min="0" max="10">
+							<button type="button" id="telelimit">limit</button>
+							<button type="button" id="telerequire">require</button>
+						</form>
+					<button type="button" onClick="slide('next')" id="startGame">Start Game</button>
+					
+					
+					<button onClick="slide('prev')">Previous</button>
+					<button onClick="slide('next')">Next</button>
+				</div>
+			</div>
+
+
+			<div class="page six">
+				<h1>Game Screen...</h1>
+				<div>
+					<p id="subtitle">Telephone messages here</p>
 					<button onClick="slide('prev')">Previous</button>
 				</div>
 			</div>
