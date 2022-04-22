@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>index</title>
+</head>
+<body>
+	
+	<p>Click to see hidden message!</p>
+<button onClick="secretMsg()">CLICK HERE!</button>
+	<p id = "demo"></p>
+<script>
+		function secretMsg(){
+			document.getElementById("demo").innerHTML = "Hello! </br> This is the secret message you're supposed to get. I am praying this works please.";
+		}
+	</script>
+	
+	
+	<p>Click to get alerted!</p>
+	<button onClick="getAlert()">GET ALERTED!</button>
+	<p id = "demo2"></p>
+	<script>
+		function getAlert(){
+			alert("ALERT ALERT!");
+		}
+	
+	</script>
+	
+	<p>You should see a picture below (please work)</p>
+	<img src="Documents/BlackKnight.png" width="89" height="112" alt=""/>
+	
+</body>
+</html>
