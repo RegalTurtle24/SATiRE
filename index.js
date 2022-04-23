@@ -581,8 +581,6 @@ class Telephone extends GameMode
 
     randomizeCharacterPolicy() {
         // choose one random policy if it exist in charPolicies list, assign it to current policies.
-        // pick a second random policy, check if it contradicts and if it does mark that it's incompatable 
-        // and choose the another policy. 
         // if the setting is not on random policy, it will just set to charPolicy
         if (!this.isRandomPolicy) {
             this.currentCharPolicies = this.charPolicies;
