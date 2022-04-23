@@ -469,12 +469,12 @@ class Telephone extends GameMode
                     // error messages that are sent to player
             if (this.message.length < min)
             {
-                let dif = min - length;
+                let dif = min - this.message.length;
                 error = 'Message is ' + dif + ' character' + (dif !== 1 ? 's' : '') + ' too short';
             }
             else if (this.message.length > max)
             {
-                let dif = length - max;
+                let dif = this.message.length - max;
                 error = 'Message is ' + dif + ' character' + (dif !== 1 ? 's' : '') + ' too long.'; 
             }
 
@@ -514,6 +514,7 @@ class Telephone extends GameMode
             }
             // randomize restriction
             this.randomizeCharacterPolicy()
+            this.yourTurnSender.args[3] = this.currentCharPolicies;
             // Inform all players that the turn has ended
             getSocketsInRoom(room).forEach((item) => item.emit('telephone-turn-end', this.currentPlayer().name));
             // Only tell the next player the previous message
