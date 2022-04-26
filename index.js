@@ -207,7 +207,7 @@ class DataReceiver {
     {
         for (var i = this.socketList.length - 1; i >= 0; i--)
         {
-            this.remove(this.socketList.at(i));
+            this.remove(this.socketList[i]);
         }
     }
 }
@@ -224,6 +224,11 @@ let nameReceiver = new DataReceiver('name-req', null, null, (socket, newName) =>
     if (nameInUse)
     {
         socket.emit('error-display', 'Failed to change name: \"' + '\" is already in use');
+        return;
+    }
+    if (newName.trim() === 0)
+    {
+        socket.emit('error-display', 'Failed to change name: You cannot have empty name');
         return;
     }
     let player = getPlayer(socket.id);
@@ -310,7 +315,6 @@ let startTelephoneReceiver = new DataReceiver('telephone-start', null, null,
         getSocketsInRoom(room).forEach((socket) => {
             players.push(getPlayer(socket.id));
         })
-        console.log(other);
         new Telephone(players, room, other[0], other[1], other[2]);
         // other contains char policies, the policy tester, and a prompt respectively
     }
