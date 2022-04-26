@@ -755,7 +755,6 @@ class CollabDraw extends GameMode
      */
     constructor(players, room, timeLimit)
     {
-<<<<<<< HEAD
         super(GameMode.randomizePlayers(players), room);
         this.onEnd.push(() => this.endDraw(room));
 
@@ -889,32 +888,75 @@ class CollabDraw extends GameMode
         // Informs players of the game having ended and sends the full image to everybody in the room
         getSocketsInRoom(room).forEach((item) => item.emit('draw-game-end', fullCanvas));
         this.endDraw(this.room);
-=======
-        super(players, room);
+        super(GameMode.randomizePlayers(players), room);
         this.onEnd.push(() => this.endDraw(room));
 
-        // Initializes the gridboard and assigns each player a space
+        class CanvasTile
+        {
+            constructor(x, y, player, lastImage = null)
+            {
+                this.x = x;
+                this.y = y;
+                this.player = player;
+                this.lastImage = lastImage;
+            }
+        }
 
-        // Initialize local variables
-        // inc. last updated version of each tile, etc.
+        // Initializes the gridboard and assigns each player a space
+        var gridWidth = Math.floor(Math.sqrt(players.length));
+        var gridHeight = Math.ceil(players.length / gridWidth);
+        var lastRowWidth = players % gridWidth;
+        var canvasGrid = new Array(gridHeight);
+        let pIndex = 0;
+        // Loops through each row of regular size
+        for (var y = 0; y < gridHeight - 1; y++)
+        {
+            canvasGrid.push(new Array(gridWidth));
+            for (var x = 0; x < gridWidth; x++)
+            {
+                canvasGrid[y][x] = new CanvasTile(x, y, players[pIndex]);
+                pIndex++;
+            }
+        }
+        // Loops through the final row of possibly different size
+        canvasGrid.push(new Array(lastRowWidth));
+        for (var x = 0; x < lastRowWidth; x++)
+        {
+            var y = gridHeight - 1
+            canvasGrid[y][x] = new CanvasTile(x, y, players[pIndex]);
+            pIndex++;
+        }
 
         // Initializes data receiver for relaying canvas updates between adjacent players
+        var canvasUpdaateReceiver = new DataReceiver('draw-canvas-update', this, getSocketsFromPlayers(sockets),
+                (socket, x, y, newImage) => {
+            let tile = canvasGrid[y][x];
+            tile.lastImage = newImage;
+            sendTileUpdatesToAdjacents(canvasGrid, )
+        });
 
         // Tells each player that the game is starting, and optionally gives them a prompt
+        // Has yet to be implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         // Starts a timer for given number of seconds (and/or listens for more than half of players requesting
         // to quit the current game)
+        // Has yet to be implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             // Inform players of the game having ended and sends the full image to everybody in the room
->>>>>>> e749972 (Created outline for server side CollabDraw)
+            // Has yet to be implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    }
+
+    /**
+     * Sends the updated tiles to all player adjacent to the given tile
+     */
+    sendTileUpdatesToAdjacents(grid, tile)
+    {
+        // Has yet to be implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     }
 
     /** Ends the game of collaborative draw in the given room */
     endDraw(room)
     {
-<<<<<<< HEAD
-=======
         getSocketsInRoom(room).forEach((item) => item.emit('draw-game-end', this.messageChain));
->>>>>>> e749972 (Created outline for server side CollabDraw)
         console.log("Game of collaborative draw in room [" + room + "] has ended");
     }
 }
