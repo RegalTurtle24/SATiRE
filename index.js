@@ -301,18 +301,29 @@ let roomLeaveReceiver = new DataReceiver('leave-rooms', null, null, (socket) => 
     })
     socket.emit('rooms-req', "");
 });
-// For when a client wants to start a game of telephone in their room:
-let startTelephoneReceiver = new DataReceiver('telephone-start', null, null,
-        (socket, room, other) => {
+// For when a client wants to start a game in their room:
+let startGameReceiver = new DataReceiver('game-start', null, null,
+        (socket, gamemode, room, other) => {
     try
     {
         let players = [];
         getSocketsInRoom(room).forEach((socket) => {
             players.push(getPlayer(socket.id));
         })
-        console.log(other);
-        new Telephone(players, room, other[0], other[1], other[2]);
-        // other contains char policies, the policy tester, and a prompt respectively
+        if (gamemode === 'telephone')
+        {
+            new Telephone(players, room, other[0], other[1], other[2]);
+            // other contains char policies, the policy tester, and a prompt respectively
+        }
+        else if (gamemode === 'draw')
+        {
+            new CollabDraw(players, room, other[0]);
+            // other contains the time limit for the game
+        }
+        else
+        {
+            throw new Error('Requested gamemode of \"' + gamemode + '\"unknown');
+        }
     }
     catch (error)
     {
@@ -406,9 +417,7 @@ class GameMode
     }
 }
 
-// purpose: Telephone class that is intialized when starting a game of telephone
-// input: the players that are playing the game
-// output: randomize the order of players and can return current player
+/** A game where players try to pass along a message with major restrictions */
 class Telephone extends GameMode
 {
 	constructor(players, room, charPolicies = null, policyTester = () => null, prompt = null) 
@@ -722,6 +731,39 @@ class Telephone extends GameMode
     }
 }
 
+/** A game where players work together to each create part of a larger picture */
+class CollabDraw extends GameMode
+{
+    /**
+     * @param {*} timeLimit The time limit of the game in seconds (-1 if unlimited) 
+     */
+    constructor(players, room, timeLimit)
+    {
+        super(players, room);
+        this.onEnd.push(() => this.endDraw(room));
+
+        // Initializes the gridboard and assigns each player a space
+
+        // Initialize local variables
+        // inc. last updated version of each tile, etc.
+
+        // Initializes data receiver for relaying canvas updates between adjacent players
+
+        // Tells each player that the game is starting, and optionally gives them a prompt
+
+        // Starts a timer for given number of seconds (and/or listens for more than half of players requesting
+        // to quit the current game)
+            // Inform players of the game having ended and sends the full image to everybody in the room
+    }
+
+    /** Ends the game of collaborative draw in the given room */
+    endDraw(room)
+    {
+        getSocketsInRoom(room).forEach((item) => item.emit('draw-game-end', this.messageChain));
+        console.log("Game of collaborative draw in room [" + room + "] has ended");
+    }
+}
+
 
 
 let globalPlayerCount = 1;
@@ -744,6 +786,6 @@ io.on('connection', function (socket)
     chatReceiver.addSockets(socket);
     roomReqReceiver.addSockets(socket);
     roomLeaveReceiver.addSockets(socket);
-    startTelephoneReceiver.addSockets(socket);
+    startGameReceiver.addSockets(socket);
     disconnectReceiver.addSockets(socket);
 });

@@ -8,7 +8,7 @@ var game = null;
 // hitting that button
 class GameStartButton {
 
-	constructor(buttonID, emitMessage, getOtherParameters) {
+	constructor(buttonID, emitMessage, gamemode, getOtherParameters) {
 		this.box = document.getElementById(buttonID);
 		// a parameter that could be used to define anything not used in the code. 
 		this.getOtherParameters = getOtherParameters;
@@ -24,7 +24,7 @@ class GameStartButton {
 				other = this.getOtherParameters();
 			}
 
-			socket.emit(emitMessage, joinedRoom, other);
+			socket.emit(emitMessage, gamemode, joinedRoom, other);
 		});
 	}
 }
@@ -78,7 +78,7 @@ function gameLogicInit() {
 		fr.readAsText(file);
 	});
 
-	var startGameButton = new GameStartButton('startGame', 'telephone-start', () => {
+	var startTelephoneButton = new GameStartButton('startGame', 'game-start', 'telephone', () => {
 		let params = [policies, testPolicy, prompts];
 		// Randomly picks a prompt
 		if (params[2] != null)
