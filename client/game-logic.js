@@ -24,7 +24,6 @@ class GameStartButton {
 				other = this.getOtherParameters();
 			}
 
-			console.log('trying to start game');
 			socket.emit(emitMessage, joinedRoom, other);
 		});
 	}
@@ -83,7 +82,6 @@ function gameLogicInit() {
 
 	var startGameButton = new GameStartButton('p5startGame', 'telephone-start', () => {
 		let params = [policies, testPolicy, prompts];
-		console.log("called first method");
 		// Randomly picks a prompt
 		if (params[2] != null)
 		{
@@ -96,14 +94,13 @@ function gameLogicInit() {
 
 
 
-    playerOrder = document.getElementById('p6playerOrder');
-    console.log(playerOrder);
+    // playerOrder = document.getElementById('p6playerOrder');
 
 	// runs gamemode when recieve that gamemode
 	let initReceiver = new DataReciever('game-init', DataReciever.LOCAL_GAME, (playerNames, mode) => {
         if (mode === "telephone")
 		{
-			// playerOrder = document.getElementById('p6playerOrder');
+			playerOrder = document.getElementById('p6playerOrder');
 			jumpTo('telephone_now_playing');
             game = new ClientSideTelephone();
             game.startGame(playerNames);
