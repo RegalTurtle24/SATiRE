@@ -755,6 +755,7 @@ class CollabDraw extends GameMode
      */
     constructor(players, room, timeLimit)
     {
+<<<<<<< HEAD
         super(GameMode.randomizePlayers(players), room);
         this.onEnd.push(() => this.endDraw(room));
 
@@ -888,11 +889,32 @@ class CollabDraw extends GameMode
         // Informs players of the game having ended and sends the full image to everybody in the room
         getSocketsInRoom(room).forEach((item) => item.emit('draw-game-end', fullCanvas));
         this.endDraw(this.room);
+=======
+        super(players, room);
+        this.onEnd.push(() => this.endDraw(room));
+
+        // Initializes the gridboard and assigns each player a space
+
+        // Initialize local variables
+        // inc. last updated version of each tile, etc.
+
+        // Initializes data receiver for relaying canvas updates between adjacent players
+
+        // Tells each player that the game is starting, and optionally gives them a prompt
+
+        // Starts a timer for given number of seconds (and/or listens for more than half of players requesting
+        // to quit the current game)
+            // Inform players of the game having ended and sends the full image to everybody in the room
+>>>>>>> e749972 (Created outline for server side CollabDraw)
     }
 
     /** Ends the game of collaborative draw in the given room */
     endDraw(room)
     {
+<<<<<<< HEAD
+=======
+        getSocketsInRoom(room).forEach((item) => item.emit('draw-game-end', this.messageChain));
+>>>>>>> e749972 (Created outline for server side CollabDraw)
         console.log("Game of collaborative draw in room [" + room + "] has ended");
     }
 }
