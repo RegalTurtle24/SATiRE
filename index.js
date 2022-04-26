@@ -92,6 +92,15 @@ function getSocketsInRoom(room)
 {
     return allSockets.filter((item) => item.rooms.has(room));
 }
+function getSocketsFromPlayers(players)
+{
+    let sockets = new Array(players.length);
+    for (var i = 0; i < players.length; i++)
+    {
+        sockets[i] = players[i].socket;
+    }
+    return sockets;
+}
 
   
 /**
@@ -357,14 +366,15 @@ class GameMode
 	// Returns a randomized order of the given players.
 	static randomizePlayers = (players) => 
 	{
-        let playersCopy = [...players];
-        let newPlayers = [ ];
-        while (newPlayers.length < players.length)
-        {
-            newPlayers.push(playersCopy.splice(Math.random() * playersCopy.length)[0]);
-        }
+        // let playersCopy = [...players];
+        // let newPlayers = [ ];
+        // while (newPlayers.length < players.length)
+        // {
+        //     newPlayers.push(playersCopy.splice(Math.random() * playersCopy.length)[0]);
+        // }
 
-        return newPlayers;
+        // return newPlayers;
+        return players;
     }
     
     constructor(players, room) 
@@ -422,7 +432,7 @@ class Telephone extends GameMode
 {
 	constructor(players, room, charPolicies = null, policyTester = () => null, prompt = null) 
 	{
-		super(players, room);
+		super(GameMode.randomizePlayers(players), room);
         this.onEnd.push(() => this.endTelephone(room));
 
         // the character policy for phrase sent in the game
@@ -460,7 +470,7 @@ class Telephone extends GameMode
         // callReciever handles when a player send a message to another player on the server 
         // I.E when a new turn starts. If your dealing with code that updates turn to turn, here's 
         // where you want to look.
-        this.callReceiver = new DataReceiver('telephone-call', this, allSockets,
+        this.callReceiver = new DataReceiver('telephone-call', this, getSocketsFromPlayers(players),
                 (socket, mes) => {
             this.message = mes.trim();
             this.yourTurnSender.args[0] = this.message;
@@ -739,21 +749,69 @@ class CollabDraw extends GameMode
      */
     constructor(players, room, timeLimit)
     {
-        super(players, room);
+        super(GameMode.randomizePlayers(players), room);
         this.onEnd.push(() => this.endDraw(room));
 
-        // Initializes the gridboard and assigns each player a space
+        class CanvasTile
+        {
+            constructor(x, y, player, lastImage = null)
+            {
+                this.x = x;
+                this.y = y;
+                this.player = player;
+                this.lastImage = lastImage;
+            }
+        }
 
-        // Initialize local variables
-        // inc. last updated version of each tile, etc.
+        // Initializes the gridboard and assigns each player a space
+        var gridWidth = Math.floor(Math.sqrt(players.length));
+        var gridHeight = Math.ceil(players.length / gridWidth);
+        var lastRowWidth = players % gridWidth;
+        var canvasGrid = new Array(gridHeight);
+        let pIndex = 0;
+        // Loops through each row of regular size
+        for (var y = 0; y < gridHeight - 1; y++)
+        {
+            canvasGrid.push(new Array(gridWidth));
+            for (var x = 0; x < gridWidth; x++)
+            {
+                canvasGrid[y][x] = new CanvasTile(x, y, players[pIndex]);
+                pIndex++;
+            }
+        }
+        // Loops through the final row of possibly different size
+        canvasGrid.push(new Array(lastRowWidth));
+        for (var x = 0; x < lastRowWidth; x++)
+        {
+            var y = gridHeight - 1
+            canvasGrid[y][x] = new CanvasTile(x, y, players[pIndex]);
+            pIndex++;
+        }
 
         // Initializes data receiver for relaying canvas updates between adjacent players
+        var canvasUpdaateReceiver = new DataReceiver('draw-canvas-update', this, getSocketsFromPlayers(sockets),
+                (socket, x, y, newImage) => {
+            let tile = canvasGrid[y][x];
+            tile.lastImage = newImage;
+            sendTileUpdatesToAdjacents(canvasGrid, )
+        });
 
         // Tells each player that the game is starting, and optionally gives them a prompt
+        // Has yet to be implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         // Starts a timer for given number of seconds (and/or listens for more than half of players requesting
         // to quit the current game)
+        // Has yet to be implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             // Inform players of the game having ended and sends the full image to everybody in the room
+            // Has yet to be implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    }
+
+    /**
+     * Sends the updated tiles to all player adjacent to the given tile
+     */
+    sendTileUpdatesToAdjacents(grid, tile)
+    {
+        // Has yet to be implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     }
 
     /** Ends the game of collaborative draw in the given room */
