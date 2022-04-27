@@ -18,8 +18,14 @@ jumpTo = (page) => {
     case "title":
       translate = 0;
       break;
-    case "name_select":
-      translate = -100;
+    case "telephone_settings":
+      translate = -400;
+      break;
+    case "telephone_now_playing":
+      translate = -500;
+      break;
+    case "lobby":
+      translate = -300;
       break;
   }
 
