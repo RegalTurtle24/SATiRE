@@ -22,7 +22,6 @@ var io;
         if (url.length > 0 && !url.endsWith('socket.io.js'))
         {
             url = url.replace('/', '/client/');
-            console.log('fileName: ' + req.url + ', url: ' + url);
         }
 
         SendFile(url, res);
@@ -208,7 +207,7 @@ class DataReceiver {
     {
         for (var i = this.socketList.length - 1; i >= 0; i--)
         {
-            this.remove(socketList.at(i));
+            this.remove(this.socketList.at(i));
         }
     }
 }
@@ -222,7 +221,11 @@ let nameReceiver = new DataReceiver('name-req', null, null, (socket, newName) =>
             nameInUse = true;
         }
     })
-    if (nameInUse) return;
+    if (nameInUse)
+    {
+        socket.emit('error-display', 'Failed to change name: \"' + '\" is already in use');
+        return;
+    }
     let player = getPlayer(socket.id);
     console.log('Player with id [' + socket.id + '] changed name from [' + player.name + '] to [' + newName + ']');
     player.name = newName;
@@ -230,20 +233,27 @@ let nameReceiver = new DataReceiver('name-req', null, null, (socket, newName) =>
 });
 // For handling passing chat messages between clients:
 let chatReceiver = new DataReceiver('chat-message', null, null, (socket, message) => {
-    console.log('Relaying chat message: [' + message + ']');
-    socket.rooms.forEach(function (value) {
-        socket.to(value).emit('chat-message', getPlayer(socket.id).name, message);
-    })
+    try
+    {
+        console.log('Relaying chat message: [' + message + ']');
+        socket.rooms.forEach(function (value) {
+            socket.to(value).emit('chat-message', getPlayer(socket.id).name, message);
+        })
+    }
+    catch (error)
+    {
+        socket.emit('error-display', 'Failed to send chat message');
+    }
 });
 // For when a client requests to join a room:
 let roomReqReceiver = new DataReceiver('join-req', null, null, (socket, message) => {
+    let error = null;
     message = message.trim();
     if (message.length === 0)
     {
-        return;
+        error = 'Cannot join a room without a name';
     }
     // Disallows joining other people's id's
-    let error = null;
     allSockets.forEach((item) => {
         if (item.id == message)
         {
@@ -254,7 +264,7 @@ let roomReqReceiver = new DataReceiver('join-req', null, null, (socket, message)
     allCurrentGames.forEach((item) => {
         if (item.room == message)
         {
-            error = "Sorry, room [" + message + "] already has a game running. Please wait until it's ended.";
+            error = "Sorry, room [" + message + "] already has a game running. Please wait until it has ended.";
         }
     })
     
@@ -293,10 +303,39 @@ let roomLeaveReceiver = new DataReceiver('leave-rooms', null, null, (socket) => 
 });
 // For when a client wants to start a game of telephone in their room:
 let startTelephoneReceiver = new DataReceiver('telephone-start', null, null,
-        (socket, room, policiesAndTester) => {
-            new Telephone(allPlayers, room, policiesAndTester[0], policiesAndTester[1]);
-            // policiesAndTester contains char policies and the policy tester respectively
+        (socket, room, other) => {
+    try
+    {
+        let players = [];
+        getSocketsInRoom(room).forEach((socket) => {
+            players.push(getPlayer(socket.id));
+        })
+        console.log(other);
+        new Telephone(players, room, other[0], other[1], other[2]);
+        // other contains char policies, the policy tester, and a prompt respectively
+    }
+    catch (error)
+    {
+        console.log('Something went wrong when starting a game: ' + error);
+        socket.emit('error-display', 'Failed to start requested game');
+    }
 });
+let disconnectReceiver = new DataReceiver('disconnect', null, null, (socket, reason) => {
+    lostPlayer = getPlayer(socket.id);
+    if (lostPlayer != null)
+    {
+        lostPlayer.remove();
+    }
+    chatReceiver.remove(socket);
+    allSockets.splice(allSockets.indexOf(socket));
+    console.log('Disconnected from client at socket id [' + socket.id + '] for reason [' + reason + ']');
+    allCurrentGames.forEach((game) => {
+        if (game.players.includes(lostPlayer))
+        {
+            game.forceEndGame('player \"' + lostPlayer.name + '\" was disconnected for reason [' + reason + ']')
+        }
+    })
+})
 
 const allCurrentGames = [];
 // purpose: GameMode class that is parent for all gamemodes
@@ -331,6 +370,8 @@ class GameMode
 		this.players = players;
         this.dataReceivers = [];
         allCurrentGames.push(this);
+
+        this.onEnd = [];
 	}
 	
 	// return players, used by GameMode subclasses
@@ -342,10 +383,26 @@ class GameMode
     // Ends the current game 
     endGame()
     {
+        this.onEnd.forEach((item) => item());
         this.dataReceivers.forEach((item) => {
             item.removeAll();
         })
         allCurrentGames.splice(allCurrentGames.indexOf(this));
+    }
+
+    /**
+     * Abruptly ends a game, in case of emergencies
+     * @param {*} reason The reason that is given to the clients 
+     */
+    forceEndGame(reason)
+    {
+        getSocketsInRoom(this.room).forEach((socket) => {
+            if (socket != null)
+            {
+                socket.emit('error-display', 'Game has ended. ' + reason);
+            }
+        })
+        this.endGame();
     }
 }
 
@@ -354,9 +411,10 @@ class GameMode
 // output: randomize the order of players and can return current player
 class Telephone extends GameMode
 {
-	constructor(players, room, charPolicies = null, policyTester = () => null) 
+	constructor(players, room, charPolicies = null, policyTester = () => null, prompt = null) 
 	{
 		super(players, room);
+        this.onEnd.push(() => this.endTelephone(room));
         this.charPolicies = charPolicies;
         this.policyTester = policyTester;
 		this.currPlayerIn = 0;
@@ -375,7 +433,9 @@ class Telephone extends GameMode
         this.InitSender = new DataSender('game-init', playerSockets, playerNames , mode);
         this.InitSender.send();
 
-        this.message = "PLACEHOLDER PROMPT: say something, idk";
+        if (prompt == null)
+            prompt = "Start the telephone chain with a your own secret message!";
+        this.message = prompt;
         this.yourTurnSender = new DataSender('telephone-your-turn', [], this.message,
             this.getCharMin(), this.getCharMax(), this.charPolicies);
         this.yourTurnSender.sendTo(playerSockets[0] /*getSocket(this.currentPlayer().id)*/);
@@ -436,9 +496,7 @@ class Telephone extends GameMode
             // show everybody the progressiom of the messages
             if (this.isFinish)
             {
-                getSocketsInRoom(room).forEach((item) => item.emit('telephone-game-end', this.messageChain));
-                this.callReceiver.removeAll();
-                console.log("Game of telephone in room [" + room + "] has ended");
+                this.endTelephone(this.room);
                 return;
             }
 
@@ -624,6 +682,17 @@ class Telephone extends GameMode
                 return null;
         }
     }
+
+    /**
+     * Wraps up and completes a game of telephone 
+     * @param {*} room Because of weird scope stuff, just enter the room id of this game here
+     */
+    endTelephone(room)
+    {
+        getSocketsInRoom(room).forEach((item) => item.emit('telephone-game-end', this.messageChain));
+        this.callReceiver.removeAll();
+        console.log("Game of telephone in room [" + room + "] has ended");
+    }
 }
 
 
@@ -649,14 +718,5 @@ io.on('connection', function (socket)
     roomReqReceiver.addSockets(socket);
     roomLeaveReceiver.addSockets(socket);
     startTelephoneReceiver.addSockets(socket);
-    socket.on('disconnect', (reason) => {
-        allSockets.splice(allSockets.indexOf(socket));
-        chatReceiver.remove(socket);
-        lostPlayer = getPlayer(socket.id);
-        if (lostPlayer != null)
-        {
-            lostPlayer.remove();
-        }
-        console.log('Disconnected from client at socket id [' + socket.id + '] for reason [' + reason + ']');
-    });
+    disconnectReceiver.addSockets(socket);
 });
