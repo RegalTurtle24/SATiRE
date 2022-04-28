@@ -102,12 +102,12 @@ function gameLogicInit() {
 
 
 	// runs gamemode when recieve that gamemode
-	let initReceiver = new DataReciever('game-init', DataReciever.LOCAL_GAME, (playerNames, mode) => {
-        if (mode === "telephone")
+	let initReceiver = new DataReciever('game-init', DataReciever.LOCAL_GAME, (playerNames, mode, ...args) => {
+        if (mode === "telephone") 
 		{
 			playerOrder = document.getElementById('p6playerOrder');
 			jumpTo('telephone_now_playing');
-            game = new ClientSideTelephone();
+            game = new ClientSideTelephone(...args);
             game.startGame(playerNames);
             console.log('Telephone game data initialized');
 		}
