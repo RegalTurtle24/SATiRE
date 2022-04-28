@@ -9,9 +9,6 @@
   	font-family: 'Montserrat', sans-serif;
 }
 
-chat{
-	align-items: right;
-}
 button{
   	padding: 8px;
   	/*width: 100px;*/
@@ -52,7 +49,7 @@ input{
   	justify-content: center;
   	flex-direction: column;
 	gap: 10px;
-	transition: all 0.0s;
+	transition: al	l 0.0s;
 	color: white;
 }
 
@@ -70,6 +67,7 @@ input{
 
 .four{
   	background: limegreen;
+	height: 100vh;
 }
 
 .five{
@@ -78,4 +76,15 @@ input{
 
 .six{
 	background: #EF09D1; 
+}
+
+#p4chatGroup{
+	align-self: end;
+	position: fixed;
+	top: 90vh;
+}
+
+#p4games{
+	height: 25%;
+	width: 30%;
 }

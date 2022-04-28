@@ -54,23 +54,20 @@
 
 			<div class="page four">
 				<h1 id="p4roomDisplay">Your Room: No Current Room</h1>
-				<div>
-				  	<form>
-						<label for="message">Enter message to send to server:</label>
-						<input type="text" id="p4textBox">
-						<button type="button" id="p4submit">Send</button>
-						<label id="p4messageErrorBox"></label>
-					</form>
 
-						
-					<h2 id="p4chat">[Last Chat Message]</h2>
-
-					<div>
-						<button id="p4leaveRoom">Return to room select</button>
-					</div>
-
+				<div id="p4games">
+					<button id="p4leaveRoom">Return to room select</button>
+					
 					<h3>Select a Game to Play:</h3>
 					<button onclick="jumpTo('telephone_settings')">Telephone Game</button>
+				</div>
+
+				<div id="p4chatGroup">
+					<h2 id="p4chat">[Last Chat Message]</h2>
+					<label for="message">Enter message to send to server:</label>
+					<input type="text" id="p4textBox">
+					<button type="button" id="p4submit">Send</button>
+					<label id="p4messageErrorBox"></label>
 				</div>
 			</div>
 
