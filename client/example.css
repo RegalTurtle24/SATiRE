@@ -63,7 +63,7 @@ input{
 
 .pages {
   	display: flex;
-	width: 600%;
+	width: 600%; 
 	box-sizing: border-box;
 }
 
