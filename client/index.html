@@ -18,24 +18,24 @@
 				
 				<h1>SATiRE</h1>
 				<h2>by Sam, Ankita, Thys, Reed, Elle</h2>
-<div>
-					<body onload="initializeSocket()">
-</body>
-					<button onClick="slide('next')">Continue</button>
-				</div>
-			</div>
+                <div>
+					<body onload="initializeSocket()"></body>
+                    <button onClick="slide('next')">Continue</button>
+			    </div>
+            </div>
+			
 			
 			<div class="page two">
-				<h1>Customize Name</h1>
+				<h3>Customize Name</h3>
 				
 				<div>
 					
 						
-						<label for="message" id="nameLabel">(Current name: NAME_HERE)</label>
+						<label for="message" id="p2nameLabel">(Current name: NAME_HERE)</label>
 						<form>
 							<label for="message">Change your name:</label>
-							<input type="text" id="nameBox">
-							<button type="button" id="nameSubmit">Confirm</button>
+							<input type="text" id="p2nameBox">
+							<button type="button" id="p2nameSubmit">Confirm</button>
 						</form>
 						
 						<button onClick="slide('prev')">Previous</button>
@@ -47,47 +47,64 @@
 
 
 <div class="page three">
-				<h1>Join a Room</h1>
+				<h3>Join a Room</h3>
   <div>
 						<form>
 							<label for="message">Enter Room Code:</label>
-							<input type="text" id="roomJoinBox">
-							<button type="button" id="roomJoinSubmit">Submit</button>
-							<button type="button" id="leaveRoom">Leave Room</button>
-							<h2 id="rooms">No current rooms</h2>
+							<input type="text" id="p3roomJoinBox">
+							<button type="button" id="p3roomJoinSubmit">Submit</button>
+							<button type="button" id="p3leaveRoom">Leave Room</button>
+							<h2 id="p3rooms">No current rooms</h2>
 						</form>
 						
 					<button onClick="slide('prev')">Previous</button>
 					<button onClick="slide('next')">Next</button>
   </div>
-			</div>
+</div>
 
 
-			<div class="page four">
-				<h1>Your Room</h1>
-				<div>
-				  <form>
-							<label for="message">Enter message to send to server:</label>
-							<input type="text" id="textBox">
-							<button type="button" id="submit">Send</button>
-							<label id="messageErrorBox"></label>
-						</form>
-
-						
-						<h2 id="chat">[Last Chat Message]</h2>
-						<h3>Select a Game:</h3>
+<div class="page four">
+	
+		
+				<h3>Your Room</h3>
+		
+				
+					<div>
+						<h4>Select a Game:</h4>
 						<button onClick="slide('next')">Telephone Game</button>
+				  
+					  <button onClick="slide('prev')">Previous</button>
+					<button onClick="slide('next')">Next</button>
+                    </div>
+					  <div id="chat">
+				    		<h2 id="p4chat">[Last Chat Message]</h2>
+					  
+					  
+							<label for="message">Enter message to send to server:</label>
+							<input type="text" id="p4textBox">
+					  
+							<button type="button" id="p4submit">Send</button>
+					  
+							<label id="p4messageErrorBox"></label>
+					  </div>
+						  
+				  
+
+						
+						
+						
 						
 
 						
-					<button onClick="slide('prev')">Previous</button>
-					<button onClick="slide('next')">Next</button>
-				</div>
+					
+				
+		
+		
 			</div>
 
 
 			<div class="page five">
-				<h1>Telephone Game</h1>
+				<h3>Telephone Game</h3>
 				<div>
 					<form>
 							<label for="message">Player settings:</label>
@@ -106,7 +123,7 @@
 
 
 			<div class="page six">
-				<h1>Game Screen...</h1>
+				<h3>Game Screen...</h3>
 				<div>
 					<p id="subtitle">Telephone messages here</p>
 					<button onClick="slide('prev')">Previous</button>

@@ -8,7 +8,19 @@
 	padding: 0;
   	font-family: 'Montserrat', sans-serif;
 }
+h1{
+	font-size: 12vw;
+}
+h2{
+	font-size: 2vw;
+}
+h3{
+	font-size: 5vw;
+}
 
+h4{
+	font-size: 3vw;
+}
 chat{
 	align-items: right;
 }
@@ -32,6 +44,17 @@ input{
 	border: 2px solid black;
 }
 
+
+
+#chat{
+	align-items: end;
+    align-self:end;
+    align-content:end;
+    justify-content:end;
+    justify-self:end;
+    justify-items:end;
+}
+
 .container{
 	width: 100%;
 	height: 100vh;
@@ -48,34 +71,45 @@ input{
   	width: 100%;
   	height: 100vh;
   	display: flex;
-  	align-items: center;
+  	
   	justify-content: center;
   	flex-direction: column;
 	gap: 10px;
 	transition: all 0.0s;
 	color: white;
 }
+p{
+	text-align: right;
+	font-size: 5vw;
+}
 
 .one{
+	align-items: center;
   	background: orangered;
 }
 
 .two{
+	align-items: center;
   	background: dodgerblue;
 }
 
 .three{
+	align-items: center;
   	background: indigo;
 }
 
 .four{
+	align-items: center;
   	background: limegreen;
+	
 }
 
 .five{
+	align-items: center;
   	background: teal;
 }
 
 .six{
+	align-items: center;
 	background: #EF09D1; 
 }
