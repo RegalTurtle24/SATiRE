@@ -758,6 +758,8 @@ class CollabDraw extends GameMode
         super(GameMode.randomizePlayers(players), room);
         this.onEnd.push(() => this.endDraw(room));
 
+        const PORTION_OF_PLAYERS_NEEDED_TO_FINISH_GAME_EARLY = 2.0 / 3.0; 
+
         class CanvasTile
         {
             constructor(x, y, player, lastImage = null)
@@ -794,15 +796,7 @@ class CollabDraw extends GameMode
             pIndex++;
         }
 
-        // Initializes data receiver for relaying canvas updates between adjacent players
-        var canvasUpdaateReceiver = new DataReceiver('draw-canvas-update', this, getSocketsFromPlayers(sockets),
-                (socket, x, y, newImage) => {
-            let tile = canvasGrid[y][x];
-            tile.lastImage = newImage;
-            sendTileUpdatesToAdjacents(canvasGrid, )
-        });
-
-        // Tells each player that the game is starting, and optionally gives them a prompt
+        // Initializes some local variables
         let playerSockets = [];
         let playerNames = [];
         let mode = "draw";
@@ -810,6 +804,30 @@ class CollabDraw extends GameMode
             playerSockets.push(getSocket(item.id));
             playerNames.push(item.name);
         })
+
+        // Initializes data receiver for relaying canvas updates between adjacent players
+        var canvasUpdaateReceiver = new DataReceiver('draw-canvas-update', this, playerSockets,
+                (socket, x, y, newImage) => {
+            let tile = canvasGrid[y][x];
+            tile.lastImage = newImage;
+            sendTileUpdatesToAdjacents(canvasGrid, )
+        });
+
+        // Initializes the data receiver for if players wish to end the drawing session early
+        var socketsRequestingEnd = [];
+        var drawEndReqReceiver = new DataReceiver('draw-finalize-req', this, playerSockets,
+                (socket) => {
+            if (!socketsRequestingEnd.includes(socket))
+            {
+                socketsRequestingEnd.push(socket);
+                if (socketsRequestingEnd.length >= this.players.length * PORTION_OF_PLAYERS_NEEDED_TO_FINISH_GAME_EARLY)
+                {
+                    this.finalizeCanvas();
+                }
+            }
+        });
+
+        // Tells each player that the game is starting, and optionally gives them a prompt
         for (var i = 0; i < this.players.length; i++)
         {
             playerSockets[i].emit('game-init', playerNames, mode, gridWidth, i);
@@ -817,9 +835,10 @@ class CollabDraw extends GameMode
 
         // Starts a timer for given number of seconds (and/or listens for more than half of players requesting
         // to quit the current game)
-        // Has yet to be implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            // Inform players of the game having ended and sends the full image to everybody in the room
-            // Has yet to be implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        if (timeLimit > 0)
+        {
+            setTimeout(this.finalizeCanvas, timeLimit * 1000);
+        }
     }
 
     /**
@@ -828,6 +847,17 @@ class CollabDraw extends GameMode
     sendTileUpdatesToAdjacents(grid, tile)
     {
         // Has yet to be implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    }
+
+    /**
+     * Puts all the player's tiles together and sends them to each player,
+     * it also ends the game
+     */
+    finalizeCanvas()
+    {
+        // Inform players of the game having ended and sends the full image to everybody in the room
+        // Has yet to be implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        this.endDraw(this.room);
     }
 
     /** Ends the game of collaborative draw in the given room */
