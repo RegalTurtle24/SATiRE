@@ -936,7 +936,17 @@ class CollabDraw extends GameMode
         });
 
         // Tells each player that the game is starting, and optionally gives them a prompt
-        // Has yet to be implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        let playerSockets = [];
+        let playerNames = [];
+        let mode = "draw";
+        this.players.forEach((item) => {
+            playerSockets.push(getSocket(item.id));
+            playerNames.push(item.name);
+        })
+        for (var i = 0; i < this.players.length; i++)
+        {
+            playerSockets[i].emit('game-init', playerNames, mode, gridWidth, i);
+        }
 
         // Starts a timer for given number of seconds (and/or listens for more than half of players requesting
         // to quit the current game)

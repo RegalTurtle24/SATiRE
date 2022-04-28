@@ -81,7 +81,6 @@ function gameLogicInit() {
 		fr.readAsText(file);
 	});
 
-<<<<<<< HEAD
 	var startTelephoneButton = new GameStartButton('p5startGame', 'game-start', 'telephone', () => {
 		if (policies.length == 0)
 		{
@@ -89,9 +88,6 @@ function gameLogicInit() {
 			policies.push(emptyCharPol);
 		}
 
-=======
-	var startTelephoneButton = new GameStartButton('startGame', 'game-start', 'telephone', () => {
->>>>>>> e749972 (Created outline for server side CollabDraw)
 		let params = [policies, testPolicy, prompts];
 		// Randomly picks a prompt
 		if (params[2] != null)
