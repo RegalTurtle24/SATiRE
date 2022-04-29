@@ -907,24 +907,24 @@ class CollabDraw extends GameMode
         var gridWidth = Math.floor(Math.sqrt(players.length));
         var gridHeight = Math.ceil(players.length / gridWidth);
         var lastRowWidth = players % gridWidth;
-        var canvasGrid = new Array(gridHeight);
+        this.canvasGrid = new Array(gridHeight);
         let pIndex = 0;
         // Loops through each row of regular size
         for (var y = 0; y < gridHeight - 1; y++)
         {
-            canvasGrid.push(new Array(gridWidth));
+            this.canvasGrid.push(new Array(gridWidth));
             for (var x = 0; x < gridWidth; x++)
             {
-                canvasGrid[y][x] = new CanvasTile(x, y, players[pIndex]);
+                this.canvasGrid[y][x] = new CanvasTile(x, y, players[pIndex]);
                 pIndex++;
             }
         }
         // Loops through the final row of possibly different size
-        canvasGrid.push(new Array(lastRowWidth));
+        this.canvasGrid.push(new Array(lastRowWidth));
         for (var x = 0; x < lastRowWidth; x++)
         {
             var y = gridHeight - 1
-            canvasGrid[y][x] = new CanvasTile(x, y, players[pIndex]);
+            this.canvasGrid[y][x] = new CanvasTile(x, y, players[pIndex]);
             pIndex++;
         }
 
@@ -940,9 +940,9 @@ class CollabDraw extends GameMode
         // Initializes data receiver for relaying canvas updates between adjacent players
         var canvasUpdaateReceiver = new DataReceiver('draw-canvas-update', this, playerSockets,
                 (socket, x, y, newImage) => {
-            let tile = canvasGrid[y][x];
+            let tile = this.canvasGrid[y][x];
             tile.lastImage = newImage;
-            sendTileUpdatesToAdjacents(canvasGrid, tile);
+            sendTileUpdatesToAdjacents(this.canvasGrid, tile);
         });
 
         // Initializes the data receiver for if players wish to end the drawing session early
@@ -1008,18 +1008,12 @@ class CollabDraw extends GameMode
     {
         var fullCanvas;
         // Adds each canvas tile to the full canvas image
-        // Loops through each row of regular size
-        for (var y = 0; y < gridHeight - 1; y++)
+        for (var y = 0; y < this.canvasGrid.length; y++)
         {
-            for (var x = 0; x < gridWidth; x++)
+            for (var x = 0; x < this.canvasGrid[y].length; x++)
             {
                 // Has yet to be implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             }
-        }
-        // Loops through the final row of possibly different size
-        for (var x = 0; x < lastRowWidth; x++)
-        {
-            // Has yet to be implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
 
         // Informs players of the game having ended and sends the full image to everybody in the room
