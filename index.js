@@ -761,6 +761,7 @@ class CollabDraw extends GameMode
                 this.x = x;
                 this.y = y;
                 this.player = player;
+                this.socket = getSocket(player.id);
                 this.lastImage = lastImage;
             }
         }
@@ -804,7 +805,7 @@ class CollabDraw extends GameMode
                 (socket, x, y, newImage) => {
             let tile = canvasGrid[y][x];
             tile.lastImage = newImage;
-            sendTileUpdatesToAdjacents(canvasGrid, )
+            sendTileUpdatesToAdjacents(canvasGrid, tile);
         });
 
         // Initializes the data receiver for if players wish to end the drawing session early
@@ -840,7 +841,26 @@ class CollabDraw extends GameMode
      */
     sendTileUpdatesToAdjacents(grid, tile)
     {
-        // Has yet to be implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // Left
+        if (tile.x > 0)
+        {
+            grid[tile.y, tile.x - 1].socket.emit('draw-tile-update', 'right', tile.lastImage);
+        }
+        // Right
+        if (tile.x < grid[tile.y].length - 1)
+        {
+            grid[tile.y, tile.x + 1].socket.emit('draw-tile-update', 'left', tile.lastImage);
+        }
+        // Up
+        if (tile.y > 0)
+        {
+            grid[tile.y - 1, tile.x].socket.emit('draw-tile-update', 'down', tile.lastImage);
+        }
+        // Down
+        if (tile.y < grid.length - 1 && !(tile.y == grid.length - 2 && tile.x >= lastRowWidth))
+        {
+            grid[tile.y + 1, tile.x].socket.emit('draw-tile-update', 'up', tile.lastImage);
+        }
     }
 
     /**
@@ -849,15 +869,30 @@ class CollabDraw extends GameMode
      */
     finalizeCanvas()
     {
-        // Inform players of the game having ended and sends the full image to everybody in the room
-        // Has yet to be implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        var fullCanvas;
+        // Adds each canvas tile to the full canvas image
+        // Loops through each row of regular size
+        for (var y = 0; y < gridHeight - 1; y++)
+        {
+            for (var x = 0; x < gridWidth; x++)
+            {
+                // Has yet to be implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            }
+        }
+        // Loops through the final row of possibly different size
+        for (var x = 0; x < lastRowWidth; x++)
+        {
+            // Has yet to be implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        }
+
+        // Informs players of the game having ended and sends the full image to everybody in the room
+        getSocketsInRoom(room).forEach((item) => item.emit('draw-game-end', messageChain));
         this.endDraw(this.room);
     }
 
     /** Ends the game of collaborative draw in the given room */
     endDraw(room)
     {
-        getSocketsInRoom(room).forEach((item) => item.emit('draw-game-end', this.messageChain));
         console.log("Game of collaborative draw in room [" + room + "] has ended");
     }
 }
