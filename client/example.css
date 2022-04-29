@@ -41,17 +41,6 @@ input{
 	border: 2px solid black;
 }
 
-
-
-#chat{
-	align-items: end;
-    align-self:end;
-    align-content:end;
-    justify-content:end;
-    justify-self:end;
-    justify-items:end;
-}
-
 .container{
 	width: 100%;
 	height: 100vh;
@@ -68,11 +57,11 @@ input{
   	width: 100%;
   	height: 100vh;
   	display: flex;
-  	
+  	align-items: center;
   	justify-content: center;
   	flex-direction: column;
 	gap: 10px;
-	transition: al	l 0.0s;
+	transition: all 0.0s;
 	color: white;
 }
 p{
@@ -81,33 +70,26 @@ p{
 }
 
 .one{
-	align-items: center;
   	background: orangered;
 }
 
 .two{
-	align-items: center;
   	background: dodgerblue;
 }
 
 .three{
-	align-items: center;
   	background: indigo;
 }
 
 .four{
-	align-items: center;
   	background: limegreen;
-  	height: 100vh;
 }
 
 .five{
-	align-items: center;
   	background: teal;
 }
 
 .six{
-	align-items: center;
 	background: #EF09D1; 
 }
 
