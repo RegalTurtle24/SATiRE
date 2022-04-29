@@ -11,6 +11,9 @@
 		<link rel="stylesheet" href="./example.css">
 	</head>
 
+	<button onclick="slide('prev')" id="p">Prev</button>
+	<button onclick="slide('next')" id="n">Next</button>
+
 	<div class="container">
 		<div class="pages">
 			<div class="page one">
@@ -23,7 +26,7 @@
             </div>
 			
 			<div class="page two">
-				<h1>Customize Name</h1>
+				<h3>Customize Name</h3>
 			
 				<div>
 					<label for="message" id="p2nameLabel">(Current name: NAME_HERE)</label>
@@ -39,7 +42,7 @@
 			</div>
 
 			<div class="page three">
-				<h1>Join a Room</h1>
+				<h3>Join a Room</h3>
   				<div>
 					<form>
 						<label for="message">Enter Room Code:</label>
@@ -52,12 +55,12 @@
 			</div>
 
 			<div class="page four">
-				<h1 id="p4roomDisplay">Your Room: No Current Room</h1>
+				<h3 id="p4roomDisplay">Your Room: No Current Room</h3>
 
 				<div id="p4games">
 					<button id="p4leaveRoom">Return to room select</button>
 					
-					<h3>Select a Game to Play:</h3>
+					<h2>Select a Game to Play:</h2>
 					<button onclick="jumpTo('telephone_settings')">Telephone Game</button>
 				</div>
 
@@ -92,12 +95,9 @@
 			</div>
 
 			<div class="page six">
-				<h1>Telephone Game</h1>
+				<h3>Telephone Game</h3>
 				<h2 id="p6playerOrder">[Player Order Here]</h2>
-				<div>
-					<p id="p6subtitle">Telephone messages here</p>
-					<button onclick="slide('prev')">Previous</button>
-				</div>
+				<p id="p6subtitle" align="center">Telephone messages here</p>
 			</div>
 		</div>
 	</div>

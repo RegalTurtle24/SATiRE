@@ -32,6 +32,14 @@ button{
   	transition: 0.3s ease-out;
 }
 
+#p{
+	color:black
+}
+
+#n{
+	color:black
+}
+
 button:hover{
   	transform: scale(1.05);
 }
@@ -64,9 +72,9 @@ input{
 	transition: all 0.0s;
 	color: white;
 }
+
 p{
-	text-align: right;
-	font-size: 5vw;
+	font-size: 2vw;
 }
 
 .one{
@@ -102,4 +110,8 @@ p{
 #p4games{
 	height: 25%;
 	width: 30%;
+}
+
+#p6subtitle{
+	width: 80%;
 }
