@@ -17,13 +17,10 @@ h2{
 h3{
 	font-size: 5vw;
 }
-
 h4{
 	font-size: 3vw;
 }
-chat{
-	align-items: right;
-}
+
 button{
   	padding: 8px;
   	/*width: 100px;*/
@@ -75,7 +72,7 @@ input{
   	justify-content: center;
   	flex-direction: column;
 	gap: 10px;
-	transition: all 0.0s;
+	transition: al	l 0.0s;
 	color: white;
 }
 p{
@@ -101,7 +98,7 @@ p{
 .four{
 	align-items: center;
   	background: limegreen;
-	
+  	height: 100vh;
 }
 
 .five{
@@ -112,4 +109,15 @@ p{
 .six{
 	align-items: center;
 	background: #EF09D1; 
+}
+
+#p4chatGroup{
+	align-self: end;
+	position: fixed;
+	top: 90vh;
+}
+
+#p4games{
+	height: 25%;
+	width: 30%;
 }

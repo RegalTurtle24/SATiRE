@@ -172,10 +172,10 @@ class ClientSideTelephone
         this.setPlayersText(this.players, 0);
 
         // Variable setup/HTML integration
-        this.playerMessage = document.getElementById('subtitle');
-        this.callBox = document.getElementById('textBox');
-        this.callSubmit = document.getElementById('submit');
-        this.messageErrorBox = document.getElementById('messageErrorBox');
+        this.playerMessage = document.getElementById('p6subtitle');
+        this.callBox = document.getElementById('p4textBox');
+        this.callSubmit = document.getElementById('p4submit');
+        this.messageErrorBox = document.getElementById('p4messageErrorBox');
 
         this.charMin = -1;
         this.charMax = -1;
