@@ -1,6 +1,6 @@
 <!doctype html>
 <html>
-	<head>
+	<head> 
 		<meta charset="utf-8">
 		<title>Better Jackbox (testing)</title>
 		<script src="/socket.io/socket.io.js"></script>
@@ -16,14 +16,15 @@
 			<div class="page one">
 				<h1>SATiRE</h1>
 				<h2>by Sam, Ankita, Thys, Reed, Elle</h2>
-				<div>
+                <div>
 					<body onload="initializeSocket()"></body>
-					<button onclick="slide('next')">Continue</button>
-				</div>
-			</div>
+                    <button onClick="slide('next')">Continue</button>
+			    </div>
+            </div>
 			
 			<div class="page two">
 				<h1>Customize Name</h1>
+			
 				<div>
 					<label for="message" id="p2nameLabel">(Current name: NAME_HERE)</label>
 					<form>
@@ -45,38 +46,32 @@
 						<input type="text" id="p3roomJoinBox">
 						<button type="button" id="p3roomJoinSubmit">Submit</button>
 					</form>
-						
 
 					<button onclick="slide('prev')">Return to name select</button>
-  				</div>
-			</div>
-
-
-			<div class="page four">
-				<h1 id="p4roomDisplay">Your Room: No Current Room</h1>
-				<div>
-				  	<form>
-						<label for="message">Enter message to send to server:</label>
-						<input type="text" id="p4textBox">
-						<button type="button" id="p4submit">Send</button>
-						<label id="p4messageErrorBox"></label>
-					</form>
-
-						
-					<h2 id="p4chat">[Last Chat Message]</h2>
-
-					<div>
-						<button id="p4leaveRoom">Return to room select</button>
-					</div>
-
-					<h3>Select a Game to Play:</h3>
-					<button onclick="jumpTo('telephone_settings')">Telephone Game</button>
 				</div>
 			</div>
 
+			<div class="page four">
+				<h1 id="p4roomDisplay">Your Room: No Current Room</h1>
+
+				<div id="p4games">
+					<button id="p4leaveRoom">Return to room select</button>
+					
+					<h3>Select a Game to Play:</h3>
+					<button onclick="jumpTo('telephone_settings')">Telephone Game</button>
+				</div>
+
+				<div id="p4chatGroup">
+					<h2 id="p4chat">[Last Chat Message]</h2>
+					<label for="message">Enter message to send to server:</label>
+					<input type="text" id="p4textBox">
+					<button type="button" id="p4submit">Send</button>
+					<label id="p4messageErrorBox"></label>
+				</div>
+      		</div>
 
 			<div class="page five">
-				<h1>Telephone Game</h1>
+				<h3>Telephone Game</h3>
 				<div>
 					<form>
 						<label for="message">Player settings:</label>
@@ -93,11 +88,8 @@
 
 					<button onclick="jumpTo('lobby')">Back to game select</button>
 					<button type="button" id="p5startGame">Start Game</button>
-					
-					<!-- <button onclick="slide('next')">Next</button> -->
 				</div>
 			</div>
-
 
 			<div class="page six">
 				<h1>Telephone Game</h1>
