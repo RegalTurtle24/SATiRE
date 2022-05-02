@@ -20,6 +20,13 @@ h3{
 h4{
 	font-size: 3vw;
 }
+h5{
+	font-weight:400;
+	font-size:2vw;
+}
+p{
+	font-size: 2vw;
+}
 
 button{
   	padding: 8px;
@@ -71,10 +78,6 @@ input{
 	gap: 10px;
 	transition: all 0.0s;
 	color: white;
-}
-
-p{
-	font-size: 2vw;
 }
 
 .one{

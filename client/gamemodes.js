@@ -173,9 +173,9 @@ class ClientSideTelephone
 
         // Variable setup/HTML integration
         this.playerMessage = document.getElementById('p6subtitle');
-        this.callBox = document.getElementById('p4textBox');
-        this.callSubmit = document.getElementById('p4submit');
-        this.messageErrorBox = document.getElementById('p4messageErrorBox');
+        this.callBox = document.getElementById('p6callBox');
+        this.callSubmit = document.getElementById('p6callSubmit');
+        this.messageErrorBox = document.getElementById('p6teleError');
 
         this.charMin = -1;
         this.charMax = -1;
@@ -246,7 +246,8 @@ class ClientSideTelephone
             console.log('Telephone call sent to server');
             socket.emit('telephone-call', call);
         }
-        this.callSubmit.addEventListener('click', () => { submitCall(this.callBox); this.myTurn = false; });
+        new TextFieldAndButton(this.callBox, this.callSubmit, () => { submitCall(this.callBox); this.myTurn = false; })
+        // this.callSubmit.addEventListener('click', () => { submitCall(this.callBox); this.myTurn = false; });
 
         // The data receivers: AKA, the actual game logic
         let turnEndReceiver = new DataReciever('telephone-turn-end', DataReciever.LOCAL_GAME, (currPlayer) => {
