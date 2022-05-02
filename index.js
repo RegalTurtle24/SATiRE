@@ -244,6 +244,7 @@ let chatReceiver = new DataReceiver('chat-message', null, null, (socket, message
         socket.rooms.forEach(function (value) {
             socket.to(value).emit('chat-message', getPlayer(socket.id).name, message);
         })
+        socket.emit('chat-message', getPlayer(socket.id).name, message);
     }
     catch (error)
     {
