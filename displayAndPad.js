@@ -1,6 +1,8 @@
 // this file is for storing the DrawingPad and VisualDisplay classes for the 
 // collab draw gamemode
 
+//new DrawingPad("drawingPad");
+
 // purpose: a DrawingPad that 
 // input: users stokes on canvas, colors they choose
 // output:
@@ -8,19 +10,47 @@ class DrawingPad {
 	
 	// variables for color, pen, stroke, etc. settings 
 	
-	constructor(/*canvasID, dataSender*/) {
-		// setup dataSender for drawing pad 
-		// addEventListener on canvas release to active dataSender
-		// addEventListener on canvas to activate draw method when click and drag
-		// addEventListner to colorSetting object.
+	constructor(canvasID /*,dataSender*/) {
+		// variable to use when drawing.
+		this.color = '#000000'; // when messing with this always use hex 
+		this.isCurrentlyDrawing = false;
+		
+		// creating eventListener so we can draw
+		this.canvas = document.getElementById(canvasID);
+		this.bounds = this.canvas.getBoundingClientRect();
+		this.canvas.addEventListener("mousedown", this.startDraw);
+		this.canvas.addEventListener("mousemove", this.draw);
+		this.canvas.addEventListener("mouseup", this.cancelDraw);
 	}
 	
 	addSetting(/*colorSettingID, submittionID, function*/) {
 		// run function, allows to grab class variables
 	}
 	
-	draw(/*some how get user data*/) {
-		// add user data to canvas
+	// purpose: starting drawing when click down, get intial cooridinates 
+	startDraw(event) {
+		this.isCurrentlyDrawing = true;
+		this.mouseCooridinatesX = event.clientX - this.bounds.left;
+		this.mouseCooridinatesY = event.clientY - this.bounds.top;
+	}
+	
+	// purpose:
+	
+	draw(event) {
+		if (this.isCurrentlyDrawing) {
+			// initialize necessar variables
+			this.context = this.canvas.getContext("2d");
+			
+			this.context.moveTo(this.mouseCooridinatesX, this.mouseCooridinatesY);
+			this.mouseCooridinatesX = event.clientX - this.bounds.left;
+			this.mouseCooridinatesY = event.clientY - this.bounds.top;
+			this.context.lineTo(this.mouseCooridinatesX, this.mouseCooridinatesY);
+			this.context.stroke();
+		}
+	}
+	
+	cancelDraw(event) {
+		this.isCurrentlyDrawing = false;
 	}
 }
 
@@ -33,7 +63,7 @@ class VisualDisplay {
 		// let data reciever do work.
 	}
 	
-	draw(/*some how get server data*/) {
+	recieveData(/*some how get server data*/) {
 		// add data to canvas.
 	}
 }
