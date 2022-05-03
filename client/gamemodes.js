@@ -96,7 +96,7 @@ function testPolicy(charPol, string)
     }
 
     // Special case for bypassing logic
-    if (charPol.policy === CharPolicy.ALLOWED && charPol.count === -1)
+    if (charPol != null && charPol.policy === CharPolicy.ALLOWED && charPol.count === -1)
         return null;
         
     // Test the string
@@ -246,8 +246,7 @@ class ClientSideTelephone
             console.log('Telephone call sent to server');
             socket.emit('telephone-call', call);
         }
-        new TextFieldAndButton(this.callBox, this.callSubmit, () => { submitCall(this.callBox); this.myTurn = false; })
-        // this.callSubmit.addEventListener('click', () => { submitCall(this.callBox); this.myTurn = false; });
+        this.callSubmit.addEventListener('click', () => { submitCall(this.callBox); this.myTurn = false; });
 
         // The data receivers: AKA, the actual game logic
         let turnEndReceiver = new DataReciever('telephone-turn-end', DataReciever.LOCAL_GAME, (currPlayer) => {
@@ -279,6 +278,15 @@ class ClientSideTelephone
         })
         let yourTurnReceiver = new DataReciever('telephone-your-turn', DataReciever.LOCAL_GAME,
                 (message, characterMin, characterMax, charPolicies) => {
+
+            for(var i = charPolicies.length - 1 ; i >= 0 ; i--)
+            {
+                if(charPolicies[i] === null)
+                {
+                    charPolicies.splice(i, 1);
+                }
+            }
+
             this.myTurn = true;
             this.charMin = characterMin;
             this.charMax = characterMax;
