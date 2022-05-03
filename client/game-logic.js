@@ -81,6 +81,12 @@ function gameLogicInit() {
 	});
 
 	var startGameButton = new GameStartButton('p5startGame', 'telephone-start', () => {
+		if(policies.length == 0)
+		{
+			let emptyCharPol = new CharPolicy([""], CharPolicy.REQUIRED, 1, true);
+			policies.push(emptyCharPol);
+		}
+
 		let params = [policies, testPolicy, prompts];
 		// Randomly picks a prompt
 		if (params[2] != null)

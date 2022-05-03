@@ -279,14 +279,6 @@ class ClientSideTelephone
         let yourTurnReceiver = new DataReciever('telephone-your-turn', DataReciever.LOCAL_GAME,
                 (message, characterMin, characterMax, charPolicies) => {
 
-            for(var i = charPolicies.length - 1 ; i >= 0 ; i--)
-            {
-                if(charPolicies[i] === null)
-                {
-                    charPolicies.splice(i, 1);
-                }
-            }
-
             this.myTurn = true;
             this.charMin = characterMin;
             this.charMax = characterMax;

@@ -118,3 +118,8 @@ input{
 #p6subtitle{
 	width: 80%;
 }
+
+#p6playerOrder{
+	position:fixed;
+	top: 0vh;
+}
