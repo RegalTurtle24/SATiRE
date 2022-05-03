@@ -96,7 +96,7 @@ function testPolicy(charPol, string)
     }
 
     // Special case for bypassing logic
-    if (charPol != null && charPol.policy === CharPolicy.ALLOWED && charPol.count === -1)
+    if (charPol.policy === CharPolicy.ALLOWED && charPol.count === -1)
         return null;
         
     // Test the string
