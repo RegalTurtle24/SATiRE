@@ -128,12 +128,7 @@ function initializeSocket()
 		}
 	})
 
-	telephoneGameListener = new TextFieldAndButton('p6callBox', 'p6callSubmit', () => {
-		if (currentlyPlayingGame)
-		{
-			
-		}
-	})
+	telephoneGameListener = new TextFieldAndButton('p6callBox', 'p6callSubmit', () => {})
 
 	//////////////////////////////////////////////////////////////////////////////
 	///                                                                        ///
