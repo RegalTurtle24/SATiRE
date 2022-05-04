@@ -20,6 +20,13 @@ h3{
 h4{
 	font-size: 3vw;
 }
+h5{
+	font-weight:400;
+	font-size:2vw;
+}
+p{
+	font-size: 2vw;
+}
 
 button{
   	padding: 8px;
@@ -73,10 +80,6 @@ input{
 	color: white;
 }
 
-p{
-	font-size: 2vw;
-}
-
 .one{
   	background: orangered;
 }
@@ -114,4 +117,9 @@ p{
 
 #p6subtitle{
 	width: 80%;
+}
+
+#p6playerOrder{
+	position:fixed;
+	top: 0vh;
 }

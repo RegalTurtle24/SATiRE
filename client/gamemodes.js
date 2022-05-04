@@ -173,9 +173,9 @@ class ClientSideTelephone
 
         // Variable setup/HTML integration
         this.playerMessage = document.getElementById('p6subtitle');
-        this.callBox = document.getElementById('p4textBox');
-        this.callSubmit = document.getElementById('p4submit');
-        this.messageErrorBox = document.getElementById('p4messageErrorBox');
+        this.callBox = document.getElementById('p6callBox');
+        this.callSubmit = document.getElementById('p6callSubmit');
+        this.messageErrorBox = document.getElementById('p6teleError');
 
         this.charMin = -1;
         this.charMax = -1;
@@ -278,6 +278,7 @@ class ClientSideTelephone
         })
         let yourTurnReceiver = new DataReciever('telephone-your-turn', DataReciever.LOCAL_GAME,
                 (message, characterMin, characterMax, charPolicies) => {
+
             this.myTurn = true;
             this.charMin = characterMin;
             this.charMax = characterMax;

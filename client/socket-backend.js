@@ -128,6 +128,8 @@ function initializeSocket()
 		}
 	})
 
+	telephoneGameListener = new TextFieldAndButton('p6callBox', 'p6callSubmit', () => {})
+
 	//////////////////////////////////////////////////////////////////////////////
 	///                                                                        ///
 	///             TEXT FIELDS THAT CHANGE AND THEIR UPDATES                  ///
