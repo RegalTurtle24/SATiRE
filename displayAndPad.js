@@ -21,6 +21,8 @@ class DrawingPad {
 		this.canvas.addEventListener("mousedown", this.startDraw);
 		this.canvas.addEventListener("mousemove", this.draw);
 		this.canvas.addEventListener("mouseup", this.cancelDraw);
+		
+		console.log("ok");
 	}
 	
 	addSetting(/*colorSettingID, submittionID, function*/) {
@@ -30,8 +32,8 @@ class DrawingPad {
 	// purpose: starting drawing when click down, get intial cooridinates 
 	startDraw(event) {
 		this.isCurrentlyDrawing = true;
-		this.mouseCooridinatesX = event.clientX - this.bounds.left;
-		this.mouseCooridinatesY = event.clientY - this.bounds.top;
+		this.setCooridinates();
+		console.log("draw started");
 	}
 	
 	// purpose:
@@ -41,16 +43,28 @@ class DrawingPad {
 			// initialize necessar variables
 			this.context = this.canvas.getContext("2d");
 			
+			//set stuff
+			this.context.lineWidth = 20;
+			this.context.lineCap = "round";
+			
+			// -----			
 			this.context.moveTo(this.mouseCooridinatesX, this.mouseCooridinatesY);
-			this.mouseCooridinatesX = event.clientX - this.bounds.left;
-			this.mouseCooridinatesY = event.clientY - this.bounds.top;
+			this.setCooridinates();
 			this.context.lineTo(this.mouseCooridinatesX, this.mouseCooridinatesY);
 			this.context.stroke();
+			console.log("drawing");
 		}
+	}
+	
+	setCooridinates() {
+		this.mouseCooridinatesX = event.clientX - this.bounds.left;
+		this.mouseCooridinatesY = event.clientY - this.bounds.top;
+		console.log(this.mouseCooridinatesX + "" + this.mouseCooridinatesY);
 	}
 	
 	cancelDraw(event) {
 		this.isCurrentlyDrawing = false;
+		console.log("draw cancelled");
 	}
 }
 
