@@ -123,3 +123,16 @@ input{
 	position:fixed;
 	top: 0vh;
 }
+
+#p4roomDisplay{
+    position: fixed;
+    top: 0vh;
+}
+
+#p4leaveRoom{
+    position: fixed;
+    top: 15vh;
+    right: 15vh;
+    align-self: end;
+    
+}
