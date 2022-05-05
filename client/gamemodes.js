@@ -368,11 +368,11 @@ class ClientSideCollabDraw
         allowedToChangeRoom = false;
 
         // Initializes and fetches the GUI for the game
-
+        var topCanvas, bottomCanvas, leftCanvas, rightCanvas = null;
 
         // Data sender to update other players on tile updates
         var tileUpdateSender = new DataSender('draw-tile-update', () => {
-            // Sends the current canvas to the server, for adjacent players to see parts of
+            // Sends the current canvas changes to the server, for adjacent players to see parts of
             // Not yet implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         });
         // Makes it update the server on the canvas
@@ -383,9 +383,23 @@ class ClientSideCollabDraw
 
         // Data receivers to dynamically change game while drawing
         var tileUpdateReceiver = new DataReciever('draw-tile-update', DataReciever.LOCAL_GAME,
-                (direction, lastImage) => {
+                (direction, lastChanges) => {
             // Update the preview edges of the adjacent tiles
-            
+            switch (direction)
+            {
+                case 'up':
+                    
+                    break;
+                case 'down':
+                    
+                    break;
+                case 'left':
+                    
+                    break;
+                case 'right':
+                    
+                    break;
+            }
             // Not yet implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         });
         var gameEndReceiver = new DataReciever('draw-game-end', DataReciever.LOCAL_GAME,

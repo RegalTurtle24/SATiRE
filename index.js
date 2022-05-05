@@ -762,13 +762,13 @@ class CollabDraw extends GameMode
 
         class CanvasTile
         {
-            constructor(x, y, player, lastImage = null)
+            constructor(x, y, player, lastChange = null)
             {
                 this.x = x;
                 this.y = y;
                 this.player = player;
                 this.socket = getSocket(player.id);
-                this.lastImage = lastImage;
+                this.lastChange = lastChange;
             }
         }
 
@@ -808,9 +808,9 @@ class CollabDraw extends GameMode
 
         // Initializes data receiver for relaying canvas updates between adjacent players
         var canvasUpdaateReceiver = new DataReceiver('draw-canvas-update', this, playerSockets,
-                (socket, x, y, newImage) => {
+                (socket, x, y, newChanges) => {
             let tile = this.canvasGrid[y][x];
-            tile.lastImage = newImage;
+            tile.lastChange = newChanges;
             sendTileUpdatesToAdjacents(this.canvasGrid, tile);
         });
 
