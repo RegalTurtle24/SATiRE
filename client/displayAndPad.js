@@ -1,6 +1,8 @@
 // this file is for storing the DrawingPad and VisualDisplay classes for the 
 // collab draw gamemode
 
+
+
 //new DrawingPad("drawingPad");
 
 // purpose: a DrawingPad that 
@@ -68,16 +70,39 @@ class DrawingPad {
 	}
 }
 
-// purpose:
+// purpose: the visual display is meant to show the 
 // input:
 // output:
 class VisualDisplay {
 	
-	constructor(/*canvasID, dataReciever*/) {
-		// let data reciever do work.
+	constructor(canvasID, cutOff) {
+		this.canvas = document.getElementByID(canvasID);
+		this.bounds = this.canvas.getBoundingClientRect();
+		
+		this.cutOffLeft = cutOff[0];
+		this.cutOffRight = cutOff[1];
+		this.cutOffTop = cutOff[2];
+		this.cutOffBottom = cutOff[3];
+		
 	}
 	
-	recieveData(/*some how get server data*/) {
+	drawData(/*color,*/ lineWidth, drawPathCoor) {
 		// add data to canvas.
+		this.context = this.canvas.getContext("2d");
+			
+		//set stuff
+		this.context.lineWidth = lineWidth;
+		this.context.lineCap = "round";
+		
+		/*
+			offset by cutOffLeft and cutOffTop
+			if the entire line is outside bounds of cutOff don't draw
+		*/
+		
+		// -----			
+		this.context.moveTo(drawPathCoor[0], drawPathCoor[1]);
+		this.context.lineTo(drawPathCoor[2], drawPathCoor[3]);
+		this.context.stroke();
+		console.log(" got drawing");
 	}
 }
