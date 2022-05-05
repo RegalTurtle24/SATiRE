@@ -20,10 +20,7 @@ function initializeSocket()
 	//////////////////////////////////////////////////////////////////////////////
 
 	socket = io();
-	chatEnabled = true;
 	currentlyPlayingGame = false;
-	playerName = "PLACEHOLDER_NAME";
-	joinedRoom = "";
 	
 	//////////////////////////////////////////////////////////////////////////////
 	///                                                                        ///
@@ -44,8 +41,14 @@ function initializeSocket()
 			chatFieldUpdater.update(name, data);
 		})
 		roomChangeReciever = new DataReciever('rooms-req', DataReciever.BACKEND, (rooms) => {
-			joinedRoomsTextUpdater.update(rooms);
+			p4roomDisplay.update(rooms);
 			console.log('Recieved rooms-req, ' + rooms);
+			if(rooms === "")
+			{
+				slide('prev');
+			} else {
+				slide('next');
+			}
 		})
 		nameChangeReciever = new DataReciever('name-change', DataReciever.BACKEND, (name) => {
 			console.log('Name successfully changed to: ' + name);
@@ -97,14 +100,14 @@ function initializeSocket()
 	//////////////////////////////////////////////////////////////////////////////
 
 	// For the name changer
-	nameFieldListener = new TextFieldAndButton('nameBox', 'nameSubmit', () => {
+	nameFieldListener = new TextFieldAndButton('p2nameBox', 'p2nameSubmit', () => {
 		var requestedName = nameFieldListener.textField.value;
 		socket.emit('name-req', requestedName);
 		nameFieldListener.textField.value = '';
 	})
 
 	// For the chat feature
-	chatFieldListener = new TextFieldAndButton('textBox', 'submit', () => {
+	chatFieldListener = new TextFieldAndButton('p4textBox', 'p4submit', () => {
 		if (chatEnabled)
 		{
 			var message = chatFieldListener.textField.value;
@@ -115,7 +118,7 @@ function initializeSocket()
 	})
 
 	// For the join box
-	joinFieldListener = new TextFieldAndButton('roomJoinBox', 'roomJoinSubmit', () => {
+	joinFieldListener = new TextFieldAndButton('p3roomJoinBox', 'p3roomJoinSubmit', () => {
 		if (allowedToChangeRoom)
 		{
 			var message = joinFieldListener.textField.value;
@@ -125,31 +128,32 @@ function initializeSocket()
 		}
 	})
 
+	telephoneGameListener = new TextFieldAndButton('p6callBox', 'p6callSubmit', () => {})
+
 	//////////////////////////////////////////////////////////////////////////////
 	///                                                                        ///
 	///             TEXT FIELDS THAT CHANGE AND THEIR UPDATES                  ///
 	///                                                                        ///
 	//////////////////////////////////////////////////////////////////////////////
 
-	var chatFieldUpdater = new ChangingTextField('chat', (requestedName, message) => {
+	var chatFieldUpdater = new ChangingTextField('p4chat', (requestedName, message) => {
 		if (chatEnabled)
 		{
 			chatFieldUpdater.textField.textContent = '[' + requestedName + '] ' + message;
 		}
 	})
 
-	var joinedRoomsTextUpdater = new ChangingTextField('rooms', (data) => {
+	var p4roomDisplay = new ChangingTextField('p4roomDisplay', (data) => {
 		joinedRoom = data;
 		if (data === "")
 		{
-			console.log('hello world');
-			joinedRoomsTextUpdater.textField.textContent = "No current rooms";
+			p4roomDisplay.textField.textContent = "Your Room: No Current Room";
 		} else {
-			joinedRoomsTextUpdater.textField.textContent = data;
+			p4roomDisplay.textField.textContent = "Your Room: " + data;
 		}
 	})
 
-	var nameLabelUpdater = new ChangingTextField('nameLabel', (newName) => {
+	var nameLabelUpdater = new ChangingTextField('p2nameLabel', (newName) => {
 		playerName = newName;
 		nameLabelUpdater.textField.textContent = '(Current name: ' + newName + ')';
 	})
@@ -179,7 +183,7 @@ function initializeSocket()
 	///                                                                        ///
 	//////////////////////////////////////////////////////////////////////////////
 
-	var roomLeaveButton = document.getElementById('leaveRoom');
+	var roomLeaveButton = document.getElementById('p4leaveRoom');
 	roomLeaveButton.addEventListener('click', () => {
 		if(allowedToChangeRoom)
 		{

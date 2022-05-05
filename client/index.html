@@ -1,6 +1,6 @@
 <!doctype html>
 <html>
-	<head>
+	<head> 
 		<meta charset="utf-8">
 		<title>Better Jackbox (testing)</title>
 		<script src="/socket.io/socket.io.js"></script>
@@ -12,12 +12,15 @@
 		<link rel="stylesheet" href="./example.css">
 	</head>
 
+	<button onclick="slide('prev')" id="p">Prev</button>
+	<button onclick="slide('next')" id="n">Next</button>
+
 	<div class="container">
 		<div class="pages">
 			<div class="page one">
 				<h1>SATiRE</h1>
 				<h2>by Sam, Ankita, Thys, Reed, Elle</h2>
-				<div>
+                <div>
 					<body onload="initializeSocket()"></body>
 					<button onClick="slide('next')">Continue</button>
 					<canvas id="drawingPad" width="150" height="150" style="border:2px solid #000000"></canvas>
@@ -25,86 +28,83 @@
 			</div>
 			
 			<div class="page two">
-				<h1>Customize Name</h1>
+				<h3>Customize Name</h3>
+			
 				<div>
-					<label for="message" id="nameLabel">(Current name: NAME_HERE)</label>
+					<label for="message" id="p2nameLabel">(Current name: NAME_HERE)</label>
 					<form>
 						<label for="message">Change your name:</label>
-						<input type="text" id="nameBox">
-						<button type="button" id="nameSubmit">Confirm</button>
+						<input type="text" id="p2nameBox">
+						<button type="button" id="p2nameSubmit" onclick="slide('next')">Confirm</button>
 					</form>
 					
-					<button onClick="slide('prev')">Previous</button>
-					<button onClick="slide('next')">Next</button>
+					<button onclick="slide('prev')">Back to Title</button>
+					<button onclick="slide('next')">Continue with default name</button>
 				</div>
 			</div>
 
 			<div class="page three">
-				<h1>Join a Room</h1>
+				<h3>Join a Room</h3>
   				<div>
 					<form>
 						<label for="message">Enter Room Code:</label>
-						<input type="text" id="roomJoinBox">
-						<button type="button" id="roomJoinSubmit">Submit</button>
-						<button type="button" id="leaveRoom">Leave Room</button>
-						<h2 id="rooms">No current rooms</h2>
-					</form>
-						
-
-					<button onClick="slide('prev')">Previous</button>
-					<button onClick="slide('next')">Next</button>
-  				</div>
-			</div>
-
-
-			<div class="page four">
-				<h1>Your Room</h1>
-				<div>
-				  	<form>
-						<label for="message">Enter message to send to server:</label>
-						<input type="text" id="textBox">
-						<button type="button" id="submit">Send</button>
-						<label id="messageErrorBox"></label>
+						<input type="text" id="p3roomJoinBox">
+						<button type="button" id="p3roomJoinSubmit">Submit</button>
 					</form>
 
-						
-					<h2 id="chat">[Last Chat Message]</h2>
-					<h3>Select a Game:</h3>
-					<button onClick="slide('next')">Telephone Game</button>
-						
-
-						
-					<button onClick="slide('prev')">Previous</button>
-					<button onClick="slide('next')">Next</button>
+					<button onclick="slide('prev')">Return to name select</button>
 				</div>
 			</div>
 
+			<div class="page four">
+				<h3 id="p4roomDisplay">Your Room: No Current Room</h3>
+
+				<div id="p4games">
+					<button id="p4leaveRoom">Return to room select</button>
+					
+					<h2>Select a Game to Play:</h2>
+					<button onclick="jumpTo('telephone_settings')">Telephone Game</button>
+				</div>
+
+				<div id="p4chatGroup">
+					<h2 id="p4chat">[Last Chat Message]</h2>
+					<label for="message">Enter message to send to server:</label>
+					<input type="text" id="p4textBox">
+					<button type="button" id="p4submit">Send</button>
+					<label id="p4messageErrorBox"></label>
+				</div>
+      		</div>
 
 			<div class="page five">
-				<h1>Telephone Game</h1>
+				<h3>Telephone Game</h3>
 				<div>
 					<form>
 						<label for="message">Player settings:</label>
-						<input type="text" id="restrictBox">
-						<input type="number" id="teleNumLimit" min="0" max="10">
-						<button type="button" id="telelimit">limit</button>
-						<button type="button" id="telerequire">require</button>
+						<input type="text" id="p5restrictBox">
+						<input type="number" id="p5teleNumLimit" min="0" max="10">
+						<button type="button" id="p5telelimit">limit</button>
+						<button type="button" id="p5telerequire">require</button>
+
+						<div>
+							<label>Custom prompts file:</label>
+							<input type="file" id="teleprompt">
+						</div>
 					</form>
-					<button type="button" onClick="slide('next')" id="startGame">Start Game</button>
-					
-					
-					<button onClick="slide('prev')">Previous</button>
-					<button onClick="slide('next')">Next</button>
+
+					<button onclick="jumpTo('lobby')">Back to game select</button>
+					<button type="button" id="p5startGame">Start Game</button>
 				</div>
 			</div>
 
-
 			<div class="page six">
-				<h1>Game Screen...</h1>
+				<h2 id="p6playerOrder" align="center">[Player Order Here]</h2>
+				<h3>Telephone Game</h3>
+				<h5 id="p6subtitle" align="center">Waiting for turn</h5>
 				<div>
-					<p id="subtitle">Telephone messages here</p>
-					<button onClick="slide('prev')">Previous</button>
+					<input id="p6callBox">
+					<button id="p6callSubmit">Submit</button>
 				</div>
+				<p id="p6teleError">Not your turn</p>
 			</div>
 		</div>
 	</div>

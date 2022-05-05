@@ -42,8 +42,10 @@ function gameLogicInit() {
 	class policyButton {
 		constructor(ButtonID, policyType) {
 			document.getElementById(ButtonID).addEventListener('click', (reqfunc) => {
-				var phrase = document.getElementById("restrictBox").value;
-				var telephoneNumberLimit = document.getElementById("teleNumLimit").value;
+				var phrase = document.getElementById("p5restrictBox").value;
+				var telephoneNumberLimit = document.getElementById("p5teleNumLimit").value;
+				document.getElementById("p5restrictBox").value = '';
+				document.getElementById("p5teleNumLimit").value = '';
 				policies.push(new CharPolicy([phrase], policyType, telephoneNumberLimit, true));
 			});
         }
@@ -63,8 +65,8 @@ function gameLogicInit() {
 		}
 	} 
 
-	var limitButton = new policyButton('telerequire', CharPolicy.REQUIRED);
-	var requireButton = new policyButton('telelimit', CharPolicy.ALLOWED);
+	var limitButton = new policyButton('p5telerequire', CharPolicy.REQUIRED);
+	var requireButton = new policyButton('p5telelimit', CharPolicy.ALLOWED);
 
 	var promptInput = new PrompFileInput('teleprompt', (file) => {
 		if (file == null)
@@ -79,7 +81,13 @@ function gameLogicInit() {
 		fr.readAsText(file);
 	});
 
-	var startGameButton = new GameStartButton('startGame', 'telephone-start', () => {
+	var startGameButton = new GameStartButton('p5startGame', 'telephone-start', () => {
+		if(policies.length == 0)
+		{
+			let emptyCharPol = new CharPolicy([""], CharPolicy.REQUIRED, 1, true);
+			policies.push(emptyCharPol);
+		}
+
 		let params = [policies, testPolicy, prompts];
 		// Randomly picks a prompt
 		if (params[2] != null)
@@ -93,12 +101,12 @@ function gameLogicInit() {
 
 
 
-    playerOrder = document.getElementById('chat');
-    
 	// runs gamemode when recieve that gamemode
 	let initReceiver = new DataReciever('game-init', DataReciever.LOCAL_GAME, (playerNames, mode) => {
-        if (mode === "telephone") 
+        if (mode === "telephone")
 		{
+			playerOrder = document.getElementById('p6playerOrder');
+			jumpTo('telephone_now_playing');
             game = new ClientSideTelephone();
             game.startGame(playerNames);
             console.log('Telephone game data initialized');

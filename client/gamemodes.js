@@ -172,10 +172,10 @@ class ClientSideTelephone
         this.setPlayersText(this.players, 0);
 
         // Variable setup/HTML integration
-        this.playerMessage = document.getElementById('subtitle');
-        this.callBox = document.getElementById('textBox');
-        this.callSubmit = document.getElementById('submit');
-        this.messageErrorBox = document.getElementById('messageErrorBox');
+        this.playerMessage = document.getElementById('p6subtitle');
+        this.callBox = document.getElementById('p6callBox');
+        this.callSubmit = document.getElementById('p6callSubmit');
+        this.messageErrorBox = document.getElementById('p6teleError');
 
         this.charMin = -1;
         this.charMax = -1;
@@ -278,6 +278,7 @@ class ClientSideTelephone
         })
         let yourTurnReceiver = new DataReciever('telephone-your-turn', DataReciever.LOCAL_GAME,
                 (message, characterMin, characterMax, charPolicies) => {
+
             this.myTurn = true;
             this.charMin = characterMin;
             this.charMax = characterMax;

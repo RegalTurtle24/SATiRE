@@ -8,10 +8,26 @@
 	padding: 0;
   	font-family: 'Montserrat', sans-serif;
 }
-
-chat{
-	align-items: right;
+h1{
+	font-size: 12vw;
 }
+h2{
+	font-size: 2vw;
+}
+h3{
+	font-size: 5vw;
+}
+h4{
+	font-size: 3vw;
+}
+h5{
+	font-weight:400;
+	font-size:2vw;
+}
+p{
+	font-size: 2vw;
+}
+
 button{
   	padding: 8px;
   	/*width: 100px;*/
@@ -21,6 +37,14 @@ button{
   	cursor: pointer;
   	border-radius: 5px;
   	transition: 0.3s ease-out;
+}
+
+#p{
+	color:black
+}
+
+#n{
+	color:black
 }
 
 button:hover{
@@ -40,7 +64,7 @@ input{
 
 .pages {
   	display: flex;
-	width: 600%;
+	width: 600%; 
 	box-sizing: border-box;
 }
 
@@ -78,4 +102,24 @@ input{
 
 .six{
 	background: #EF09D1; 
+}
+
+#p4chatGroup{
+	align-self: end;
+	position: fixed;
+	top: 90vh;
+}
+
+#p4games{
+	height: 25%;
+	width: 30%;
+}
+
+#p6subtitle{
+	width: 80%;
+}
+
+#p6playerOrder{
+	position:fixed;
+	top: 0vh;
 }
