@@ -352,3 +352,57 @@ class ClientSideTelephone
 	
 }
 
+class ClientSideCollabDraw
+{
+    constructor(numPlayers, x, y, timeLimit)
+    {
+        this.tilePos = [x, y];
+        this.gridWidth = Math.floor(Math.sqrt(players.length));
+        this.gridHeight = Math.ceil(players.length / gridWidth);
+        this.lastRowWidth = players % gridWidth;
+    }
+
+    startGame()
+    {
+        // Overhead/local variables
+        allowedToChangeRoom = false;
+
+        // Initializes and fetches the GUI for the game
+
+
+        // Data sender to update other players on tile updates
+        var tileUpdateSender = new DataSender('draw-tile-update', () => {
+            // Sends the current canvas to the server, for adjacent players to see parts of
+            // Not yet implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        });
+        // Makes it update the server on the canvas
+        setTimeout(() => {
+
+        });
+        // Not yet implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        // Data receivers to dynamically change game while drawing
+        var tileUpdateReceiver = new DataReciever('draw-tile-update', DataReciever.LOCAL_GAME,
+                (direction, lastImage) => {
+            // Update the preview edges of the adjacent tiles
+            
+            // Not yet implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        });
+        var gameEndReceiver = new DataReciever('draw-game-end', DataReciever.LOCAL_GAME,
+            (finalImage) => {
+            // Shows the user the masterpiece they helped build 
+            // Not yet implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            
+            this.endGame();
+
+            console.log('The game of collaborative drawing in room has ended :)');
+        });
+    }
+
+    endGame()
+    {
+        currentlyPlayingGame = false;
+        allowedToChangeRoom = true;
+        DataReciever.closeAllLocalGameReceivers();
+    }
+}
