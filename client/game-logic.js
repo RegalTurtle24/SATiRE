@@ -31,6 +31,7 @@ class GameStartButton {
 
 // purpose: A class that handles starting gamemode or applying settings to gamemodes.
 function gameLogicInit() {
+	
 	console.log('game logic init is running');
 
 	// ------------------------------- Telephone --------------------------- //
