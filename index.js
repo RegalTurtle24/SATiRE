@@ -962,7 +962,7 @@ class CollabDraw extends GameMode
         // Tells each player that the game is starting, and optionally gives them a prompt
         for (var i = 0; i < this.players.length; i++)
         {
-            playerSockets[i].emit('game-init', playerNames, mode, gridWidth, i);
+            playerSockets[i].emit('game-init', playerNames, mode, i % gridWidth, i / gridWidth, timeLimit);
         }
 
         // Starts a timer for given number of seconds (and/or listens for more than half of players requesting
@@ -1017,7 +1017,7 @@ class CollabDraw extends GameMode
         }
 
         // Informs players of the game having ended and sends the full image to everybody in the room
-        getSocketsInRoom(room).forEach((item) => item.emit('draw-game-end', messageChain));
+        getSocketsInRoom(room).forEach((item) => item.emit('draw-game-end', fullCanvas));
         this.endDraw(this.room);
     }
 
