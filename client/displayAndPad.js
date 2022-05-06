@@ -41,17 +41,21 @@ class DrawingPad {
 	// purpose:
 	
 	draw(event) {
+
 		if (this.isCurrentlyDrawing) {
 			// initialize necessar variables
 			this.context = this.canvas.getContext("2d");
 			
 			//set stuff
-			this.context.lineWidth = 20;
+			this.context.lineWidth = 2;
 			this.context.lineCap = "round";
 			
 			// -----			
 			this.context.moveTo(this.mouseCooridinatesX, this.mouseCooridinatesY);
 			this.setCooridinates(event);
+			if (this.mouseCooridinatesX > this.bounds.width || this.mouseCooridinatesX < 0 || this.mouseCooridinatesY > this.bounds.height || this.mouseCooridinatesY < 0) {
+				this.cancelDraw(event);
+			}
 			this.context.lineTo(this.mouseCooridinatesX, this.mouseCooridinatesY);
 			this.context.stroke();
 			console.log("drawing");
@@ -59,8 +63,12 @@ class DrawingPad {
 	}
 	
 	setCooridinates(event) {
-		this.mouseCooridinatesX = event.clientX - this.bounds.left;
-		this.mouseCooridinatesY = event.clientY - this.bounds.top;
+		if (this.mouseCooridinatesX != null && this.this.mouseCooridinatesY != null) {
+			this.previousX = this.mouseCooridinatesX;
+			this.previousY = this.mouseCorridinatesY;
+        }
+		this.mouseCooridinatesX = event.pageX - this.bounds.left;
+		this.mouseCooridinatesY = event.pageY - this.bounds.top;
 		console.log(this.mouseCooridinatesX + "" + this.mouseCooridinatesY);
 	}
 	
@@ -80,9 +88,7 @@ class VisualDisplay {
 		this.bounds = this.canvas.getBoundingClientRect();
 		
 		this.cutOffLeft = cutOff[0];
-		this.cutOffRight = cutOff[1];
-		this.cutOffTop = cutOff[2];
-		this.cutOffBottom = cutOff[3];
+		this.cutOffTop = cutOff[1];
 		
 	}
 	
@@ -94,14 +100,8 @@ class VisualDisplay {
 		this.context.lineWidth = lineWidth;
 		this.context.lineCap = "round";
 		
-		/*
-			offset by cutOffLeft and cutOffTop
-			if the entire line is outside bounds of cutOff don't draw
-		*/
-		
-		// -----			
-		this.context.moveTo(drawPathCoor[0], drawPathCoor[1]);
-		this.context.lineTo(drawPathCoor[2], drawPathCoor[3]);
+		this.context.moveTo(drawPathCoor[0] - cutOffLeft, drawPathCoor[1] - cutOffTop);
+		this.context.lineTo(drawPathCoor[2] - cutOffLeft, drawPathCoor[3] - cutOffTop);
 		this.context.stroke();
 		console.log(" got drawing");
 	}
