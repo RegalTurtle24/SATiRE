@@ -99,10 +99,11 @@ class VisualDisplay {
 		//set stuff
 		this.context.lineWidth = lineWidth;
 		this.context.lineCap = "round";
+		console.log("previous cooridinates " + drawPathCoor[0] + " : " + drawPathCoor[1]);
+		console.log("current cooridinates " + drawPathCoor[2] + " : " + drawPathCoor[3]);
 		
 		this.context.moveTo(drawPathCoor[0] - cutOffLeft, drawPathCoor[1] - cutOffTop);
 		this.context.lineTo(drawPathCoor[2] - cutOffLeft, drawPathCoor[3] - cutOffTop);
 		this.context.stroke();
-		console.log(" got drawing");
 	}
 }
