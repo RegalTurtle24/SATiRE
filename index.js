@@ -92,6 +92,15 @@ function getSocketsInRoom(room)
 {
     return allSockets.filter((item) => item.rooms.has(room));
 }
+function getSocketsFromPlayers(players)
+{
+    let sockets = new Array(players.length);
+    for (var i = 0; i < players.length; i++)
+    {
+        sockets[i] = players[i].socket;
+    }
+    return sockets;
+}
 
   
 /**
@@ -307,17 +316,29 @@ let roomLeaveReceiver = new DataReceiver('leave-rooms', null, null, (socket) => 
     })
     socket.emit('rooms-req', "");
 });
-// For when a client wants to start a game of telephone in their room:
-let startTelephoneReceiver = new DataReceiver('telephone-start', null, null,
-        (socket, room, other) => {
+// For when a client wants to start a game in their room:
+let startGameReceiver = new DataReceiver('game-start', null, null,
+        (socket, gamemode, room, other) => {
     try
     {
         let players = [];
         getSocketsInRoom(room).forEach((socket) => {
             players.push(getPlayer(socket.id));
         })
-        new Telephone(players, room, other[0], other[1], other[2]);
-        // other contains char policies, the policy tester, and a prompt respectively
+        if (gamemode === 'telephone')
+        {
+            new Telephone(players, room, other[0], other[1], other[2]);
+            // other contains char policies, the policy tester, and a prompt respectively
+        }
+        else if (gamemode === 'draw')
+        {
+            new CollabDraw(players, room, other[0]);
+            // other contains the time limit for the game
+        }
+        else
+        {
+            throw new Error('Requested gamemode of \"' + gamemode + '\"unknown');
+        }
     }
     catch (error)
     {
@@ -351,14 +372,15 @@ class GameMode
 	// Returns a randomized order of the given players.
 	static randomizePlayers = (players) => 
 	{
-        let playersCopy = [...players];
-        let newPlayers = [ ];
-        while (newPlayers.length < players.length)
-        {
-            newPlayers.push(playersCopy.splice(Math.random() * playersCopy.length)[0]);
-        }
+        // let playersCopy = [...players];
+        // let newPlayers = [ ];
+        // while (newPlayers.length < players.length)
+        // {
+        //     newPlayers.push(playersCopy.splice(Math.random() * playersCopy.length)[0]);
+        // }
 
-        return newPlayers;
+        // return newPlayers;
+        return players;
     }
     
     constructor(players, room) 
@@ -411,14 +433,12 @@ class GameMode
     }
 }
 
-// purpose: Telephone class that is intialized when starting a game of telephone
-// input: the players that are playing the game
-// output: randomize the order of players and can return current player
+/** A game where players try to pass along a message with major restrictions */
 class Telephone extends GameMode
 {
 	constructor(players, room, charPolicies = null, policyTester = () => null, prompt = null) 
 	{
-		super(players, room);
+		super(GameMode.randomizePlayers(players), room);
         this.onEnd.push(() => this.endTelephone(room));
 
         // the character policy for phrase sent in the game
@@ -456,7 +476,7 @@ class Telephone extends GameMode
         // callReciever handles when a player send a message to another player on the server 
         // I.E when a new turn starts. If your dealing with code that updates turn to turn, here's 
         // where you want to look.
-        this.callReceiver = new DataReceiver('telephone-call', this, allSockets,
+        this.callReceiver = new DataReceiver('telephone-call', this, getSocketsFromPlayers(players),
                 (socket, mes) => {
             this.message = mes.trim();
             this.yourTurnSender.args[0] = this.message;
@@ -727,6 +747,204 @@ class Telephone extends GameMode
     }
 }
 
+/** A game where players work together to each create part of a larger picture */
+class CollabDraw extends GameMode
+{
+    /**
+     * @param {*} timeLimit The time limit of the game in seconds (-1 if unlimited) 
+     */
+    constructor(players, room, timeLimit)
+    {
+        super(GameMode.randomizePlayers(players), room);
+        this.onEnd.push(() => this.endDraw(room));
+
+        const PORTION_OF_PLAYERS_NEEDED_TO_FINISH_GAME_EARLY = 2.0 / 3.0; 
+
+        class CanvasTile
+        {
+            constructor(x, y, player, lastChange = null)
+            {
+                this.x = x;
+                this.y = y;
+                this.player = player;
+                this.socket = getSocket(player.id);
+                this.lastChange = lastChange;
+            }
+        }
+
+        // Initializes the gridboard and assigns each player a space
+        var gridWidth = Math.floor(Math.sqrt(players.length));
+        var gridHeight = Math.ceil(players.length / gridWidth);
+        var lastRowWidth = players % gridWidth;
+        this.canvasGrid = new Array(gridHeight);
+        let pIndex = 0;
+        // Loops through each row of regular size
+        for (var y = 0; y < gridHeight - 1; y++)
+        {
+            this.canvasGrid.push(new Array(gridWidth));
+            for (var x = 0; x < gridWidth; x++)
+            {
+                this.canvasGrid[y][x] = new CanvasTile(x, y, players[pIndex]);
+                pIndex++;
+            }
+        }
+        // Loops through the final row of possibly different size
+        this.canvasGrid.push(new Array(lastRowWidth));
+        for (var x = 0; x < lastRowWidth; x++)
+        {
+            var y = gridHeight - 1
+            this.canvasGrid[y][x] = new CanvasTile(x, y, players[pIndex]);
+            pIndex++;
+        }
+
+        // Initializes some local variables
+        let playerSockets = [];
+        let playerNames = [];
+        let mode = "draw";
+        this.players.forEach((item) => {
+            playerSockets.push(getSocket(item.id));
+            playerNames.push(item.name);
+        })
+
+        // Initializes data receiver for relaying canvas updates between adjacent players
+        var canvasUpdaateReceiver = new DataReceiver('draw-canvas-update', this, playerSockets,
+                (socket, x, y, newChanges) => {
+            let tile = this.canvasGrid[y][x];
+            tile.lastChange = newChanges;
+            sendTileUpdatesToAdjacents(this.canvasGrid, tile);
+        });
+
+        // Initializes the data receiver for if players wish to end the drawing session early
+        var socketsRequestingEnd = [];
+        var drawEndReqReceiver = new DataReceiver('draw-finalize-req', this, playerSockets,
+                (socket) => {
+            if (!socketsRequestingEnd.includes(socket))
+            {
+                socketsRequestingEnd.push(socket);
+                if (socketsRequestingEnd.length >= this.players.length * PORTION_OF_PLAYERS_NEEDED_TO_FINISH_GAME_EARLY)
+                {
+                    this.finalizeCanvas();
+                }
+            }
+        });
+
+        // Tells each player that the game is starting, and optionally gives them a prompt
+        for (var i = 0; i < this.players.length; i++)
+        {
+            playerSockets[i].emit('game-init', playerNames, mode, i % gridWidth, i / gridWidth, timeLimit);
+        }
+
+        // Starts a timer for given number of seconds (and/or listens for more than half of players requesting
+        // to quit the current game)
+        if (timeLimit > 0)
+        {
+            setTimeout(this.finalizeCanvas, timeLimit * 1000);
+        }
+    }
+
+    /**
+     * Sends the updated tiles to all player adjacent to the given tile
+     */
+    sendTileUpdatesToAdjacents(grid, tile)
+    {
+        // Left
+        if (tile.x > 0)
+        {
+            grid[tile.y, tile.x - 1].socket.emit('draw-tile-update', 'right', tile.lastImage);
+        }
+        // Right
+        if (tile.x < grid[tile.y].length - 1)
+        {
+            grid[tile.y, tile.x + 1].socket.emit('draw-tile-update', 'left', tile.lastImage);
+        }
+        // Up
+        if (tile.y > 0)
+        {
+            grid[tile.y - 1, tile.x].socket.emit('draw-tile-update', 'down', tile.lastImage);
+        }
+        // Down
+        if (tile.y < grid.length - 1 && !(tile.y == grid.length - 2 && tile.x >= lastRowWidth))
+        {
+            grid[tile.y + 1, tile.x].socket.emit('draw-tile-update', 'up', tile.lastImage);
+        }
+    }
+
+    /**
+     * Puts all the player's tiles together and sends them to each player,
+     * it also ends the game
+     */
+    finalizeCanvas()
+    {
+        var fullCanvas;
+        // Adds each canvas tile to the full canvas image
+        for (var y = 0; y < this.canvasGrid.length; y++)
+        {
+            for (var x = 0; x < this.canvasGrid[y].length; x++)
+            {
+                // Has yet to be implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            }
+        }
+
+        // Informs players of the game having ended and sends the full image to everybody in the room
+        getSocketsInRoom(room).forEach((item) => item.emit('draw-game-end', fullCanvas));
+        this.endDraw(this.room);
+    }
+
+    /**
+     * Sends the updated tiles to all player adjacent to the given tile
+     */
+    sendTileUpdatesToAdjacents(grid, tile)
+    {
+        // Left
+        if (tile.x > 0)
+        {
+            grid[tile.y, tile.x - 1].socket.emit('draw-tile-update', 'right', tile.lastImage);
+        }
+        // Right
+        if (tile.x < grid[tile.y].length - 1)
+        {
+            grid[tile.y, tile.x + 1].socket.emit('draw-tile-update', 'left', tile.lastImage);
+        }
+        // Up
+        if (tile.y > 0)
+        {
+            grid[tile.y - 1, tile.x].socket.emit('draw-tile-update', 'down', tile.lastImage);
+        }
+        // Down
+        if (tile.y < grid.length - 1 && !(tile.y == grid.length - 2 && tile.x >= lastRowWidth))
+        {
+            grid[tile.y + 1, tile.x].socket.emit('draw-tile-update', 'up', tile.lastImage);
+        }
+    }
+
+    /**
+     * Puts all the player's tiles together and sends them to each player,
+     * it also ends the game
+     */
+    finalizeCanvas()
+    {
+        var fullCanvas;
+        // Adds each canvas tile to the full canvas image
+        for (var y = 0; y < this.canvasGrid.length; y++)
+        {
+            for (var x = 0; x < this.canvasGrid[y].length; x++)
+            {
+                // Has yet to be implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            }
+        }
+
+        // Informs players of the game having ended and sends the full image to everybody in the room
+        getSocketsInRoom(room).forEach((item) => item.emit('draw-game-end', fullCanvas));
+        this.endDraw(this.room);
+    }
+
+    /** Ends the game of collaborative draw in the given room */
+    endDraw(room)
+    {
+        console.log("Game of collaborative draw in room [" + room + "] has ended");
+    }
+}
+
 
 
 let globalPlayerCount = 1;
@@ -749,6 +967,6 @@ io.on('connection', function (socket)
     chatReceiver.addSockets(socket);
     roomReqReceiver.addSockets(socket);
     roomLeaveReceiver.addSockets(socket);
-    startTelephoneReceiver.addSockets(socket);
+    startGameReceiver.addSockets(socket);
     disconnectReceiver.addSockets(socket);
 });
