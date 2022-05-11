@@ -63,7 +63,7 @@ class DrawingPad {
 	}
 	
 	setCooridinates(event) {
-		if (this.mouseCooridinatesX != null && this.this.mouseCooridinatesY != null) {
+		if (this.mouseCooridinatesX != null && this.mouseCooridinatesY != null) {
 			this.previousX = this.mouseCooridinatesX;
 			this.previousY = this.mouseCorridinatesY;
         }
@@ -84,7 +84,7 @@ class DrawingPad {
 class VisualDisplay {
 	
 	constructor(canvasID, cutOff) {
-		this.canvas = document.getElementByID(canvasID);
+		this.canvas = document.getElementById(canvasID);
 		this.bounds = this.canvas.getBoundingClientRect();
 		
 		this.cutOffLeft = cutOff[0];
