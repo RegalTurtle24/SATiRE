@@ -39,3 +39,5 @@ jumpTo = (page) => {
     pages => (pages.style.transform = `translateX(${translate}%)`)
   );
 }
+
+jumpTo('title');
