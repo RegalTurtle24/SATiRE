@@ -8,6 +8,7 @@
 		<script src="./inputs.js"></script>
 		<script src="./game-logic.js"></script>
 		<script src="./gamemodes.js"></script>
+		<script src="./displayAndPad.js"></script>
 		<link rel="stylesheet" href="./example.css">
 	</head>
 
@@ -21,9 +22,10 @@
 				<h2>by Sam, Ankita, Thys, Reed, Elle</h2>
                 <div>
 					<body onload="initializeSocket()"></body>
-                    <button onClick="slide('next')">Continue</button>
-			    </div>
-            </div>
+					<button onClick="slide('next')">Continue</button>
+					<canvas id="drawingPad" width="150" height="150" style="border:2px solid #000000"></canvas>
+				</div>
+			</div>
 			
 			<div class="page two">
 				<h3>Customize Name</h3>
@@ -63,6 +65,7 @@
 					
 					<h2>Select a Game to Play:</h2>
 					<button onclick="jumpTo('telephone_settings')">Telephone Game</button>
+					<button onclick="jumpTo('drawing_game_settings')">Drawing Game</button>
 				</div>
 
 				<div id="p4chatGroup">
@@ -104,6 +107,14 @@
 					<button id="p6callSubmit">Submit</button>
 				</div>
 				<p id="p6teleError">Not your turn</p>
+			</div>
+
+			<div class="page seven">
+				<h2>Drawing Game Setup</h2>
+			</div>
+
+			<div class="page eight">
+				<h2>Drawing Game Running</h2>
 			</div>
 		</div>
 	</div>
