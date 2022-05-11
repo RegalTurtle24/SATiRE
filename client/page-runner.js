@@ -27,6 +27,12 @@ jumpTo = (page) => {
     case "lobby":
       translate = -300;
       break;
+    case "drawing_game_settings":
+      translate = -600;
+      break;
+    case "drawing_game_now_playing":
+      translate = -700;
+      break;
   }
 
   pages.forEach(

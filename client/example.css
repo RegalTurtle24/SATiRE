@@ -64,7 +64,7 @@ input{
 
 .pages {
   	display: flex;
-	width: 600%; 
+	width: 800%; 
 	box-sizing: border-box;
 }
 
@@ -102,6 +102,14 @@ input{
 
 .six{
 	background: #EF09D1; 
+}
+
+.seven{
+	background: #1ac233
+}
+
+.eight{
+	background: #13b285
 }
 
 #p4chatGroup{
