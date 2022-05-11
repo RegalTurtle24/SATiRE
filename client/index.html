@@ -37,8 +37,9 @@
 						<input type="text" id="p2nameBox">
 						<button type="button" id="p2nameSubmit" onclick="slide('next')">Confirm</button>
 					</form>
-					
-					<button onclick="slide('prev')">Back to Title</button>
+					<div id="backToTitle">
+					    <button onclick="slide('prev')">Back to Title</button>
+                    </div>
 					<button onclick="slide('next')">Continue with default name</button>
 				</div>
 			</div>
@@ -51,14 +52,16 @@
 						<input type="text" id="p3roomJoinBox">
 						<button type="button" id="p3roomJoinSubmit">Submit</button>
 					</form>
-
-					<button onclick="slide('prev')">Return to name select</button>
+                    <div id="backToName">
+					    <button onclick="slide('prev')">Return to name select</button>
+                    </div>
 				</div>
 			</div>
 
 			<div class="page four">
-				<h3 id="p4roomDisplay">Your Room: No Current Room</h3>
+				
                 <button id="p4leaveRoom">Return to room select</button>
+                <h3 id="p4roomDisplay">Your Room: No Current Room</h3>
 
 				<div id="p4games" align="center">
 					
