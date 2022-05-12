@@ -8,7 +8,7 @@ var game = null;
 // hitting that button
 class GameStartButton {
 
-	constructor(buttonID, emitMessage, getOtherParameters) {
+	constructor(buttonID, emitMessage, gamemode, getOtherParameters) {
 		this.box = document.getElementById(buttonID);
 		// a parameter that could be used to define anything not used in the code. 
 		this.getOtherParameters = getOtherParameters;
@@ -24,7 +24,7 @@ class GameStartButton {
 				other = this.getOtherParameters();
 			}
 
-			socket.emit(emitMessage, joinedRoom, other);
+			socket.emit(emitMessage, gamemode, joinedRoom, other);
 		});
 	}
 }
@@ -81,8 +81,8 @@ function gameLogicInit() {
 		fr.readAsText(file);
 	});
 
-	var startGameButton = new GameStartButton('p5startGame', 'telephone-start', () => {
-		if(policies.length == 0)
+	var startTelephoneButton = new GameStartButton('p5startGame', 'game-start', 'telephone', () => {
+		if (policies.length == 0)
 		{
 			let emptyCharPol = new CharPolicy([""], CharPolicy.REQUIRED, 1, true);
 			policies.push(emptyCharPol);
@@ -102,14 +102,20 @@ function gameLogicInit() {
 
 
 	// runs gamemode when recieve that gamemode
-	let initReceiver = new DataReciever('game-init', DataReciever.LOCAL_GAME, (playerNames, mode) => {
-        if (mode === "telephone")
+	let initReceiver = new DataReciever('game-init', DataReciever.LOCAL_GAME, (playerNames, mode, ...args) => {
+        if (mode === "telephone") 
 		{
 			playerOrder = document.getElementById('p6playerOrder');
 			jumpTo('telephone_now_playing');
-            game = new ClientSideTelephone();
+            game = new ClientSideTelephone(...args);
             game.startGame(playerNames);
             console.log('Telephone game data initialized');
+		}
+		else if (mode === "draw");
+		{
+			game = new ClientSideCollabDraw(playerNames.length, ...args);
+			game.startGame();
+			console.log('Collaborative drawing game initialized');
 		}
     })
 }
