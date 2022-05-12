@@ -20,10 +20,12 @@
 			<div class="page one">
 				<h1>SATiRE</h1>
 				<h2>by Sam, Ankita, Thys, Reed, Elle</h2>
-                <div>
-					<body onload="initializeSocket()"></body>
+				<div>
+					<body onload="initializeSocket()">
+					</body>
 					<button onClick="slide('next')">Continue</button>
 					<canvas id="drawingPad" width="150" height="150" style="border:2px solid #000000"></canvas>
+					<canvas id="bruhPad" width="150" height="75" style="border:2px solid #000000"></canvas>
 				</div>
 			</div>
 			
@@ -123,4 +125,12 @@
 	</div>
 
 	<script src="./page-runner.js"></script>
+	<script>
+		let pad = new DrawingPad("drawingPad");
+		let bruh = new VisualDisplay("bruhPad", [0, 75]);
+		document.getElementById("drawingPad").addEventListener("mousemove", function(){
+			bruh.drawData(2, [pad.previousX, pad.previousY, pad.mouseCooridinatesX, pad.mouseCooridinatesY]);
+			console.log("is this run");
+		});
+	</script>
 </html>
