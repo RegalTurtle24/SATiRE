@@ -158,7 +158,13 @@ input{
     right: 180vh;
 }
 
-#BackToGameSelect{
+#p5BackToGameSelect{
+    position: fixed;
+    top: 10vh;
+    right: 180vh;
+}
+
+#p7BackToGameSelect{
     position: fixed;
     top: 10vh;
     right: 180vh;
