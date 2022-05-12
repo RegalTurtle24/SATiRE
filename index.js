@@ -890,54 +890,6 @@ class CollabDraw extends GameMode
         this.endDraw(this.room);
     }
 
-    /**
-     * Sends the updated tiles to all player adjacent to the given tile
-     */
-    sendTileUpdatesToAdjacents(grid, tile)
-    {
-        // Left
-        if (tile.x > 0)
-        {
-            grid[tile.y, tile.x - 1].socket.emit('draw-tile-update', 'right', tile.lastImage);
-        }
-        // Right
-        if (tile.x < grid[tile.y].length - 1)
-        {
-            grid[tile.y, tile.x + 1].socket.emit('draw-tile-update', 'left', tile.lastImage);
-        }
-        // Up
-        if (tile.y > 0)
-        {
-            grid[tile.y - 1, tile.x].socket.emit('draw-tile-update', 'down', tile.lastImage);
-        }
-        // Down
-        if (tile.y < grid.length - 1 && !(tile.y == grid.length - 2 && tile.x >= lastRowWidth))
-        {
-            grid[tile.y + 1, tile.x].socket.emit('draw-tile-update', 'up', tile.lastImage);
-        }
-    }
-
-    /**
-     * Puts all the player's tiles together and sends them to each player,
-     * it also ends the game
-     */
-    finalizeCanvas()
-    {
-        var fullCanvas;
-        // Adds each canvas tile to the full canvas image
-        for (var y = 0; y < this.canvasGrid.length; y++)
-        {
-            for (var x = 0; x < this.canvasGrid[y].length; x++)
-            {
-                // Has yet to be implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            }
-        }
-
-        // Informs players of the game having ended and sends the full image to everybody in the room
-        getSocketsInRoom(room).forEach((item) => item.emit('draw-game-end', fullCanvas));
-        this.endDraw(this.room);
-    }
-
     /** Ends the game of collaborative draw in the given room */
     endDraw(room)
     {
