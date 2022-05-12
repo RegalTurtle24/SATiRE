@@ -99,7 +99,7 @@ function gameLogicInit() {
 	});
 
 	// ____________________________Collaborative Draw________________________________//
-	var startDrawButton = new GameStartButton('p7startgame', 'game-start', 'draw', () => {
+	var startDrawButton = new GameStartButton('p7startGame', 'game-start', 'draw', () => {
 		let params = [ ];
 		// Gets the time limit entered by the player
 		params.push(document.getElementById("p7drawTime").value);
