@@ -97,8 +97,15 @@ function gameLogicInit() {
 		}
 		return params;
 	});
-	// __________________________________________________________________________//
 
+	// ____________________________Collaborative Draw________________________________//
+	var startDrawButton = new GameStartButton('p7startgame', 'game-start', 'draw', () => {
+		let params = [ ];
+		// Gets the time limit entered by the player
+		params.push(document.getElementById("p7drawTime").value);
+		
+		return params;
+	})
 
 
 	// runs gamemode when recieve that gamemode
