@@ -131,3 +131,35 @@ input{
 	position:fixed;
 	top: 0vh;
 }
+
+#p4roomDisplay{
+    position: fixed;
+    top: 20vh;
+}
+
+#p4leaveRoom{
+    position: fixed;
+    top: 10vh;
+    right: 180vh;
+    align-self: end;
+    
+}
+
+#backToTitle{
+    position: fixed;
+    top: 10vh;
+    right: 190vh;
+    align-self: end;
+}
+
+#backToName{
+    position: fixed;
+    top: 10vh;
+    right: 180vh;
+}
+
+#BackToGameSelect{
+    position: fixed;
+    top: 10vh;
+    right: 180vh;
+}
