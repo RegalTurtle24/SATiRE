@@ -24,8 +24,6 @@
 					<body onload="initializeSocket()">
 					</body>
 					<button onClick="slide('next')">Continue</button>
-					<canvas id="drawingPad" width="150" height="150" style="border:2px solid #000000"></canvas>
-					<canvas id="bruhPad" width="150" height="75" style="border:2px solid #000000"></canvas>
 				</div>
 			</div>
 			
@@ -39,7 +37,7 @@
 						<input type="text" id="p2nameBox">
 						<button type="button" id="p2nameSubmit" onclick="slide('next')">Confirm</button>
 					</form>
-					<div id="backToTitle">
+					<div id="p2backToTitle">
 					    <button onclick="slide('prev')">Back to Title</button>
                     </div>
 					<button onclick="slide('next')">Continue with default name</button>
@@ -54,7 +52,7 @@
 						<input type="text" id="p3roomJoinBox">
 						<button type="button" id="p3roomJoinSubmit">Submit</button>
 					</form>
-                    <div id="backToName">
+                    <div id="p3backToName">
 					    <button onclick="slide('prev')">Return to name select</button>
                     </div>
 				</div>
@@ -139,12 +137,4 @@
 	</div>
 
 	<script src="./page-runner.js"></script>
-	<script>
-		let pad = new DrawingPad("drawingPad");
-		let bruh = new VisualDisplay("bruhPad", [0, 75]);
-		document.getElementById("drawingPad").addEventListener("mousemove", function(){
-			bruh.drawData(2, [pad.previousX, pad.previousY, pad.mouseCooridinatesX, pad.mouseCooridinatesY]);
-			console.log("is this run");
-		});
-	</script>
 </html>
