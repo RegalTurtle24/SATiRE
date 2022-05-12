@@ -3,16 +3,14 @@
 
 
 
-//new DrawingPad("drawingPad");
-
-// purpose: a DrawingPad that 
-// input: users stokes on canvas, colors they choose
-// output:
+// purpose: this class is to create a canvas in which a user can directly draw images on using their cursor
+// input: the element ID for the canvas your using
+// output: a canvas that you can drawing own by holding down your cursor and moving across it.
 class DrawingPad {
 	
 	// variables for color, pen, stroke, etc. settings 
 	
-	constructor(canvasID /*,dataSender*/) {
+	constructor(canvasID) {
 		// variable to use when drawing.
 		this.color = '#000000'; // when messing with this always use hex 
 		this.isCurrentlyDrawing = false;
@@ -35,15 +33,14 @@ class DrawingPad {
 	startDraw(event) {
 		this.isCurrentlyDrawing = true;
 		this.setCooridinates(event);
-		console.log("draw started");
+		//console.log("draw started");
 	}
 	
-	// purpose:
-	
+	// purpose: draw a line for one cooridinate to another, typically when the mouse moves.
 	draw(event) {
 
 		if (this.isCurrentlyDrawing) {
-			// initialize necessar variables
+			// initialize necessary variables
 			this.context = this.canvas.getContext("2d");
 			
 			//set stuff
@@ -58,10 +55,11 @@ class DrawingPad {
 			}
 			this.context.lineTo(this.mouseCooridinatesX, this.mouseCooridinatesY);
 			this.context.stroke();
-			console.log("drawing");
 		}
 	}
-	
+
+	// purpose: sets new cooridinate based on mouse position relative to canvas
+	// store previous position, if needed to be used.
 	setCooridinates(event) {
 		if (this.mouseCooridinatesX != null && this.mouseCooridinatesY != null) {
 			this.previousX = this.mouseCooridinatesX;
@@ -69,26 +67,32 @@ class DrawingPad {
         }
 		this.mouseCooridinatesX = event.pageX - this.bounds.left;
 		this.mouseCooridinatesY = event.pageY - this.bounds.top;
-		console.log(this.mouseCooridinatesX + "" + this.mouseCooridinatesY);
 	}
-	
+
+	// purpose: cancels drawing, usual when mouse is released
 	cancelDraw(event) {
 		this.isCurrentlyDrawing = false;
-		console.log("draw cancelled");
 	}
 }
 
-// purpose: the visual display is meant to show the 
-// input:
-// output:
+// purpose: this class is meant to be a visual display that a program can draw on in real time for the user.
+// primarly this is used to display the drawings of other players, however their could also be used for other programs.
+// input: the element ID for the canvas you want to use, and the off set for what ever cooridinates are inputted.
+// output: when given a set of cooridinates and other parameter such as lineWidth and color, the drawData function should 
+// be able to draw an image on the given canvas using inputted cooridinate data.
 class VisualDisplay {
 	
 	constructor(canvasID, cutOff) {
 		this.canvas = document.getElementById(canvasID);
 		this.bounds = this.canvas.getBoundingClientRect();
-		
-		this.cutOffLeft = cutOff[0];
-		this.cutOffTop = cutOff[1];
+
+		if (cutOff == null) {
+			this.cutOffLeft = 0;
+			this.cutOffTop = 0;
+		} else {
+			this.cutOffLeft = cutOff[0];
+			this.cutOffTop = cutOff[1];
+        }
 		
 	}
 	
@@ -102,8 +106,8 @@ class VisualDisplay {
 		console.log("previous cooridinates " + drawPathCoor[0] + " : " + drawPathCoor[1]);
 		console.log("current cooridinates " + drawPathCoor[2] + " : " + drawPathCoor[3]);
 		
-		this.context.moveTo(drawPathCoor[0] - cutOffLeft, drawPathCoor[1] - cutOffTop);
-		this.context.lineTo(drawPathCoor[2] - cutOffLeft, drawPathCoor[3] - cutOffTop);
+		this.context.moveTo(drawPathCoor[0] - this.cutOffLeft, drawPathCoor[1] - this.cutOffTop);
+		this.context.lineTo(drawPathCoor[2] - this.cutOffLeft, drawPathCoor[3] - this.cutOffTop);
 		this.context.stroke();
 	}
 }
