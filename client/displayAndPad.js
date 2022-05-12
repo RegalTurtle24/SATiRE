@@ -83,16 +83,27 @@ class DrawingPad {
 // be able to draw an image on the given canvas using inputted cooridinate data.
 class VisualDisplay {
 	
+	/**
+	 * 
+	 * @param {*} cutOff [x cut off (+ for left, - for right), y cut off (+ for top, - for left)]
+	 */
 	constructor(canvasID, cutOff) {
 		this.canvas = document.getElementById(canvasID);
 		this.bounds = this.canvas.getBoundingClientRect();
 
-		if (cutOff == null) {
-			this.cutOffLeft = 0;
-			this.cutOffTop = 0;
-		} else {
-			this.cutOffLeft = cutOff[0];
-			this.cutOffTop = cutOff[1];
+		this.cutOffLeft = 0;
+		this.cutOffRight = 0;
+		this.cutOffTop = 0;
+		this.cutOffBottom = 0;
+		if (cutOff != null) {
+			if (cutOff[0] < 0)
+				this.cutOffLeft = cutOff[0];
+			else
+				this.cutOffRight = -cutOff[0]
+			if (cutOff[1] < 0)
+				this.cutOffTop = cutOff[1];
+			else
+				this.cutOffBottom = -cutOff[1];
         }
 		
 	}
@@ -101,15 +112,15 @@ class VisualDisplay {
 		// add data to canvas.
 		
 		if (drawPathCoor == null || drawPathCoor[0] == null || drawPathCoor[1] == null || drawPathCoor[2] == null || drawPathCoor[3] == null) {
-			this.context = this.canvas.getContext("2d");
 			//set stuff
 			this.context.lineWidth = lineWidth;
 			this.context.lineCap = "round";
 			//console.log("previous cooridinates " + drawPathCoor[0] + " : " + drawPathCoor[1]);
 			//console.log("current cooridinates " + drawPathCoor[2] + " : " + drawPathCoor[3]);
 		
-			this.context.moveTo(drawPathCoor[0] - this.cutOffLeft, drawPathCoor[1] - this.cutOffTop);
-			this.context.lineTo(drawPathCoor[2] - this.cutOffLeft, drawPathCoor[3] - this.cutOffTop);
+			var offset = [this.cutOffRight - this.cutOffLeft, this.cutOffBottom - this.cutOffTop];
+			this.context.moveTo(drawPathCoor[0] + offset[0], drawPathCoor[1] + offset[1]);
+			this.context.lineTo(drawPathCoor[2] + offset[0], drawPathCoor[3] + offset[1]);
 			this.context.stroke();
 		}
 	}
