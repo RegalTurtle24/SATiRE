@@ -771,6 +771,7 @@ class CollabDraw extends GameMode
                 this.player = player;
                 this.socket = player.socket;
                 this.lastChange = lastChange;
+                this.allChanges = lastChange == null ? [ ] : [ ...lastChange ];
             }
         }
 
@@ -821,6 +822,10 @@ class CollabDraw extends GameMode
             {
                 let tile = canvasGridScopeGetArounder[y][x];
                 tile.lastChange = newChanges;
+                for (var i = 0; i < tile.lastChange.length; i++)
+                {
+                    tile.allChanges.push(tile.lastChange[i]);
+                }
                 this.sendTileUpdatesToAdjacents(canvasGridScopeGetArounder, tile);
             }
         });

@@ -112,11 +112,11 @@ class VisualDisplay {
 		this.cutOffBottom = 0;
 		if (cutOff != null) {
 			if (cutOff[0] < 0)
-				this.cutOffLeft = cutOff[0];
+				this.cutOffLeft = -cutOff[0];
 			else
 				this.cutOffRight = -cutOff[0]
 			if (cutOff[1] < 0)
-				this.cutOffTop = cutOff[1];
+				this.cutOffTop = -cutOff[1];
 			else
 				this.cutOffBottom = -cutOff[1];
         }
