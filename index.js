@@ -61,10 +61,11 @@ var io;
  */
 class Player
 {
-    constructor(id, name)
+    constructor(id, name, socket)
     {
         this.id = id;
         this.name = name;
+        this.socket = socket
         allPlayers.push(this);
         //console.log('Player created. id [' + id + ']' + ', name: ' + name)
     }
@@ -291,7 +292,7 @@ let roomReqReceiver = new DataReceiver('join-req', null, null, (socket, message)
     }
     
     // If it made it to this point, it is a valid room
-    console.log('Joining Room: [' + message + ']');
+    console.log('Socket "' + socket.id + '" is joining room: [' + message + ']');
     // Leaves all other rooms
     socket.rooms.forEach((value) => {
         if(socket.id != value){
@@ -343,7 +344,8 @@ let startGameReceiver = new DataReceiver('game-start', null, null,
     catch (error)
     {
         console.log('Something went wrong when starting a game: ' + error);
-        socket.emit('error-display', 'Failed to start requested game');
+        console.log(error);
+        socket.emit('error-display', 'Failed to start requested game\nReason: "' + error + '"');
     }
 });
 let disconnectReceiver = new DataReceiver('disconnect', null, null, (socket, reason) => {
@@ -353,7 +355,7 @@ let disconnectReceiver = new DataReceiver('disconnect', null, null, (socket, rea
         lostPlayer.remove();
     }
     chatReceiver.remove(socket);
-    allSockets.splice(allSockets.indexOf(socket));
+    allSockets.splice(allSockets.indexOf(socket), 1);
     console.log('Disconnected from client at socket id [' + socket.id + '] for reason [' + reason + ']');
     allCurrentGames.forEach((game) => {
         if (game.players.includes(lostPlayer))
@@ -457,7 +459,7 @@ class Telephone extends GameMode
         let playerNames = [];
         let mode = "telephone";
         this.players.forEach((item) => {
-            playerSockets.push(getSocket(item.id));
+            playerSockets.push(item.socket);
             playerNames.push(item.name);
         })
 		
@@ -476,7 +478,7 @@ class Telephone extends GameMode
         // callReciever handles when a player send a message to another player on the server 
         // I.E when a new turn starts. If your dealing with code that updates turn to turn, here's 
         // where you want to look.
-        this.callReceiver = new DataReceiver('telephone-call', this, getSocketsFromPlayers(players),
+        this.callReceiver = new DataReceiver('telephone-call', this, playerSockets,
                 (socket, mes) => {
             this.message = mes.trim();
             this.yourTurnSender.args[0] = this.message;
@@ -767,33 +769,37 @@ class CollabDraw extends GameMode
                 this.x = x;
                 this.y = y;
                 this.player = player;
-                this.socket = getSocket(player.id);
+                this.socket = player.socket;
                 this.lastChange = lastChange;
             }
         }
 
         // Initializes the gridboard and assigns each player a space
-        var gridWidth = Math.floor(Math.sqrt(players.length));
-        var gridHeight = Math.ceil(players.length / gridWidth);
-        var lastRowWidth = players % gridWidth;
+        var gridWidth = Math.ceil(Math.sqrt(this.players.length));
+        var gridHeight = Math.floor(this.players.length / gridWidth);
+        var lastRowWidth = this.players.length % gridWidth;
+        if (lastRowWidth === 0) lastRowWidth = gridWidth;
         this.canvasGrid = new Array(gridHeight);
         let pIndex = 0;
+        console.log(`Grid dimensions: width: ${gridWidth}, height: ${gridHeight}, lastRowWidth:
+            ${lastRowWidth}, player num: ${this.players.length} -- and stuff`);
         // Loops through each row of regular size
         for (var y = 0; y < gridHeight - 1; y++)
         {
-            this.canvasGrid.push(new Array(gridWidth));
+            this.canvasGrid[y] = new Array(gridWidth);
             for (var x = 0; x < gridWidth; x++)
             {
-                this.canvasGrid[y][x] = new CanvasTile(x, y, players[pIndex]);
+                var player = this.players[pIndex];
+                this.canvasGrid[y][x] = new CanvasTile(x, y, player);
                 pIndex++;
             }
         }
         // Loops through the final row of possibly different size
-        this.canvasGrid.push(new Array(lastRowWidth));
+        this.canvasGrid[gridHeight - 1] = new Array(lastRowWidth);
         for (var x = 0; x < lastRowWidth; x++)
         {
             var y = gridHeight - 1
-            this.canvasGrid[y][x] = new CanvasTile(x, y, players[pIndex]);
+            this.canvasGrid[y][x] = new CanvasTile(x, y, this.players[pIndex]);
             pIndex++;
         }
 
@@ -802,16 +808,21 @@ class CollabDraw extends GameMode
         let playerNames = [];
         let mode = "draw";
         this.players.forEach((item) => {
-            playerSockets.push(getSocket(item.id));
+            playerSockets.push(item.socket);
             playerNames.push(item.name);
         })
 
         // Initializes data receiver for relaying canvas updates between adjacent players
-        var canvasUpdaateReceiver = new DataReceiver('draw-canvas-update', this, playerSockets,
+        let canvasGridScopeGetArounder = this.canvasGrid;
+        var canvasUpdateReceiver = new DataReceiver('draw-canvas-update', this, playerSockets,
                 (socket, x, y, newChanges) => {
-            let tile = this.canvasGrid[y][x];
-            tile.lastChange = newChanges;
-            sendTileUpdatesToAdjacents(this.canvasGrid, tile);
+            if (Math.round(x) == x && Math.round(y) == y && x >= 0 && y >= 0 &&
+                y < canvasGridScopeGetArounder.length && x < canvasGridScopeGetArounder[y].length)
+            {
+                let tile = canvasGridScopeGetArounder[y][x];
+                tile.lastChange = newChanges;
+                this.sendTileUpdatesToAdjacents(canvasGridScopeGetArounder, tile);
+            }
         });
 
         // Initializes the data receiver for if players wish to end the drawing session early
@@ -831,7 +842,8 @@ class CollabDraw extends GameMode
         // Tells each player that the game is starting, and optionally gives them a prompt
         for (var i = 0; i < this.players.length; i++)
         {
-            playerSockets[i].emit('game-init', playerNames, mode, i % gridWidth, i / gridWidth, timeLimit);
+            playerSockets[i].emit('game-init', playerNames, mode, Math.floor(i % gridWidth),
+                Math.floor(i / gridWidth), timeLimit);
         }
 
         // Starts a timer for given number of seconds (and/or listens for more than half of players requesting
@@ -847,73 +859,27 @@ class CollabDraw extends GameMode
      */
     sendTileUpdatesToAdjacents(grid, tile)
     {
+        // console.log(`Tile (${tile.x},${tile.y})`);
+        // console.log(tile.lastChange);
         // Left
         if (tile.x > 0)
         {
-            grid[tile.y, tile.x - 1].socket.emit('draw-tile-update', 'right', tile.lastImage);
+            grid[tile.y][tile.x - 1].socket.emit('draw-tile-update', 'right', tile.lastChange);
         }
         // Right
         if (tile.x < grid[tile.y].length - 1)
         {
-            grid[tile.y, tile.x + 1].socket.emit('draw-tile-update', 'left', tile.lastImage);
+            grid[tile.y][tile.x + 1].socket.emit('draw-tile-update', 'left', tile.lastChange);
         }
         // Up
         if (tile.y > 0)
         {
-            grid[tile.y - 1, tile.x].socket.emit('draw-tile-update', 'down', tile.lastImage);
+            grid[tile.y - 1][tile.x].socket.emit('draw-tile-update', 'down', tile.lastChange);
         }
         // Down
-        if (tile.y < grid.length - 1 && !(tile.y == grid.length - 2 && tile.x >= lastRowWidth))
+        if (tile.y < grid.length - 1 && !(tile.y == grid.length - 2 && tile.x > grid[grid.length - 1].length - 1))
         {
-            grid[tile.y + 1, tile.x].socket.emit('draw-tile-update', 'up', tile.lastImage);
-        }
-    }
-
-    /**
-     * Puts all the player's tiles together and sends them to each player,
-     * it also ends the game
-     */
-    finalizeCanvas()
-    {
-        var fullCanvas;
-        // Adds each canvas tile to the full canvas image
-        for (var y = 0; y < this.canvasGrid.length; y++)
-        {
-            for (var x = 0; x < this.canvasGrid[y].length; x++)
-            {
-                // Has yet to be implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            }
-        }
-
-        // Informs players of the game having ended and sends the full image to everybody in the room
-        getSocketsInRoom(room).forEach((item) => item.emit('draw-game-end', fullCanvas));
-        this.endDraw(this.room);
-    }
-
-    /**
-     * Sends the updated tiles to all player adjacent to the given tile
-     */
-    sendTileUpdatesToAdjacents(grid, tile)
-    {
-        // Left
-        if (tile.x > 0)
-        {
-            grid[tile.y, tile.x - 1].socket.emit('draw-tile-update', 'right', tile.lastImage);
-        }
-        // Right
-        if (tile.x < grid[tile.y].length - 1)
-        {
-            grid[tile.y, tile.x + 1].socket.emit('draw-tile-update', 'left', tile.lastImage);
-        }
-        // Up
-        if (tile.y > 0)
-        {
-            grid[tile.y - 1, tile.x].socket.emit('draw-tile-update', 'down', tile.lastImage);
-        }
-        // Down
-        if (tile.y < grid.length - 1 && !(tile.y == grid.length - 2 && tile.x >= lastRowWidth))
-        {
-            grid[tile.y + 1, tile.x].socket.emit('draw-tile-update', 'up', tile.lastImage);
+            grid[tile.y + 1][tile.x].socket.emit('draw-tile-update', 'up', tile.lastChange);
         }
     }
 
@@ -953,7 +919,7 @@ io.on('connection', function (socket)
 {
     allSockets.push(socket);
 
-    player = new Player(socket.id, 'Player #' + globalPlayerCount);
+    player = new Player(socket.id, 'Player #' + globalPlayerCount, socket);
     globalPlayerCount = globalPlayerCount + 1;
 
     // Log info and inform other clients that the connection was successful

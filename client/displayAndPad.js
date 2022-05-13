@@ -23,7 +23,11 @@ class DrawingPad {
 		this.canvas.addEventListener("mouseup", (event) => this.cancelDraw(event));
 		this.canvas.addEventListener("mouseout", (event) => this.cancelDraw(event));
 		
-		console.log("ok");
+		this.context = this.canvas.getContext("2d");
+
+		// creating variables for other code to get/send drawing changes
+		this.onStrokeEnd = null;
+		this.mostRecentChanges = [ ];
 	}
 	
 	addSetting(/*colorSettingID, submittionID, function*/) {
@@ -34,16 +38,13 @@ class DrawingPad {
 	startDraw(event) {
 		this.isCurrentlyDrawing = true;
 		this.setCooridinates(event);
-		//console.log("draw started");
+		this.mostRecentChanges.push([this.color, [[this.mouseCooridinatesX, this.mouseCooridinatesY]] ]);
 	}
 	
 	// purpose: draw a line for one cooridinate to another, typically when the mouse moves.
 	draw(event) {
 
 		if (this.isCurrentlyDrawing) {
-			// initialize necessary variables
-			this.context = this.canvas.getContext("2d");
-			
 			//set stuff
 			this.context.lineWidth = 2;
 			this.context.lineCap = "round";
@@ -56,6 +57,14 @@ class DrawingPad {
 			}
 			this.context.lineTo(this.mouseCooridinatesX, this.mouseCooridinatesY);
 			this.context.stroke();
+
+			// Updates the changes array
+			if (this.mostRecentChanges.length === 0)
+			{
+				this.mostRecentChanges.push([this.color, [[this.mouseCooridinatesX, this.mouseCooridinatesY]] ]);
+			}
+			this.mostRecentChanges[this.mostRecentChanges.length - 1][1].push(
+				[this.mouseCooridinatesX, this.mouseCooridinatesY]);
 		}
 	}
 
@@ -73,6 +82,11 @@ class DrawingPad {
 	// purpose: cancels drawing, usual when mouse is released
 	cancelDraw(event) {
 		this.isCurrentlyDrawing = false;
+
+		if (this.onStrokeEnd != null)
+		{
+			this.onStrokeEnd();
+		}
 	}
 }
 
@@ -83,33 +97,66 @@ class DrawingPad {
 // be able to draw an image on the given canvas using inputted cooridinate data.
 class VisualDisplay {
 	
+	/**
+	 * 
+	 * @param {*} cutOff [x cut off (+ for left, - for right), y cut off (+ for top, - for left)]
+	 */
 	constructor(canvasID, cutOff) {
 		this.canvas = document.getElementById(canvasID);
 		this.bounds = this.canvas.getBoundingClientRect();
+		this.context = this.canvas.getContext("2d");
 
-		if (cutOff == null) {
-			this.cutOffLeft = 0;
-			this.cutOffTop = 0;
-		} else {
-			this.cutOffLeft = cutOff[0];
-			this.cutOffTop = cutOff[1];
+		this.cutOffLeft = 0;
+		this.cutOffRight = 0;
+		this.cutOffTop = 0;
+		this.cutOffBottom = 0;
+		if (cutOff != null) {
+			if (cutOff[0] < 0)
+				this.cutOffLeft = cutOff[0];
+			else
+				this.cutOffRight = -cutOff[0]
+			if (cutOff[1] < 0)
+				this.cutOffTop = cutOff[1];
+			else
+				this.cutOffBottom = -cutOff[1];
         }
 		
 	}
 	
-	drawData(/*color,*/ lineWidth, drawPathCoor) {
+	drawData(color, lineWidth, drawPathCoor) {
 		// add data to canvas.
 		
 		if (drawPathCoor == null || drawPathCoor[0] == null || drawPathCoor[1] == null || drawPathCoor[2] == null || drawPathCoor[3] == null) {
-			this.context = this.canvas.getContext("2d");
 			//set stuff
 			this.context.lineWidth = lineWidth;
 			this.context.lineCap = "round";
 			//console.log("previous cooridinates " + drawPathCoor[0] + " : " + drawPathCoor[1]);
 			//console.log("current cooridinates " + drawPathCoor[2] + " : " + drawPathCoor[3]);
 		
-			this.context.moveTo(drawPathCoor[0] - this.cutOffLeft, drawPathCoor[1] - this.cutOffTop);
-			this.context.lineTo(drawPathCoor[2] - this.cutOffLeft, drawPathCoor[3] - this.cutOffTop);
+			var offset = [this.cutOffRight - this.cutOffLeft, this.cutOffBottom - this.cutOffTop];
+			this.context.moveTo(drawPathCoor[0] + offset[0], drawPathCoor[1] + offset[1]);
+			this.context.lineTo(drawPathCoor[2] + offset[0], drawPathCoor[3] + offset[1]);
+			this.context.stroke();
+		}
+	}
+
+	drawAllData(changes)
+	{
+		for (var i = 0; i < changes.length; i++)
+		{
+			let color = changes[i][0];
+			let line = changes[i][1];
+			
+			
+			this.context.lineWidth = 2;
+			this.context.lineCap = "round";
+			
+			var offset = [this.cutOffRight - this.cutOffLeft, this.cutOffBottom - this.cutOffTop];
+			this.context.moveTo(line[0][0] + offset[0], line[0][1] + offset[1]);
+			for (var j = 0; j < line.length; j++)
+			{
+				this.context.lineTo(line[j][0] + offset[0], line[j][1] + offset[1]);
+			}
 			this.context.stroke();
 		}
 	}
