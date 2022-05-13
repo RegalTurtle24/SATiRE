@@ -83,9 +83,9 @@ class DrawingPad {
 	cancelDraw(event) {
 		this.isCurrentlyDrawing = false;
 
-		if (onStrokeEnd != null)
+		if (this.onStrokeEnd != null)
 		{
-			onStrokeEnd();
+			this.onStrokeEnd();
 		}
 	}
 }
