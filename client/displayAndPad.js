@@ -140,8 +140,6 @@ class VisualDisplay {
 		}
 	}
 
-	}
-
 	drawAllData(changes)
 	{
 		for (var i = 0; i < changes.length; i++)
