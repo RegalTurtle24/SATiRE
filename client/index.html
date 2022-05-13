@@ -24,8 +24,6 @@
 					<body onload="initializeSocket()">
 					</body>
 					<button onClick="slide('next')">Continue</button>
-					<canvas id="drawingPad" width="150" height="150" style="border:2px solid #000000"></canvas>
-					<canvas id="bruhPad" width="150" height="75" style="border:2px solid #000000"></canvas>
 				</div>
 			</div>
 			
@@ -39,7 +37,7 @@
 						<input type="text" id="p2nameBox">
 						<button type="button" id="p2nameSubmit" onclick="slide('next')">Confirm</button>
 					</form>
-					<div id="backToTitle">
+					<div id="p2backToTitle">
 					    <button onclick="slide('prev')">Back to Title</button>
                     </div>
 					<button onclick="slide('next')">Continue with default name</button>
@@ -54,7 +52,7 @@
 						<input type="text" id="p3roomJoinBox">
 						<button type="button" id="p3roomJoinSubmit">Submit</button>
 					</form>
-                    <div id="backToName">
+                    <div id="p3backToName">
 					    <button onclick="slide('prev')">Return to name select</button>
                     </div>
 				</div>
@@ -83,7 +81,7 @@
       		</div>
 
 			<div class="page five">
-				<h3>Telephone Game</h3>
+				<h3>Telephone Game Setup</h3>
 				<div>
 					<form>
 						<label for="message">Player settings:</label>
@@ -97,9 +95,8 @@
 							<input type="file" id="teleprompt">
 						</div>
 					</form>
-                    <div id="p5BackToGameSelect">
+
 					<button onclick="jumpTo('lobby')">Back to game select</button>
-                    </div>
 					<button type="button" id="p5startGame">Start Game</button>
 				</div>
 			</div>
@@ -116,34 +113,28 @@
 			</div>
 
 			<div class="page seven">
-                <h3>Drawing Game</h3>
-                <h2>Settings...</h2>
-                <div id="p7BackToGameSelect">
-					<button onclick="jumpTo('lobby')">Back to game select</button>
-                </div>
+				<h2>Drawing Game Setup</h2>
 				<div>
 					<form>
 						<label for="message">Player settings:</label>
 						<label>Time limit (seconds)</label>
 						<input type="number" id="p7drawTime" min="1" max="600" value="120">
 					</form>
+
+					<button onclick="jumpTo('lobby')">Back to game select</button>
 					<button type="button" id="p7startGame">Start Game</button>
 				</div>
 			</div>
 
 			<div class="page eight">
-				<h2>Drawing Game Running</h2>
+				<h2>Drawing Game</h2>
+				<div>
+					<!-- Left side is space for drawing pad & adjacent ones -->
+					<!-- Right side is prompt/chat -->
+				</div>
 			</div>
 		</div>
 	</div>
 
 	<script src="./page-runner.js"></script>
-	<script>
-		let pad = new DrawingPad("drawingPad");
-		let bruh = new VisualDisplay("bruhPad", [0, 75]);
-		document.getElementById("drawingPad").addEventListener("mousemove", function(){
-			bruh.drawData(2, [pad.previousX, pad.previousY, pad.mouseCooridinatesX, pad.mouseCooridinatesY]);
-			console.log("is this run");
-		});
-	</script>
 </html>
