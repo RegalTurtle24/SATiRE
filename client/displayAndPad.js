@@ -2,7 +2,6 @@
 // collab draw gamemode
 
 
-
 // purpose: this class is to create a canvas in which a user can directly draw images on using their cursor
 // input: the element ID for the canvas your using
 // output: a canvas that you can drawing own by holding down your cursor and moving across it.
@@ -13,6 +12,7 @@ class DrawingPad {
 	constructor(canvasID) {
 		// variable to use when drawing.
 		this.color = '#000000'; // when messing with this always use hex 
+		this.lineWidth = 2;
 		this.isCurrentlyDrawing = false;
 		
 		// creating eventListener so we can draw
@@ -24,10 +24,6 @@ class DrawingPad {
 		this.canvas.addEventListener("mouseout", (event) => this.cancelDraw(event));
 		
 		console.log("ok");
-	}
-	
-	addSetting(/*colorSettingID, submittionID, function*/) {
-		// run function, allows to grab class variables
 	}
 	
 	// purpose: starting drawing when click down, get intial cooridinates 
@@ -44,8 +40,8 @@ class DrawingPad {
 			// initialize necessary variables
 			this.context = this.canvas.getContext("2d");
 			
-			//set stuff
-			this.context.lineWidth = 2;
+			//set different variables
+			this.context.lineWidth = this.lineWidth;
 			this.context.lineCap = "round";
 			
 			// -----			
@@ -75,6 +71,29 @@ class DrawingPad {
 		this.isCurrentlyDrawing = false;
 	}
 }
+
+// settings for line width
+class drawingPadWidthSet {
+	// the element should be something you can get value out of.
+	constructor(settingElementId, drawingPad) {
+		this.numberSetting = document.getElementById("settingElementId");
+		this.numberSetting.addEventListener("mouseout", function(){
+			drawingPad.lineWidth = this.number.value;
+		});
+	}
+}
+
+// settings for color
+class drawingPadColorSet {
+	constructor(settingElementId, drawingPad, color) {
+		this.colorSetting = document.getElementById("settingElementId");
+		this.colorSetting.addEventListener("click", function(){
+			drawingPad.color = color;
+		});
+	}
+}
+
+
 
 // purpose: this class is meant to be a visual display that a program can draw on in real time for the user.
 // primarly this is used to display the drawings of other players, however their could also be used for other programs.
