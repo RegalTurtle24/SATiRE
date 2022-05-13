@@ -167,6 +167,7 @@ class ClientSideTelephone
 	{
         chatEnabled = false;
         allowedToChangeRoom = false;
+        currentlyPlayingGame = true;
 
         this.players = players;
         this.setPlayersText(this.players, 0);
@@ -357,15 +358,17 @@ class ClientSideCollabDraw
     constructor(numPlayers, x, y, timeLimit)
     {
         this.tilePos = [x, y];
-        this.gridWidth = Math.floor(Math.sqrt(players.length));
-        this.gridHeight = Math.ceil(players.length / gridWidth);
-        this.lastRowWidth = players % gridWidth;
+        this.gridWidth = Math.floor(Math.sqrt(numPlayers));
+        this.gridHeight = Math.ceil(numPlayers / this.gridWidth);
+        this.lastRowWidth = numPlayers % this.gridWidth;
     }
 
     startGame()
     {
         // Overhead/local variables
+        chatEnabled = true;
         allowedToChangeRoom = false;
+        currentlyPlayingGame = true;
 
         // Initializes and fetches the GUI for the game
         var drawingPad = new DrawingPad('p8drawingPad');
@@ -377,15 +380,24 @@ class ClientSideCollabDraw
         // Data sender to update other players on tile updates
         var tileUpdateSender = new DataSender('draw-canvas-update', () => {
             // Sends the current canvas changes to the server, for adjacent players to see parts of
-            changes = drawingPad.mostRecentChanges;
+            var changes = drawingPad.mostRecentChanges;
             drawingPad.mostRecentChanges = [];
 
             return [this.tilePos[0], this.tilePos[1], changes];
         });
         // Makes it update the server on the canvas
-        setTimeout(() => {
-            tileUpdateSender.sendToServer();
-        }, 1000);
+        function trySendChanges(timeout)
+        {
+            setTimeout(() =>
+            {
+                if (drawingPad.mostRecentChanges != null && drawingPad.mostRecentChanges.length != 0)
+                {
+                    tileUpdateSender.sendToServer();
+                }
+                trySendChanges(timeout);
+            }, timeout)
+        }
+        trySendChanges(1000);
 
         // Data receivers to dynamically change game while drawing
         var tileUpdateReceiver = new DataReciever('draw-tile-update', DataReciever.LOCAL_GAME,
@@ -406,7 +418,6 @@ class ClientSideCollabDraw
                     rightCanvas.drawAllData(lastChanges);
                     break;
             }
-            // Not yet implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         });
         var gameEndReceiver = new DataReciever('draw-game-end', DataReciever.LOCAL_GAME,
             (finalImage) => {
@@ -421,6 +432,7 @@ class ClientSideCollabDraw
 
     endGame()
     {
+        chatEnabled = true;
         currentlyPlayingGame = false;
         allowedToChangeRoom = true;
         DataReciever.closeAllLocalGameReceivers();

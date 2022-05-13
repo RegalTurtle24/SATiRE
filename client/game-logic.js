@@ -118,8 +118,9 @@ function gameLogicInit() {
             game.startGame(playerNames);
             console.log('Telephone game data initialized');
 		}
-		else if (mode === "draw");
+		else if (mode === "draw")
 		{
+			jumpTo('drawing_game_now_playing');
 			game = new ClientSideCollabDraw(playerNames.length, ...args);
 			game.startGame();
 			console.log('Collaborative drawing game initialized');
