@@ -157,7 +157,7 @@ class VisualDisplay {
 			{
 				this.context.lineTo(line[j][0] + offset[0], line[j][1] + offset[1]);
 			}
-			this.context.stroke;
+			this.context.stroke();
 		}
 	}
 }

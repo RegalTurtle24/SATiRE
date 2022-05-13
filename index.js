@@ -859,8 +859,8 @@ class CollabDraw extends GameMode
      */
     sendTileUpdatesToAdjacents(grid, tile)
     {
-        console.log(`Tile (${tile.x},${tile.y})`);
-        console.log(tile.lastChange);
+        // console.log(`Tile (${tile.x},${tile.y})`);
+        // console.log(tile.lastChange);
         // Left
         if (tile.x > 0)
         {
@@ -877,7 +877,7 @@ class CollabDraw extends GameMode
             grid[tile.y - 1][tile.x].socket.emit('draw-tile-update', 'down', tile.lastChange);
         }
         // Down
-        if (tile.y < grid.length - 1 && !(tile.y == grid.length - 2 && tile.x >= lastRowWidth))
+        if (tile.y < grid.length - 1 && !(tile.y == grid.length - 2 && tile.x > grid[grid.length - 1].length - 1))
         {
             grid[tile.y + 1][tile.x].socket.emit('draw-tile-update', 'up', tile.lastChange);
         }
