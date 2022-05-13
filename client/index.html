@@ -151,11 +151,18 @@
 					<button id="p8PurpleColor" style="background-color: #9D41FF"></button>
 					<button id="p8CyanColor" style="background-color: #21FFF5"></button>
 					<input type="range" id="p8widthSlider" min="1" max="40" step="1" value="2">
-
 				</div>
 			</div>
 		</div>
 	</div>	
 
 	<script src="./page-runner.js"></script>
+	<script>
+		let pad = new DrawingPad("drawingPad");
+		let bruh = new VisualDisplay("bruhPad", [0, 75]);
+		document.getElementById("drawingPad").addEventListener("mousemove", function(){
+			bruh.drawData(2, [pad.previousX, pad.previousY, pad.mouseCooridinatesX, pad.mouseCooridinatesY]);
+			console.log("is this run");
+		});
+	</script>
 </html>
