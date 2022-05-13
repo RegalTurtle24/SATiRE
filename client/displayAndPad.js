@@ -123,7 +123,7 @@ class VisualDisplay {
 		
 	}
 	
-	drawData(/*color,*/ lineWidth, drawPathCoor) {
+	drawData(color, lineWidth, drawPathCoor) {
 		// add data to canvas.
 		
 		if (drawPathCoor == null || drawPathCoor[0] == null || drawPathCoor[1] == null || drawPathCoor[2] == null || drawPathCoor[3] == null) {
@@ -138,6 +138,8 @@ class VisualDisplay {
 			this.context.lineTo(drawPathCoor[2] + offset[0], drawPathCoor[3] + offset[1]);
 			this.context.stroke();
 		}
+	}
+
 	}
 
 	drawAllData(changes)
