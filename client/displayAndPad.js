@@ -21,6 +21,7 @@ class DrawingPad {
 		this.canvas.addEventListener("mousedown", (event) => this.startDraw(event));
 		this.canvas.addEventListener("mousemove", (event) => this.draw(event));
 		this.canvas.addEventListener("mouseup", (event) => this.cancelDraw(event));
+		this.canvas.addEventListener("mouseout", (event) => this.cancelDraw(event));
 		
 		console.log("ok");
 	}
@@ -98,16 +99,18 @@ class VisualDisplay {
 	
 	drawData(/*color,*/ lineWidth, drawPathCoor) {
 		// add data to canvas.
-		this.context = this.canvas.getContext("2d");
-			
-		//set stuff
-		this.context.lineWidth = lineWidth;
-		this.context.lineCap = "round";
-		console.log("previous cooridinates " + drawPathCoor[0] + " : " + drawPathCoor[1]);
-		console.log("current cooridinates " + drawPathCoor[2] + " : " + drawPathCoor[3]);
 		
-		this.context.moveTo(drawPathCoor[0] - this.cutOffLeft, drawPathCoor[1] - this.cutOffTop);
-		this.context.lineTo(drawPathCoor[2] - this.cutOffLeft, drawPathCoor[3] - this.cutOffTop);
-		this.context.stroke();
+		if (drawPathCoor == null || drawPathCoor[0] == null || drawPathCoor[1] == null || drawPathCoor[2] == null || drawPathCoor[3] == null) {
+			this.context = this.canvas.getContext("2d");
+			//set stuff
+			this.context.lineWidth = lineWidth;
+			this.context.lineCap = "round";
+			//console.log("previous cooridinates " + drawPathCoor[0] + " : " + drawPathCoor[1]);
+			//console.log("current cooridinates " + drawPathCoor[2] + " : " + drawPathCoor[3]);
+		
+			this.context.moveTo(drawPathCoor[0] - this.cutOffLeft, drawPathCoor[1] - this.cutOffTop);
+			this.context.lineTo(drawPathCoor[2] - this.cutOffLeft, drawPathCoor[3] - this.cutOffTop);
+			this.context.stroke();
+		}
 	}
 }
