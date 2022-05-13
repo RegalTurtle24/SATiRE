@@ -22,6 +22,8 @@ class DrawingPad {
 		this.canvas.addEventListener("mousemove", (event) => this.draw(event));
 		this.canvas.addEventListener("mouseup", (event) => this.cancelDraw(event));
 		this.canvas.addEventListener("mouseout", (event) => this.cancelDraw(event));
+
+		this.pages = document.querySelectorAll(".page");
 		
 		console.log("ok");
 	}
@@ -62,6 +64,10 @@ class DrawingPad {
 	// purpose: sets new cooridinate based on mouse position relative to canvas
 	// store previous position, if needed to be used.
 	setCooridinates(event) {
+		ajustedMouseCoordinatesX = event.pageX;
+		this.pages.forEach(
+			pages => (Console.log(pages.style.transform))
+		);
 		if (this.mouseCooridinatesX != null && this.mouseCooridinatesY != null) {
 			this.previousX = this.mouseCooridinatesX;
 			this.previousY = this.mouseCorridinatesY;
