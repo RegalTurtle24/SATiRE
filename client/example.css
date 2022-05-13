@@ -145,14 +145,14 @@ input{
     
 }
 
-#backToTitle{
+#p2backToTitle{
     position: fixed;
     top: 10vh;
     right: 190vh;
     align-self: end;
 }
 
-#backToName{
+#p3backToName{
     position: fixed;
     top: 10vh;
     right: 180vh;
