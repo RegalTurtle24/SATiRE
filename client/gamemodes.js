@@ -377,6 +377,10 @@ class ClientSideCollabDraw
         var leftCanvas = new VisualDisplay('p8displayLeft', [-75, 0]);
         var rightCanvas = new VisualDisplay('p8displayRight', [75, 0]);
 
+        var buttonBlack = new padColorSetting('p8BlackColor', drawingPad, '#000000');
+        var buttonRed = new padColorSetting('p8RedColor', drawingPad, '#FF0000');
+        var widthSlider = new padWidthSetting('p8widthSlider', drawingPad);
+
         // Data sender to update other players on tile updates
         var tileUpdateSender = new DataSender('draw-canvas-update', () => {
             // Sends the current canvas changes to the server, for adjacent players to see parts of
