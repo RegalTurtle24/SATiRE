@@ -60,10 +60,10 @@ class DrawingPad {
 			// Updates the changes array
 			if (this.mostRecentChanges.length === 0)
 			{
-				this.mostRecentChanges.push([this.color, [[this.mouseCooridinatesX, this.mouseCooridinatesY]] ]);
+				this.mostRecentChanges.push([this.color, [[this.mouseCooridinatesX, this.mouseCooridinatesY, this.lineWidth]] ]);
 			}
 			this.mostRecentChanges[this.mostRecentChanges.length - 1][1].push(
-				[this.mouseCooridinatesX, this.mouseCooridinatesY]);
+				[this.mouseCooridinatesX, this.mouseCooridinatesY, this.lineWidth]);
 		}
 	}
 
@@ -173,19 +173,23 @@ class VisualDisplay {
 			let color = changes[i][0];
 			let line = changes[i][1];
 
-			this.context.lineWidth = 2;
-			this.context.lineCap = "round";
-			this.context.strokeStyle = color;
 
-			this.context.beginPath();
+			//this.context.beginPath();
 			
 			var offset = [this.cutOffRight - this.cutOffLeft, this.cutOffBottom - this.cutOffTop];
-			this.context.moveTo(line[0][0] + offset[0], line[0][1] + offset[1]);
-			for (var j = 0; j < line.length; j++)
+			//this.context.moveTo(line[0][0] + offset[0], line[0][1] + offset[1]);
+			for (var j = 1; j < line.length; j++)
 			{
+				this.context.beginPath();
+
+				this.context.lineWidth = line[j][2];
+				this.context.lineCap = "round";
+				this.context.strokeStyle = color;
+
+				this.context.moveTo(line[j - 1][0] + offset[0], line[j - 1][1] + offset[1]);
 				this.context.lineTo(line[j][0] + offset[0], line[j][1] + offset[1]);
+				this.context.stroke();
 			}
-			this.context.stroke();
 		}
 	}
 }
