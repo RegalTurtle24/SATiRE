@@ -63,7 +63,9 @@ class DrawingPad {
 			// Updates the changes array
 			if (this.mostRecentChanges.length === 0)
 			{
-				this.mostRecentChanges.push([this.color, [[this.mouseCooridinatesX, this.mouseCooridinatesY, this.lineWidth]]]);
+				console.log(this.previousX + " : " + this.previousY);
+				this.mostRecentChanges.push([this.color, [[this.previousX, this.previousY, this.lineWidth]]]);
+				//this.mostRecentChanges[0][1].push([this.mouseCooridinatesX, this.mouseCooridinatesY, this.lineWidth]);
 			}
 			this.mostRecentChanges[this.mostRecentChanges.length - 1][1].push(
 				[this.mouseCooridinatesX, this.mouseCooridinatesY, this.lineWidth]);
@@ -75,8 +77,8 @@ class DrawingPad {
 	setCooridinates(event) {
 		if (this.mouseCooridinatesX != null && this.mouseCooridinatesY != null) {
 			this.previousX = this.mouseCooridinatesX;
-			this.previousY = this.mouseCorridinatesY;
-        }
+			this.previousY = this.mouseCooridinatesY;
+		} 
 		this.mouseCooridinatesX = event.pageX - this.bounds.left;
 		this.mouseCooridinatesY = event.pageY - this.bounds.top;
 	}
@@ -175,6 +177,7 @@ class VisualDisplay {
 			let color = changes[i][0];
 			let line = changes[i][1];
 
+			console.log(line[0][0] + " : " + line[0][1] + " -> " + line[1][0] + " : " + line[1][1]);
 			for (var j = 1; j < line.length; j++) {
 				this.drawData(color, line[j][2], [line[j - 1][0], line[j - 1][1], line[j][0], line[j][1]]);
 
