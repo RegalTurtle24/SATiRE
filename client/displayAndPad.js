@@ -9,7 +9,10 @@
 class DrawingPad {
 	
 	// variables for color, pen, stroke, etc. settings 
-	
+
+	// for your information most resent changes include
+	// color, array[contains cooridinates and line width], and if it was still drawing
+
 	constructor(canvasID) {
 		// variable to use when drawing.
 		this.color = '#000000'; // when messing with this always use hex
@@ -35,7 +38,7 @@ class DrawingPad {
 	startDraw(event) {
 		this.isCurrentlyDrawing = true;
 		this.setCooridinates(event);
-		this.mostRecentChanges.push([this.color, [[this.mouseCooridinatesX, this.mouseCooridinatesY]] ]);
+		this.mostRecentChanges.push([this.color, [[this.mouseCooridinatesX, this.mouseCooridinatesY, this.lineWidth]]]);
 	}
 	
 	// purpose: draw a line for one cooridinate to another, typically when the mouse moves.
@@ -60,7 +63,7 @@ class DrawingPad {
 			// Updates the changes array
 			if (this.mostRecentChanges.length === 0)
 			{
-				this.mostRecentChanges.push([this.color, [[this.mouseCooridinatesX, this.mouseCooridinatesY, this.lineWidth]] ]);
+				this.mostRecentChanges.push([this.color, [[this.mouseCooridinatesX, this.mouseCooridinatesY, this.lineWidth]]]);
 			}
 			this.mostRecentChanges[this.mostRecentChanges.length - 1][1].push(
 				[this.mouseCooridinatesX, this.mouseCooridinatesY, this.lineWidth]);
@@ -146,26 +149,25 @@ class VisualDisplay {
         }
 		
 	}
-	
+
+	// purpose: draw a line on the canvas from one point the other
+	// input: set of cooridinate, lineWidth, and color of line
+	// output: a line with the respective color, width, and cooridinates is drawn out.
 	drawData(color, lineWidth, drawPathCoor) {
-		// add data to canvas.
+		this.context.beginPath();
+		this.context.lineWidth = lineWidth;
+		this.context.lineCap = "round";
+		this.context.strokeStyle = color;
 		
-		if (drawPathCoor == null || drawPathCoor[0] == null || drawPathCoor[1] == null || drawPathCoor[2] == null || drawPathCoor[3] == null) {
-			//set stuff
-			this.context.beginPath();
-			this.context.lineWidth = lineWidth;
-			this.context.lineCap = "round";
-			this.context.strokeStyle = color;
-			//console.log("previous cooridinates " + drawPathCoor[0] + " : " + drawPathCoor[1]);
-			//console.log("current cooridinates " + drawPathCoor[2] + " : " + drawPathCoor[3]);
-		
-			var offset = [this.cutOffRight - this.cutOffLeft, this.cutOffBottom - this.cutOffTop];
-			this.context.moveTo(drawPathCoor[0] + offset[0], drawPathCoor[1] + offset[1]);
-			this.context.lineTo(drawPathCoor[2] + offset[0], drawPathCoor[3] + offset[1]);
-			this.context.stroke();
-		}
+		var offset = [this.cutOffRight - this.cutOffLeft, this.cutOffBottom - this.cutOffTop];
+		this.context.moveTo(drawPathCoor[0] + offset[0], drawPathCoor[1] + offset[1]);
+		this.context.lineTo(drawPathCoor[2] + offset[0], drawPathCoor[3] + offset[1]);
+		this.context.stroke();
 	}
 
+	// purpose: draws alls changes made by other player to the visual display
+	// input: all changes that had been made to the representive canvas since last checked
+	// output: changes are drawn on canvas
 	drawAllData(changes)
 	{
 		for (var i = 0; i < changes.length; i++)
@@ -173,22 +175,9 @@ class VisualDisplay {
 			let color = changes[i][0];
 			let line = changes[i][1];
 
+			for (var j = 1; j < line.length; j++) {
+				this.drawData(color, line[j][2], [line[j - 1][0], line[j - 1][1], line[j][0], line[j][1]]);
 
-			//this.context.beginPath();
-			
-			var offset = [this.cutOffRight - this.cutOffLeft, this.cutOffBottom - this.cutOffTop];
-			//this.context.moveTo(line[0][0] + offset[0], line[0][1] + offset[1]);
-			for (var j = 1; j < line.length; j++)
-			{
-				this.context.beginPath();
-
-				this.context.lineWidth = line[j][2];
-				this.context.lineCap = "round";
-				this.context.strokeStyle = color;
-
-				this.context.moveTo(line[j - 1][0] + offset[0], line[j - 1][1] + offset[1]);
-				this.context.lineTo(line[j][0] + offset[0], line[j][1] + offset[1]);
-				this.context.stroke();
 			}
 		}
 	}

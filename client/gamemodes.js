@@ -379,6 +379,13 @@ class ClientSideCollabDraw
 
         var buttonBlack = new padColorSetting('p8BlackColor', drawingPad, '#000000');
         var buttonRed = new padColorSetting('p8RedColor', drawingPad, '#FF0000');
+        var buttonLime = new padColorSetting('p8LimeColor', drawingPad, '#53FF45');
+        var buttonGreen = new padColorSetting('p8GreenColor', drawingPad, '#198733');
+        var buttonBlue = new padColorSetting('p8BlueColor', drawingPad, '#1356E4');
+        var buttonPurple = new padColorSetting('p8PurpleColor', drawingPad, '#9D41FF');
+        var buttonCyan = new padColorSetting('p8CyanColor', drawingPad, '#21FFF5');
+
+
         var widthSlider = new padWidthSetting('p8widthSlider', drawingPad);
 
         // Data sender to update other players on tile updates
