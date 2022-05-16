@@ -132,7 +132,7 @@
 					<!-- Left side is space for drawing pad & adjacent ones -->
 					<!-- Right side is prompt/chat -->
 					<canvas id="drawingPad" width="150" height="150" style="border:2px solid #000000"></canvas>
-					<canvas id="bruhPad" width="150" height="75" style="border:2px solid #000000"></canvas>
+					<!-- <canvas id="bruhPad" width="150" height="75" style="border:2px solid #000000"></canvas> -->
 				</div>
 			</div>
 		</div>
@@ -141,9 +141,9 @@
 	<script src="./page-runner.js"></script>
 	<script>
 		let pad = new DrawingPad("drawingPad");
-		let bruh = new VisualDisplay("bruhPad", [0, 75]);
-		document.getElementById("drawingPad").addEventListener("mousemove", function(){
-			bruh.drawData(2, [pad.previousX, pad.previousY, pad.mouseCooridinatesX, pad.mouseCooridinatesY]);
-		});
+		//let bruh = new VisualDisplay("bruhPad", [0, 75]);
+		//document.getElementById("drawingPad").addEventListener("mousemove", function(){
+			//bruh.drawData(2, [pad.previousX, pad.previousY, pad.mouseCooridinatesX, pad.mouseCooridinatesY]);
+		//});
 	</script>
 </html>
