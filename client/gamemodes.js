@@ -385,6 +385,12 @@ class ClientSideCollabDraw
         var buttonPurple = new padColorSetting('p8PurpleColor', drawingPad, '#9D41FF');
         var buttonCyan = new padColorSetting('p8CyanColor', drawingPad, '#21FFF5');
 
+        var endEarlyButton = document.getElementById('p8endGameReq');
+        endEarlyButton.addEventListener('click', () => {
+            // Asks the server nicely to end the game early
+            socket.emit('draw-finalize-req');
+        });
+
 
         var widthSlider = new padWidthSetting('p8widthSlider', drawingPad);
 
