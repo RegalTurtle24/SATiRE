@@ -8,6 +8,7 @@
 		<script src="./inputs.js"></script>
 		<script src="./game-logic.js"></script>
 		<script src="./gamemodes.js"></script>
+		<script src="./Chatbox.js"></script>
 		<link rel="stylesheet" href="./example.css">
 	</head>
 
@@ -66,9 +67,6 @@
 
 			<div class="page three">
 				<h1>PAGE 3</h1>
-				</form>
-				Hi, this is the 2nd page!
-				</form>
 				<div>
 					<button onClick="slide('prev')">Previous</button>
 					<button onClick="slide('next')">Next</button>
@@ -113,6 +111,47 @@
 			<!--In-Game Screen-->
 			<div class="page eight">
 				<h1>PAGE 8</h1>
+				
+				<!--Visual For PLayer Turn
+				//|O|_|_|_|//
+				how: 
+				-->
+					
+				
+				<!--text alignment test-->
+				<head>
+				<title>
+					HTML p align Attribute
+				</title>
+				</head>
+
+				<body>
+					<h1>Telephone Game</h1>
+
+					<h2>Current Player Turn:</h2>
+
+					<p align="left">
+					  Waiting for turn...
+					  	
+				  </p>
+					
+					<p align="center">
+					  center align content
+				  </p>
+					<p align="right">
+					
+						
+					    Chat Box Here
+				  </p>
+				</body>
+
+
+				<form>
+				<!--Waiting Text; to change on your turn-->
+				</form>
+				Waiting for your turn...
+				
+				
 				<div>
 					<button onClick="slide('prev')">Previous</button>
 					<button onClick="slide('next')">Next</button>
@@ -121,7 +160,44 @@
 			
 			<div class="page nine">
 				<h1>PAGE 9</h1>
+				
 				<div>
+				  <p/>
+					
+					<p align="center">
+					 
+					<body>
+					 
+					<canvas id="myCanvas2" width="250" height="400" style="border:3px solid #000000;"/>
+					 
+					 <script>
+						var canv = document.getElementById("myCanvas2");
+						 
+						var ctx = c.getContext("2d");
+		
+						ctx.strokeText("Hi", 10, 50);
+						 
+						ctx.beginPath();
+						ctx.fillStyle = 'white';
+						ctx.fillRect(100,100,10,10);
+						 
+					
+					 </script>	
+					  
+						 
+						
+						
+						
+					 <p>Talk in chat:</p>
+        			  <input id="chattext" type="text">
+						  
+				
+						  
+						</body>
+						
+				  </p>
+					
+					
 					<button onClick="slide('prev')">Previous</button>
 				</div>
 			</div>
