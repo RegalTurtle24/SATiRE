@@ -78,11 +78,10 @@ class DrawingPad {
 	// store previous position, if needed to be used.
 	setCooridinates(event) {
 		let ajustedMouseCoordinatesX = event.pageX;
-		this.pages.forEach((page) => {
-			page => (console.log(page.style.transform))
-			var width = page.style.width;
-			console.log(width);
-		});
+
+		console.log('Transform: ' + pages.item(0).style.transform);
+		console.log('TranslateX: ' + pages.item(0).style.transform.toString().substring(11, 16));
+		console.log('Width: ' + screen.width);
 
 		if (this.mouseCooridinatesX != null && this.mouseCooridinatesY != null) {
 			this.previousX = this.mouseCooridinatesX;
