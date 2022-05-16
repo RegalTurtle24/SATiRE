@@ -64,7 +64,7 @@ input{
 
 .pages {
   	display: flex;
-	width: 800%; 
+	width: 900%; 
 	box-sizing: border-box;
 }
 
@@ -112,6 +112,9 @@ input{
 	background: #13b285
 }
 
+.nine{
+    background: #F55806;
+}
 #p4chatGroup{
 	align-self: end;
 	position: fixed;
@@ -161,11 +164,17 @@ input{
 #p5BackToGameSelect{
     position: fixed;
     top: 10vh;
-    right: 180vh;
+    right: 190vh;
 }
 
 #p7BackToGameSelect{
     position: fixed;
     top: 10vh;
-    right: 180vh;
+    right: 190vh;
+}
+
+#p6BackToGameSelect{
+    position: fixed;
+    top: 10vh;
+    right: 190vh;
 }

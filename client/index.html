@@ -53,19 +53,18 @@
 						<button type="button" id="p3roomJoinSubmit">Submit</button>
 					</form>
                     <div id="p3backToName">
-					    <button onclick="slide('prev')">Return to name select</button>
+					    <button onclick="slide('prev')">Back to Name Select</button>
                     </div>
 				</div>
 			</div>
 
 			<div class="page four">
 				
-                <button id="p4leaveRoom">Return to room select</button>
+                <button id="p4leaveRoom">Back to Room select</button>
                 <h3 id="p4roomDisplay">Your Room: No Current Room</h3>
                 <h2>Select a Game to Play:</h2>
 
 				<div id="p4games" align="center">
-					
 					<button onclick="jumpTo('telephone_settings')">Telephone Game</button>
 					<button onclick="jumpTo('drawing_game_settings')">Drawing Game</button>
 				</div>
@@ -88,14 +87,13 @@
 						<input type="number" id="p5teleNumLimit" min="0" max="10">
 						<button type="button" id="p5telelimit">limit</button>
 						<button type="button" id="p5telerequire">require</button>
-
 						<div>
 							<label>Custom prompts file:</label>
 							<input type="file" id="teleprompt">
 						</div>
 					</form>
                     <div id="p5BackToGameSelect">
-					    <button onclick="jumpTo('lobby')">Back to game select</button>
+					    <button onclick="jumpTo('lobby')">Back to Lobby</button>
                     </div>
 					<button type="button" id="p5startGame">Start Game</button>
 				</div>
@@ -103,6 +101,9 @@
 
 			<div class="page six">
 				<h2 id="p6playerOrder" align="center">[Player Order Here]</h2>
+                <div id="p6BackToGameSelect">
+					    <button onclick="jumpTo('lobby')">Back to Lobby</button>
+                    </div>
 				<h3>Telephone Game</h3>
 				<h5 id="p6subtitle" align="center">Waiting for turn</h5>
 				<div>
@@ -121,7 +122,7 @@
 						<input type="number" id="p7drawTime" min="1" max="600" value="120">
 					</form>
                     <div id="p7BackToGameSelect">
-					    <button onclick="jumpTo('lobby')">Back to game select</button>
+					    <button onclick="jumpTo('lobby')">Back to Lobby</button>
                     </div>
 					<button type="button" id="p7startGame">Start Game</button>
 				</div>
@@ -132,6 +133,13 @@
 				<div>
 					<!-- Left side is space for drawing pad & adjacent ones -->
 					<!-- Right side is prompt/chat -->
+				</div>
+			</div>
+            
+            <div class="page nine">
+				<h2>Drawing Game Result</h2>
+				<div>
+					
 				</div>
 			</div>
 		</div>
