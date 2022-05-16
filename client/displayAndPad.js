@@ -77,10 +77,13 @@ class DrawingPad {
 	// purpose: sets new cooridinate based on mouse position relative to canvas
 	// store previous position, if needed to be used.
 	setCooridinates(event) {
-		ajustedMouseCoordinatesX = event.pageX;
-		this.pages.forEach(
-			pages => (Console.log(pages.style.transform))
-		);
+		let ajustedMouseCoordinatesX = event.pageX;
+		this.pages.forEach((page) => {
+			page => (console.log(page.style.transform))
+			var width = page.style.width;
+			console.log(width);
+		});
+
 		if (this.mouseCooridinatesX != null && this.mouseCooridinatesY != null) {
 			this.previousX = this.mouseCooridinatesX;
 			this.previousY = this.mouseCorridinatesY;
