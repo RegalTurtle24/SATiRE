@@ -417,16 +417,16 @@ class ClientSideCollabDraw
             switch (direction)
             {
                 case 'up':
-                    topCanvas.drawAllData(lastChanges);
+                    topCanvas.drawAllData(lastChanges, 1);
                     break;
                 case 'down':
-                    bottomCanvas.drawAllData(lastChanges);
+                    bottomCanvas.drawAllData(lastChanges, 1);
                     break;
                 case 'left':
-                    leftCanvas.drawAllData(lastChanges);
+                    leftCanvas.drawAllData(lastChanges, 1);
                     break;
                 case 'right':
-                    rightCanvas.drawAllData(lastChanges);
+                    rightCanvas.drawAllData(lastChanges, 1);
                     break;
             }
         });

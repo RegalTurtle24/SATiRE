@@ -170,7 +170,7 @@ class VisualDisplay {
 	// purpose: draws alls changes made by other player to the visual display
 	// input: all changes that had been made to the representive canvas since last checked
 	// output: changes are drawn on canvas
-	drawAllData(changes)
+	drawAllData(changes, scale)
 	{
 		for (var i = 0; i < changes.length; i++)
 		{
@@ -179,7 +179,7 @@ class VisualDisplay {
 
 			console.log(line[0][0] + " : " + line[0][1] + " -> " + line[1][0] + " : " + line[1][1]);
 			for (var j = 1; j < line.length; j++) {
-				this.drawData(color, line[j][2], [line[j - 1][0], line[j - 1][1], line[j][0], line[j][1]]);
+				this.drawData(color, line[j][2] * scale, [line[j - 1][0] * scale, line[j - 1][1] * scale, line[j][0] * scale, line[j][1] * scale]);
 
 			}
 		}
