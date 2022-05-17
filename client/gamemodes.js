@@ -365,6 +365,7 @@ class ClientSideCollabDraw
         this.gridWidth = Math.floor(Math.sqrt(numPlayers));
         this.gridHeight = Math.ceil(numPlayers / this.gridWidth);
         this.lastRowWidth = numPlayers % this.gridWidth;
+        this.timeLimit = timeLimit;
     }
 
     startGame()
@@ -378,6 +379,9 @@ class ClientSideCollabDraw
         var lobbyButton = document.getElementById('p8BackToGameSelect');
         lobbyButton.hidden = true;
 
+        var drawTimer = document.getElementById('p8drawTimer');
+        drawTimer.textContent = this.timeLimit;
+        
         var drawingPad = new DrawingPad('p8drawingPad');
         var topCanvas = new VisualDisplay('p8displayTop', [0, -75]);
         var bottomCanvas = new VisualDisplay('p8displayBottom', [0, 75]);
@@ -453,6 +457,21 @@ class ClientSideCollabDraw
 
             console.log('The game of collaborative drawing in room has ended :)');
         });
+
+        // Starts ticking down the timer
+        function pollTimer(timeLeft)
+        {
+            setTimeout(() =>
+            {
+                timeLeft -= 1.0;
+                drawTimer.textContent = timeLeft;
+                if (timeLeft > 0 && currentlyPlayingGame)
+                {
+                    pollTimer(timeLeft);
+                }
+            }, 1000.0);
+        }
+        pollTimer(this.timeLimit);
     }
 
     endGame()
