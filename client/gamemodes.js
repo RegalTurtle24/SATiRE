@@ -415,6 +415,7 @@ class ClientSideCollabDraw
         var tileUpdateReceiver = new DataReciever('draw-tile-update', DataReciever.LOCAL_GAME,
                 (direction, lastChanges) => {
             // Update the preview edges of the adjacent tiles
+            finalCanvas.drawAllData(lastChanges, 1.0 / this.gridWidth);
             switch (direction)
             {
                 case 'up':
