@@ -432,6 +432,11 @@ class ClientSideCollabDraw
             }
 			finalCanvas.drawAllData(lastChanges, 1.0 / this.gridWidth);
         });
+		
+		/*var completeDisplayReceiver = new DataReceiver('draw-game-finaldisplay', DataReciever.LOCAL_GAME, (changes, x, y) => {
+			finalCanvas.drawAllData(changes, );
+		});*/
+		
         var gameEndReceiver = new DataReciever('draw-game-end', DataReciever.LOCAL_GAME,
             (finalImage) => {
             // Shows the user the masterpiece they helped build 
