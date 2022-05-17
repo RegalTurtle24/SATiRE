@@ -158,7 +158,7 @@ class DataSender {
 class DataReceiver {
 
     /**
-     * @param {*} tag The tag that the receiver looks for when detecting messages
+     * @param {*} tag The tag that the receiver looks for when detecting messages -- DON'T USE DUPLICATE TAGS
      * @param {*} game The game the receiver was created for (null if unapplicable)
      * @param {*} sockets Sockets to be automatically added to the receiver
      * @param {*} callback The method that's called when a message is received
@@ -189,7 +189,7 @@ class DataReceiver {
                 this.socketList.push(socket);
                 socket.on(this.tag, (...args) => {
                     this.callback(socket, ...args);
-                })
+                });
             }
         })
     }
@@ -201,11 +201,9 @@ class DataReceiver {
      */ 
     remove(socket)
     {
-        socket.removeListener(this.tag, (...args) => {
-            this.callback(socket, ...args);
-        });
         var index = this.socketList.indexOf(socket);
         if (index === -1) return false;
+        this.socketList[index].removeAllListeners(this.tag);
         this.socketList.splice(index);
         return true;
     }
@@ -536,7 +534,7 @@ class Telephone extends GameMode
             // show everybody the progressiom of the messages
             if (this.isFinish)
             {
-                this.endTelephone(this.room);
+                this.endGame();
                 return;
             }
             // randomize restriction
@@ -837,9 +835,12 @@ class CollabDraw extends GameMode
             if (!socketsRequestingEnd.includes(socket))
             {
                 socketsRequestingEnd.push(socket);
-                if (socketsRequestingEnd.length >= this.players.length * PORTION_OF_PLAYERS_NEEDED_TO_FINISH_GAME_EARLY)
+                let playersNeededToFinishEarly = this.players.length * PORTION_OF_PLAYERS_NEEDED_TO_FINISH_GAME_EARLY;
+                console.log(socketsRequestingEnd.length +  ' of ' + playersNeededToFinishEarly +
+                    ' requesting to end CollabDraw in room [' + room + ']');
+                if (socketsRequestingEnd.length >= playersNeededToFinishEarly)
                 {
-                    this.finalizeCanvas();
+                    this.finalizeCanvas(this);
                 }
             }
         });
@@ -855,7 +856,9 @@ class CollabDraw extends GameMode
         // to quit the current game)
         if (timeLimit > 0)
         {
-            setTimeout(this.finalizeCanvas, timeLimit * 1000);
+            setTimeout(() => {
+                this.finalizeCanvas(this)
+            }, timeLimit * 1000);
         }
     }
 
@@ -892,21 +895,21 @@ class CollabDraw extends GameMode
      * Puts all the player's tiles together and sends them to each player,
      * it also ends the game
      */
-    finalizeCanvas()
+    finalizeCanvas(game)
     {
         var fullCanvas;
         // Adds each canvas tile to the full canvas image
-        for (var y = 0; y < this.canvasGrid.length; y++)
+        for (var y = 0; y < game.canvasGrid.length; y++)
         {
-            for (var x = 0; x < this.canvasGrid[y].length; x++)
+            for (var x = 0; x < game.canvasGrid[y].length; x++)
             {
                 // Has yet to be implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             }
         }
 
         // Informs players of the game having ended and sends the full image to everybody in the room
-        getSocketsInRoom(room).forEach((item) => item.emit('draw-game-end', fullCanvas));
-        this.endDraw(this.room);
+        getSocketsInRoom(game.room).forEach((item) => item.emit('draw-game-end', fullCanvas));
+        game.endGame();
     }
 
     /** Ends the game of collaborative draw in the given room */

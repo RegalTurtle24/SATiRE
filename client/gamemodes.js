@@ -173,6 +173,9 @@ class ClientSideTelephone
         this.setPlayersText(this.players, 0);
 
         // Variable setup/HTML integration
+        var lobbyButton = document.getElementById('p6BackToGameSelect');
+        lobbyButton.hidden = true;
+
         this.playerMessage = document.getElementById('p6subtitle');
         this.callBox = document.getElementById('p6callBox');
         this.callSubmit = document.getElementById('p6callSubmit');
@@ -316,6 +319,7 @@ class ClientSideTelephone
             this.callBox.removeEventListener('input', () => updateCharacterCount(this));
 
             this.endGame();
+            lobbyButton.hidden = false;
             
 
             console.log('The game of telephone in room has ended :)');
@@ -372,6 +376,9 @@ class ClientSideCollabDraw
         currentlyPlayingGame = true;
 
         // Initializes and fetches the GUI for the game
+        var lobbyButton = document.getElementById('p8BackToGameSelect');
+        lobbyButton.hidden = true;
+
         var drawTimer = document.getElementById('p8drawTimer');
         drawTimer.textContent = this.timeLimit;
         
@@ -388,6 +395,12 @@ class ClientSideCollabDraw
         var buttonBlue = new padColorSetting('p8BlueColor', drawingPad, '#1356E4');
         var buttonPurple = new padColorSetting('p8PurpleColor', drawingPad, '#9D41FF');
         var buttonCyan = new padColorSetting('p8CyanColor', drawingPad, '#21FFF5');
+
+        var endEarlyButton = document.getElementById('p8endGameReq');
+        endEarlyButton.addEventListener('click', () => {
+            // Asks the server nicely to end the game early
+            socket.emit('draw-finalize-req');
+        });
 
 
         var widthSlider = new padWidthSetting('p8widthSlider', drawingPad);
@@ -440,6 +453,7 @@ class ClientSideCollabDraw
             // Not yet implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             
             this.endGame();
+            lobbyButton.hidden = false;
 
             console.log('The game of collaborative drawing in room has ended :)');
         });

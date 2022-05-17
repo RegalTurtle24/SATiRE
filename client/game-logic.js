@@ -109,7 +109,7 @@ function gameLogicInit() {
 
 
 	// runs gamemode when recieve that gamemode
-	let initReceiver = new DataReciever('game-init', DataReciever.LOCAL_GAME, (playerNames, mode, ...args) => {
+	let initReceiver = new DataReciever('game-init', DataReciever.GLOBAL, (playerNames, mode, ...args) => {
         if (mode === "telephone") 
 		{
 			playerOrder = document.getElementById('p6playerOrder');
