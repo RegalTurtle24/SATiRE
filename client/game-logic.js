@@ -96,7 +96,6 @@ function gameLogicInit() {
 			params[2] = params[2][index];
 		}
 		return params;
-        ('#p6BackToGameSelect').show();
 	});
 
 	// ____________________________Collaborative Draw________________________________//

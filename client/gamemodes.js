@@ -173,6 +173,9 @@ class ClientSideTelephone
         this.setPlayersText(this.players, 0);
 
         // Variable setup/HTML integration
+        var lobbyButton = document.getElementById('p6BackToGameSelect');
+        lobbyButton.hidden = true;
+
         this.playerMessage = document.getElementById('p6subtitle');
         this.callBox = document.getElementById('p6callBox');
         this.callSubmit = document.getElementById('p6callSubmit');
@@ -316,6 +319,7 @@ class ClientSideTelephone
             this.callBox.removeEventListener('input', () => updateCharacterCount(this));
 
             this.endGame();
+            lobbyButton.hidden = false;
             
 
             console.log('The game of telephone in room has ended :)');
@@ -371,6 +375,9 @@ class ClientSideCollabDraw
         currentlyPlayingGame = true;
 
         // Initializes and fetches the GUI for the game
+        var lobbyButton = document.getElementById('p8BackToGameSelect');
+        lobbyButton.hidden = true;
+
         var drawingPad = new DrawingPad('p8drawingPad');
         var topCanvas = new VisualDisplay('p8displayTop', [0, -75]);
         var bottomCanvas = new VisualDisplay('p8displayBottom', [0, 75]);
@@ -442,6 +449,7 @@ class ClientSideCollabDraw
             // Not yet implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             
             this.endGame();
+            lobbyButton.hidden = false;
 
             console.log('The game of collaborative drawing in room has ended :)');
         });
