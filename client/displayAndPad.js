@@ -135,6 +135,14 @@ class VisualDisplay {
 		this.bounds = this.canvas.getBoundingClientRect();
 		this.context = this.canvas.getContext("2d");
 
+		this.setCutOff(cutOff);
+		
+	}
+	
+	// purpose:
+	// input:
+	// output:
+	setCutOff(cutOff) {
 		this.cutOffLeft = 0;
 		this.cutOffRight = 0;
 		this.cutOffTop = 0;
@@ -149,9 +157,8 @@ class VisualDisplay {
 			else
 				this.cutOffBottom = -cutOff[1];
         }
-		
 	}
-
+	
 	// purpose: draw a line on the canvas from one point the other
 	// input: set of cooridinate, lineWidth, and color of line
 	// output: a line with the respective color, width, and cooridinates is drawn out.
