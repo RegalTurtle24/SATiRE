@@ -75,7 +75,7 @@ class Player
      */
     remove()
     {
-        allPlayers.splice(allPlayers.indexOf(this));
+        allPlayers.splice(allPlayers.indexOf(this), 1);
     }
 }
 function getPlayer(id)
@@ -156,15 +156,17 @@ class DataSender {
  * An object that handles tagged messages received from arbitrary client sockets 
  */
 class DataReceiver {
+    static globalReceivers = [];
 
     /**
      * @param {*} tag The tag that the receiver looks for when detecting messages -- DON'T USE DUPLICATE TAGS
      * @param {*} game The game the receiver was created for (null if unapplicable)
      * @param {*} sockets Sockets to be automatically added to the receiver
      * @param {*} callback The method that's called when a message is received
+     * @param {*} isGlobal Whether or not all sockets should automatically be added to this receiver
      *  (FIRST PARAMATER MUST TAKE THE SOCKET SENDING THE MESSAGE)
      */
-    constructor(tag, game, sockets, callback)
+    constructor(tag, game, sockets, callback, isGlobal = false)
     {
         this.tag = tag;
         if (game != null)
@@ -174,6 +176,13 @@ class DataReceiver {
         this.callback = callback;
         this.socketList = [];
         this.addSockets(sockets);
+
+        this.isGlobal = isGlobal;
+        if (isGlobal)
+        {
+            DataReceiver.globalReceivers.push(this);
+            this.addSockets(allSockets);
+        }
     }
 
     addSockets(sockets)
@@ -243,7 +252,7 @@ let nameReceiver = new DataReceiver('name-req', null, null, (socket, newName) =>
     console.log('Player with id [' + socket.id + '] changed name from [' + player.name + '] to [' + newName + ']');
     player.name = newName;
     socket.emit('name-change', newName)
-});
+}, isGlobal = true);
 // For handling passing chat messages between clients:
 let chatReceiver = new DataReceiver('chat-message', null, null, (socket, message) => {
     try
@@ -258,7 +267,7 @@ let chatReceiver = new DataReceiver('chat-message', null, null, (socket, message
     {
         socket.emit('error-display', 'Failed to send chat message');
     }
-});
+}, isGlobal = true);
 // For when a client requests to join a room:
 let roomReqReceiver = new DataReceiver('join-req', null, null, (socket, message) => {
     let error = null;
@@ -305,7 +314,7 @@ let roomReqReceiver = new DataReceiver('join-req', null, null, (socket, message)
     })
     str2 = str2.substring(22, str2.length - 2)
     socket.emit('rooms-req', str2);
-});
+}, isGlobal = true);
 // For when a client requests to leave a room:
 let roomLeaveReceiver = new DataReceiver('leave-rooms', null, null, (socket) => {
     socket.rooms.forEach(function (value) {
@@ -314,7 +323,7 @@ let roomLeaveReceiver = new DataReceiver('leave-rooms', null, null, (socket) => 
         }
     })
     socket.emit('rooms-req', "");
-});
+}, isGlobal = true);
 // For when a client wants to start a game in their room:
 let startGameReceiver = new DataReceiver('game-start', null, null,
         (socket, gamemode, room, other) => {
@@ -345,14 +354,13 @@ let startGameReceiver = new DataReceiver('game-start', null, null,
         console.log(error);
         socket.emit('error-display', 'Failed to start requested game\nReason: "' + error + '"');
     }
-});
+}, isGlobal = true);
 let disconnectReceiver = new DataReceiver('disconnect', null, null, (socket, reason) => {
     lostPlayer = getPlayer(socket.id);
     if (lostPlayer != null)
     {
         lostPlayer.remove();
     }
-    chatReceiver.remove(socket);
     allSockets.splice(allSockets.indexOf(socket), 1);
     console.log('Disconnected from client at socket id [' + socket.id + '] for reason [' + reason + ']');
     allCurrentGames.forEach((game) => {
@@ -361,7 +369,7 @@ let disconnectReceiver = new DataReceiver('disconnect', null, null, (socket, rea
             game.forceEndGame('player \"' + lostPlayer.name + '\" was disconnected for reason [' + reason + ']')
         }
     })
-})
+}, isGlobal = true);
 
 const allCurrentGames = [];
 // purpose: GameMode class that is parent for all gamemodes
@@ -949,11 +957,9 @@ io.on('connection', function (socket)
     socket.broadcast.emit('message', 'New user has joined: [' + socket.id + ']');
     
 
-    // Adds this new client to the global sockets
-    nameReceiver.addSockets(socket);
-    chatReceiver.addSockets(socket);
-    roomReqReceiver.addSockets(socket);
-    roomLeaveReceiver.addSockets(socket);
-    startGameReceiver.addSockets(socket);
-    disconnectReceiver.addSockets(socket);
+    // Adds this new client to the global receivers
+    for (var i = 0; i < DataReceiver.globalReceivers.length; i++)
+    {
+        DataReceiver.globalReceivers[i].addSockets(socket);
+    }
 });
