@@ -26,8 +26,6 @@ class DrawingPad {
 		this.canvas.addEventListener("mousemove", (event) => this.draw(event));
 		this.canvas.addEventListener("mouseup", (event) => this.cancelDraw(event));
 		this.canvas.addEventListener("mouseout", (event) => this.cancelDraw(event));
-
-		this.pages = document.querySelectorAll(".page");
 		
 		this.context = this.canvas.getContext("2d");
 
