@@ -87,11 +87,13 @@ class DrawingPad {
 			this.previousX = this.mouseCooridinatesX;
 			this.previousY = this.mouseCorridinatesY;
         }
-		this.mouseCooridinatesX = event.pageX - this.bounds.left + (7 * screen.width);
+		this.mouseCooridinatesX = event.pageX /*+ (7 * screen.width)*/ /*+ 10790.1005859375*/ - 424 /*- this.bounds.left*/;
+		this.mouseCooridinatesX = event.pageX - (this.bounds.left - (7 * screen.width));
 
 		console.log('mouseCooridinatesX: ' + this.mouseCooridinatesX);
 		console.log('OldMouseCooridinatesX: ' + (event.pageX - this.bounds.left));
 		console.log('event.pageX: ' + event.pageX + ' | bounds.left: ' + this.bounds.left);
+		console.log('offset: ' + (this.bounds.left - (7 * screen.width)));
 
 		this.mouseCooridinatesY = event.pageY - this.bounds.top;
 	}
