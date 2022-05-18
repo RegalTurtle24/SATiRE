@@ -67,7 +67,6 @@ class Player
         this.name = name;
         this.socket = socket
         allPlayers.push(this);
-        //console.log('Player created. id [' + id + ']' + ', name: ' + name)
     }
 
     /**
@@ -188,9 +187,7 @@ class DataReceiver {
     addSockets(sockets)
     {
         if (sockets == null) return;
-        // console.log(sockets.constructor.name);
         sockets = getSocketArray(sockets);
-        // console.log(sockets.constructor.name);
         sockets.forEach((socket) => {
             // Only adds it if it isn't already added
             if (!this.socketList.includes(socket))
@@ -380,7 +377,6 @@ class GameMode
 	// Returns a randomized order of the given players.
 	static randomizePlayers = (players) => 
 	{
-        console.log(players);
         let playersCopy = new Array(players.length);
         for (var i = 0; i < playersCopy.length; i++)
         {
@@ -882,8 +878,6 @@ class CollabDraw extends GameMode
      */
     sendTileUpdatesToAdjacents(grid, tile)
     {
-        // console.log(`Tile (${tile.x},${tile.y})`);
-        // console.log(tile.lastChange);
         // Left
         if (tile.x > 0)
         {
