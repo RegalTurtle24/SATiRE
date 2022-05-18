@@ -382,22 +382,17 @@ class GameMode
 	{
         console.log(players);
         let playersCopy = new Array(players.length);
-        let playersCopyNames = new Array(players.length);
         for (var i = 0; i < playersCopy.length; i++)
         {
             playersCopy[i] = players[i];
-            playersCopyNames[i] = players[i].name;
         }
         let newPlayers = new Array(players.length);
         for (var i = 0; i < newPlayers.length; i++)
         {
             // This algorithm took me 840 hours to make, you better appreciate it.
             let index = Math.floor(Math.random() * playersCopy.length);
-            // console.log(playersCopyNames);
-            // console.log(`${i}th player is index [${index}]: ${playersCopyNames[index]}`);
             newPlayers[i] = playersCopy[index];
             playersCopy.splice(index, 1);
-            playersCopyNames.splice(index, 1);
         }
 
         return newPlayers;
@@ -459,7 +454,6 @@ class Telephone extends GameMode
 	constructor(players, room, charPolicies = null, policyTester = () => null, prompt = null) 
 	{
         super(GameMode.randomizePlayers(players), room);
-        console.log(this.players);
         this.onEnd.push(() => this.endTelephone(room));
 
         // the character policy for phrase sent in the game
