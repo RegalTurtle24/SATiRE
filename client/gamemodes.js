@@ -387,7 +387,14 @@ class ClientSideCollabDraw
         var bottomCanvas = new VisualDisplay('p8displayBottom', [0, 75]);
         var leftCanvas = new VisualDisplay('p8displayLeft', [-75, 0]);
         var rightCanvas = new VisualDisplay('p8displayRight', [75, 0]);
-		var finalCanvas = new VisualDisplay('p8finalDisplay', [0, 0]);
+        var finalCanvas = new VisualDisplay('p8finalDisplay', [0, 0]);
+
+        drawingPad.reset();
+        topCanvas.reset();
+        bottomCanvas.reset();
+        leftCanvas.reset();
+        rightCanvas.reset();
+        finalCanvas.reset();
 
         var buttonBlack = new padColorSetting('p8BlackColor', drawingPad, '#000000');
         var buttonRed = new padColorSetting('p8RedColor', drawingPad, '#FF0000');
@@ -453,14 +460,15 @@ class ClientSideCollabDraw
             (finalImage) => {
             // Shows the user the masterpiece they helped build 
             // Not yet implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            
-			for (int i = 0; i < finalImage.length; i++) {
+
+            //console.log("" + finalImage[0]);
+			for (var i = 0; i < finalImage.length; i++) {
 				var offSetX = finalCanvas.bounds.width / this.gridWidth * finalImage[i][1];
 				var offSetY = finalCanvas.bounds.height / this.gridHeight * finalImage[i][2];
 				finalCanvas.setCutOff([offSetX, offSetY]);
 				finalCanvas.drawAllData(finalImage[i][0], finalCanvas.bounds.width / this.gridWidth);
 			}
-			
+
             this.endGame();
             lobbyButton.hidden = false;
 

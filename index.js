@@ -906,9 +906,12 @@ class CollabDraw extends GameMode
 			for (var x = 0; x < game.canvasGrid[y].length; x++)
             {
                 // Has yet to be implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-				fullCanvas.push([game.canvasGrid[y][x], x, y]);
+                var tileContents = [game.canvasGrid[y][x].allChanges, x, y];
+                fullCanvas.push(tileContents);
             }
         }
+
+        //console.log("" + fullCanvas[0]);
 
         // Informs players of the game having ended and sends the full image to everybody in the room
         getSocketsInRoom(game.room).forEach((item) => item.emit('draw-game-end', fullCanvas));
