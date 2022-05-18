@@ -904,6 +904,7 @@ class CollabDraw extends GameMode
             for (var x = 0; x < game.canvasGrid[y].length; x++)
             {
                 // Has yet to be implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				
             }
         }
 

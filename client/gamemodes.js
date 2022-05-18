@@ -387,6 +387,7 @@ class ClientSideCollabDraw
         var bottomCanvas = new VisualDisplay('p8displayBottom', [0, 75]);
         var leftCanvas = new VisualDisplay('p8displayLeft', [-75, 0]);
         var rightCanvas = new VisualDisplay('p8displayRight', [75, 0]);
+		var finalCanvas = new VisualDisplay('p8finalDisplay', [0, 0]);
 
         var buttonBlack = new padColorSetting('p8BlackColor', drawingPad, '#000000');
         var buttonRed = new padColorSetting('p8RedColor', drawingPad, '#FF0000');
@@ -434,19 +435,25 @@ class ClientSideCollabDraw
             switch (direction)
             {
                 case 'up':
-                    topCanvas.drawAllData(lastChanges);
+                    topCanvas.drawAllData(lastChanges, 1);
                     break;
                 case 'down':
-                    bottomCanvas.drawAllData(lastChanges);
+                    bottomCanvas.drawAllData(lastChanges, 1);
                     break;
                 case 'left':
-                    leftCanvas.drawAllData(lastChanges);
+                    leftCanvas.drawAllData(lastChanges, 1);
                     break;
                 case 'right':
-                    rightCanvas.drawAllData(lastChanges);
+                    rightCanvas.drawAllData(lastChanges, 1);
                     break;
             }
+			finalCanvas.drawAllData(lastChanges, 1.0 / this.gridWidth);
         });
+		
+		/*var completeDisplayReceiver = new DataReceiver('draw-game-finaldisplay', DataReciever.LOCAL_GAME, (changes, x, y) => {
+			finalCanvas.drawAllData(changes, );
+		});*/
+		
         var gameEndReceiver = new DataReciever('draw-game-end', DataReciever.LOCAL_GAME,
             (finalImage) => {
             // Shows the user the masterpiece they helped build 
