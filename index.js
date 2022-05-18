@@ -897,14 +897,16 @@ class CollabDraw extends GameMode
      */
     finalizeCanvas(game)
     {
-        var fullCanvas;
+        var fullCanvas = new Array();
+		
+		
         // Adds each canvas tile to the full canvas image
         for (var y = 0; y < game.canvasGrid.length; y++)
         {
-            for (var x = 0; x < game.canvasGrid[y].length; x++)
+			for (var x = 0; x < game.canvasGrid[y].length; x++)
             {
                 // Has yet to be implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-				
+				fullCanvas.push([game.canvasGrid[y][x], x, y]);
             }
         }
 

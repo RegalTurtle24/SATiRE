@@ -447,18 +447,20 @@ class ClientSideCollabDraw
                     rightCanvas.drawAllData(lastChanges, 1);
                     break;
             }
-			finalCanvas.drawAllData(lastChanges, 1.0 / this.gridWidth);
         });
-		
-		/*var completeDisplayReceiver = new DataReceiver('draw-game-finaldisplay', DataReciever.LOCAL_GAME, (changes, x, y) => {
-			finalCanvas.drawAllData(changes, );
-		});*/
 		
         var gameEndReceiver = new DataReciever('draw-game-end', DataReciever.LOCAL_GAME,
             (finalImage) => {
             // Shows the user the masterpiece they helped build 
             // Not yet implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             
+			for (int i = 0; i < finalImage.length; i++) {
+				var offSetX = finalCanvas.bounds.width / this.gridWidth * finalImage[i][1];
+				var offSetY = finalCanvas.bounds.height / this.gridHeight * finalImage[i][2];
+				finalCanvas.setCutOff([offSetX, offSetY]);
+				finalCanvas.drawAllData(finalImage[i][0], finalCanvas.bounds.width / this.gridWidth);
+			}
+			
             this.endGame();
             lobbyButton.hidden = false;
 
