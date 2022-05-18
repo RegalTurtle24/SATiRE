@@ -77,9 +77,9 @@ class DrawingPad {
 	setCooridinates(event) {
 		if (this.mouseCooridinatesX != null && this.mouseCooridinatesY != null) {
 			this.previousX = this.mouseCooridinatesX;
-			this.previousY = this.mouseCooridinatesY;
-		} 
-		this.mouseCooridinatesX = event.pageX - this.bounds.left;
+			this.previousY = this.mouseCorridinatesY;
+        }
+		this.mouseCooridinatesX = event.pageX - (this.bounds.left - (7 * document.getElementById('container').offsetWidth));
 		this.mouseCooridinatesY = event.pageY - this.bounds.top;
 	}
 
