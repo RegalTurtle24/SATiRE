@@ -168,6 +168,7 @@ class ClientSideTelephone
         chatEnabled = false;
         allowedToChangeRoom = false;
         currentlyPlayingGame = true;
+        ('#p6BackToGameSelect').hide();
 
         this.players = players;
         this.setPlayersText(this.players, 0);
@@ -353,6 +354,7 @@ class ClientSideTelephone
         currentlyPlayingGame = false;
         allowedToChangeRoom = true;
         DataReciever.closeAllLocalGameReceivers();
+        ('#p6BackToGameSelect').show();
     }
 	
 }
