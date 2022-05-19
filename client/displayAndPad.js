@@ -9,10 +9,14 @@
 class DrawingPad {
 	
 	// variables for color, pen, stroke, etc. settings 
-	
+
+	// for your information most resent changes include
+	// color, array[contains cooridinates and line width], and if it was still drawing
+
 	constructor(canvasID) {
 		// variable to use when drawing.
-		this.color = '#000000'; // when messing with this always use hex 
+		this.color = '#000000'; // when messing with this always use hex
+		this.lineWidth = 2;
 		this.isCurrentlyDrawing = false;
 		
 		// creating eventListener so we can draw
@@ -23,32 +27,31 @@ class DrawingPad {
 		this.canvas.addEventListener("mouseup", (event) => this.cancelDraw(event));
 		this.canvas.addEventListener("mouseout", (event) => this.cancelDraw(event));
 		
-		console.log("ok");
-	}
-	
-	addSetting(/*colorSettingID, submittionID, function*/) {
-		// run function, allows to grab class variables
+		this.context = this.canvas.getContext("2d");
+
+		// creating variables for other code to get/send drawing changes
+		this.onStrokeEnd = null;
+		this.mostRecentChanges = [ ];
 	}
 	
 	// purpose: starting drawing when click down, get intial cooridinates 
 	startDraw(event) {
 		this.isCurrentlyDrawing = true;
 		this.setCooridinates(event);
-		//console.log("draw started");
+		this.mostRecentChanges.push([this.color, [[this.mouseCooridinatesX, this.mouseCooridinatesY, this.lineWidth]]]);
 	}
 	
 	// purpose: draw a line for one cooridinate to another, typically when the mouse moves.
 	draw(event) {
 
 		if (this.isCurrentlyDrawing) {
-			// initialize necessary variables
-			this.context = this.canvas.getContext("2d");
-			
-			//set stuff
-			this.context.lineWidth = 2;
+			//get components set up
+			this.context.lineWidth = this.lineWidth;
 			this.context.lineCap = "round";
-			
-			// -----			
+			this.context.strokeStyle = this.color;
+
+			// actually drawing
+			this.context.beginPath();			
 			this.context.moveTo(this.mouseCooridinatesX, this.mouseCooridinatesY);
 			this.setCooridinates(event);
 			if (this.mouseCooridinatesX > this.bounds.width || this.mouseCooridinatesX < 0 || this.mouseCooridinatesY > this.bounds.height || this.mouseCooridinatesY < 0) {
@@ -56,6 +59,16 @@ class DrawingPad {
 			}
 			this.context.lineTo(this.mouseCooridinatesX, this.mouseCooridinatesY);
 			this.context.stroke();
+
+			// Updates the changes array
+			if (this.mostRecentChanges.length === 0)
+			{
+				console.log(this.previousX + " : " + this.previousY);
+				this.mostRecentChanges.push([this.color, [[this.previousX, this.previousY, this.lineWidth]]]);
+				//this.mostRecentChanges[0][1].push([this.mouseCooridinatesX, this.mouseCooridinatesY, this.lineWidth]);
+			}
+			this.mostRecentChanges[this.mostRecentChanges.length - 1][1].push(
+				[this.mouseCooridinatesX, this.mouseCooridinatesY, this.lineWidth]);
 		}
 	}
 
@@ -66,15 +79,45 @@ class DrawingPad {
 			this.previousX = this.mouseCooridinatesX;
 			this.previousY = this.mouseCorridinatesY;
         }
-		this.mouseCooridinatesX = event.pageX - this.bounds.left;
+		this.mouseCooridinatesX = event.pageX - (this.bounds.left);
 		this.mouseCooridinatesY = event.pageY - this.bounds.top;
 	}
 
 	// purpose: cancels drawing, usual when mouse is released
 	cancelDraw(event) {
 		this.isCurrentlyDrawing = false;
+
+		if (this.onStrokeEnd != null)
+		{
+			this.onStrokeEnd();
+		}
 	}
 }
+
+// purpose: give a button the capability to change the color used on a canvas
+// input: button element Id, and drawing Pad
+// ouput: you can click on button, and it change draw color on drawing Pad
+class padColorSetting {
+	constructor(colorId, drawPad, color) {
+		this.colorButton = document.getElementById(colorId);
+		this.colorButton.addEventListener("click", function() {
+			drawPad.color = color;
+		});
+    }
+}
+
+// purpose: allow for a slider to change the width of draw stroke on the drawing pad
+// input: allow for a slider to change lineWidth
+// output: line width changes with slider
+class padWidthSetting {
+	constructor(widthId, drawPad) {
+		this.widthSlider = document.getElementById(widthId);
+		this.widthSlider.addEventListener("mouseup", function() {
+			drawPad.lineWidth = this.value;
+		});
+    }
+}
+
 
 // purpose: this class is meant to be a visual display that a program can draw on in real time for the user.
 // primarly this is used to display the drawings of other players, however their could also be used for other programs.
@@ -83,34 +126,69 @@ class DrawingPad {
 // be able to draw an image on the given canvas using inputted cooridinate data.
 class VisualDisplay {
 	
+	/**
+	 * 
+	 * @param {*} cutOff [x cut off (+ for left, - for right), y cut off (+ for top, - for left)]
+	 */
 	constructor(canvasID, cutOff) {
 		this.canvas = document.getElementById(canvasID);
 		this.bounds = this.canvas.getBoundingClientRect();
+		this.context = this.canvas.getContext("2d");
 
-		if (cutOff == null) {
-			this.cutOffLeft = 0;
-			this.cutOffTop = 0;
-		} else {
-			this.cutOffLeft = cutOff[0];
-			this.cutOffTop = cutOff[1];
-        }
+		this.setCutOff(cutOff);
 		
 	}
 	
-	drawData(/*color,*/ lineWidth, drawPathCoor) {
-		// add data to canvas.
+	// purpose:
+	// input:
+	// output:
+	setCutOff(cutOff) {
+		this.cutOffLeft = 0;
+		this.cutOffRight = 0;
+		this.cutOffTop = 0;
+		this.cutOffBottom = 0;
+		if (cutOff != null) {
+			if (cutOff[0] < 0)
+				this.cutOffLeft = -cutOff[0];
+			else
+				this.cutOffRight = -cutOff[0]
+			if (cutOff[1] < 0)
+				this.cutOffTop = -cutOff[1];
+			else
+				this.cutOffBottom = -cutOff[1];
+        }
+	}
+	
+	// purpose: draw a line on the canvas from one point the other
+	// input: set of cooridinate, lineWidth, and color of line
+	// output: a line with the respective color, width, and cooridinates is drawn out.
+	drawData(color, lineWidth, drawPathCoor) {
+		this.context.beginPath();
+		this.context.lineWidth = lineWidth;
+		this.context.lineCap = "round";
+		this.context.strokeStyle = color;
 		
-		if (drawPathCoor == null || drawPathCoor[0] == null || drawPathCoor[1] == null || drawPathCoor[2] == null || drawPathCoor[3] == null) {
-			this.context = this.canvas.getContext("2d");
-			//set stuff
-			this.context.lineWidth = lineWidth;
-			this.context.lineCap = "round";
-			//console.log("previous cooridinates " + drawPathCoor[0] + " : " + drawPathCoor[1]);
-			//console.log("current cooridinates " + drawPathCoor[2] + " : " + drawPathCoor[3]);
-		
-			this.context.moveTo(drawPathCoor[0] - this.cutOffLeft, drawPathCoor[1] - this.cutOffTop);
-			this.context.lineTo(drawPathCoor[2] - this.cutOffLeft, drawPathCoor[3] - this.cutOffTop);
-			this.context.stroke();
+		var offset = [this.cutOffRight - this.cutOffLeft, this.cutOffBottom - this.cutOffTop];
+		this.context.moveTo(drawPathCoor[0] + offset[0], drawPathCoor[1] + offset[1]);
+		this.context.lineTo(drawPathCoor[2] + offset[0], drawPathCoor[3] + offset[1]);
+		this.context.stroke();
+	}
+
+	// purpose: draws alls changes made by other player to the visual display
+	// input: all changes that had been made to the representive canvas since last checked
+	// output: changes are drawn on canvas
+	drawAllData(changes, scale)
+	{
+		for (var i = 0; i < changes.length; i++)
+		{
+			let color = changes[i][0];
+			let line = changes[i][1];
+
+			console.log(line[0][0] + " : " + line[0][1] + " -> " + line[1][0] + " : " + line[1][1]);
+			for (var j = 1; j < line.length; j++) {
+				this.drawData(color, line[j][2] * scale, [line[j - 1][0] * scale, line[j - 1][1] * scale, line[j][0] * scale, line[j][1] * scale]);
+
+			}
 		}
 	}
 }

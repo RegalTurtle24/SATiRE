@@ -15,7 +15,7 @@
 	<button onclick="slide('prev')" id="p">Prev</button>
 	<button onclick="slide('next')" id="n">Next</button>
 
-	<div class="container">
+	<div class="container" id="container">
 		<div class="pages">
 			<div class="page one">
 				<h1>SATiRE</h1>
@@ -104,9 +104,9 @@
 
 			<div class="page six">
 				<h2 id="p6playerOrder" align="center">[Player Order Here]</h2>
-                <div id="p6BackToGameSelect">
-					    <button onclick="jumpTo('lobby')">Back to Lobby</button>
-                    </div>
+        <div id="p6BackToGameSelect">
+          <button onclick="jumpTo('lobby')">Back to Lobby</button>
+        </div>
 				
 				<h5 id="p6subtitle" align="center">Waiting for turn</h5>
 				<div>
@@ -133,20 +133,48 @@
 
 			<div class="page eight">
 				<h2>Drawing Game</h2>
+                <div>
+					<button id="p8BackToGameSelect" type ="button" onclick="jumpTo('lobby')" hidden>Back to Lobby</button>
+				</div>
 				<div>
 					<!-- Left side is space for drawing pad & adjacent ones -->
 					<!-- Right side is prompt/chat -->
+					<label id="p8drawTimer" style="border:2px solid #000000">(timer)</label>
+
+					<br>
+
+					<canvas id="p8drawingPad" width="150" height="150" style="border:2px solid #000000"></canvas>
+					<canvas id="p8displayTop" width="150" height="75" style="border:2px dashed #484848"></canvas>
+					<canvas id="p8displayBottom" width="150" height="75" style="border:2px dashed #484848"></canvas>
+					<canvas id="p8displayLeft" width="75" height="150" style="border:2px dashed #484848"></canvas>
+					<canvas id="p8displayRight" width="75" height="150" style="border:2px dashed #484848"></canvas>
+					
+
+					<br>
+
+					<button id="p8BlackColor" style="background-color:black"></button>
+					<button id="p8RedColor" style="background-color:red"></button>
+					<button id="p8LimeColor" style="background-color:#53FF45"></button>
+					<button id="p8GreenColor" style="background-color:#198733"></button>
+					<button id="p8BlueColor" style="background-color: #1356E4"></button>
+					<button id="p8PurpleColor" style="background-color: #9D41FF"></button>
+					<button id="p8CyanColor" style="background-color: #21FFF5"></button>
+					<input type="range" id="p8widthSlider" min="1" max="40" step="1" value="2">
+
+					<br>
+
+					<button id="p8endGameReq" type="button">Vote to end early</button>
 				</div>
 			</div>
-            
-            <div class="page nine">
+
+			<div class="page nine">
 				<h2>Drawing Game Result</h2>
 				<div>
-					
+					<canvas id="p8finalDisplay" width="300" height="300" style="border:2px dashed #484848"></canvas>
 				</div>
 			</div>
 		</div>
-	</div>
+	</div>	
 
 	<script src="./page-runner.js"></script>
 </html>

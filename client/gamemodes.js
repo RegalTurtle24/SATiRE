@@ -167,12 +167,16 @@ class ClientSideTelephone
 	{
         chatEnabled = false;
         allowedToChangeRoom = false;
+        currentlyPlayingGame = true;
         ('#p6BackToGameSelect').hide();
 
         this.players = players;
         this.setPlayersText(this.players, 0);
 
         // Variable setup/HTML integration
+        var lobbyButton = document.getElementById('p6BackToGameSelect');
+        lobbyButton.hidden = true;
+
         this.playerMessage = document.getElementById('p6subtitle');
         this.callBox = document.getElementById('p6callBox');
         this.callSubmit = document.getElementById('p6callSubmit');
@@ -316,6 +320,7 @@ class ClientSideTelephone
             this.callBox.removeEventListener('input', () => updateCharacterCount(this));
 
             this.endGame();
+            lobbyButton.hidden = false;
             
 
             console.log('The game of telephone in room has ended :)');
@@ -359,29 +364,71 @@ class ClientSideCollabDraw
     constructor(numPlayers, x, y, timeLimit)
     {
         this.tilePos = [x, y];
-        this.gridWidth = Math.floor(Math.sqrt(players.length));
-        this.gridHeight = Math.ceil(players.length / gridWidth);
-        this.lastRowWidth = players % gridWidth;
+        this.gridWidth = Math.floor(Math.sqrt(numPlayers));
+        this.gridHeight = Math.ceil(numPlayers / this.gridWidth);
+        this.lastRowWidth = numPlayers % this.gridWidth;
+        this.timeLimit = timeLimit;
     }
 
     startGame()
     {
         // Overhead/local variables
+        chatEnabled = true;
         allowedToChangeRoom = false;
+        currentlyPlayingGame = true;
 
         // Initializes and fetches the GUI for the game
-        var topCanvas, bottomCanvas, leftCanvas, rightCanvas = null;
+        var lobbyButton = document.getElementById('p8BackToGameSelect');
+        lobbyButton.hidden = true;
+
+        var drawTimer = document.getElementById('p8drawTimer');
+        drawTimer.textContent = this.timeLimit;
+        
+        var drawingPad = new DrawingPad('p8drawingPad');
+        var topCanvas = new VisualDisplay('p8displayTop', [0, -75]);
+        var bottomCanvas = new VisualDisplay('p8displayBottom', [0, 75]);
+        var leftCanvas = new VisualDisplay('p8displayLeft', [-75, 0]);
+        var rightCanvas = new VisualDisplay('p8displayRight', [75, 0]);
+		var finalCanvas = new VisualDisplay('p8finalDisplay', [0, 0]);
+
+        var buttonBlack = new padColorSetting('p8BlackColor', drawingPad, '#000000');
+        var buttonRed = new padColorSetting('p8RedColor', drawingPad, '#FF0000');
+        var buttonLime = new padColorSetting('p8LimeColor', drawingPad, '#53FF45');
+        var buttonGreen = new padColorSetting('p8GreenColor', drawingPad, '#198733');
+        var buttonBlue = new padColorSetting('p8BlueColor', drawingPad, '#1356E4');
+        var buttonPurple = new padColorSetting('p8PurpleColor', drawingPad, '#9D41FF');
+        var buttonCyan = new padColorSetting('p8CyanColor', drawingPad, '#21FFF5');
+
+        var endEarlyButton = document.getElementById('p8endGameReq');
+        endEarlyButton.addEventListener('click', () => {
+            // Asks the server nicely to end the game early
+            socket.emit('draw-finalize-req');
+        });
+
+
+        var widthSlider = new padWidthSetting('p8widthSlider', drawingPad);
 
         // Data sender to update other players on tile updates
-        var tileUpdateSender = new DataSender('draw-tile-update', () => {
+        var tileUpdateSender = new DataSender('draw-canvas-update', () => {
             // Sends the current canvas changes to the server, for adjacent players to see parts of
-            // Not yet implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            var changes = drawingPad.mostRecentChanges;
+            drawingPad.mostRecentChanges = [];
+
+            return [this.tilePos[0], this.tilePos[1], changes];
         });
         // Makes it update the server on the canvas
-        setTimeout(() => {
-
-        });
-        // Not yet implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        function trySendChanges(timeout)
+        {
+            setTimeout(() =>
+            {
+                if (drawingPad.mostRecentChanges != null && drawingPad.mostRecentChanges.length != 0)
+                {
+                    tileUpdateSender.sendToServer();
+                }
+                trySendChanges(timeout);
+            }, timeout)
+        }
+        trySendChanges(1000);
 
         // Data receivers to dynamically change game while drawing
         var tileUpdateReceiver = new DataReciever('draw-tile-update', DataReciever.LOCAL_GAME,
@@ -390,33 +437,55 @@ class ClientSideCollabDraw
             switch (direction)
             {
                 case 'up':
-                    
+                    topCanvas.drawAllData(lastChanges, 1);
                     break;
                 case 'down':
-                    
+                    bottomCanvas.drawAllData(lastChanges, 1);
                     break;
                 case 'left':
-                    
+                    leftCanvas.drawAllData(lastChanges, 1);
                     break;
                 case 'right':
-                    
+                    rightCanvas.drawAllData(lastChanges, 1);
                     break;
             }
-            // Not yet implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			finalCanvas.drawAllData(lastChanges, 1.0 / this.gridWidth);
         });
+		
+		/*var completeDisplayReceiver = new DataReceiver('draw-game-finaldisplay', DataReciever.LOCAL_GAME, (changes, x, y) => {
+			finalCanvas.drawAllData(changes, );
+		});*/
+		
         var gameEndReceiver = new DataReciever('draw-game-end', DataReciever.LOCAL_GAME,
             (finalImage) => {
             // Shows the user the masterpiece they helped build 
             // Not yet implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             
             this.endGame();
+            lobbyButton.hidden = false;
 
             console.log('The game of collaborative drawing in room has ended :)');
         });
+
+        // Starts ticking down the timer
+        function pollTimer(timeLeft)
+        {
+            setTimeout(() =>
+            {
+                timeLeft -= 1.0;
+                drawTimer.textContent = timeLeft;
+                if (timeLeft > 0 && currentlyPlayingGame)
+                {
+                    pollTimer(timeLeft);
+                }
+            }, 1000.0);
+        }
+        pollTimer(this.timeLimit);
     }
 
     endGame()
     {
+        chatEnabled = true;
         currentlyPlayingGame = false;
         allowedToChangeRoom = true;
         DataReciever.closeAllLocalGameReceivers();
