@@ -237,3 +237,9 @@ input{
     right: 190vh;
     
 }
+
+#p8drawingPad{
+	position: fixed;
+	left: 40%;
+	top: 40%;
+}
