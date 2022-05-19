@@ -168,6 +168,7 @@ class ClientSideTelephone
         chatEnabled = false;
         allowedToChangeRoom = false;
         currentlyPlayingGame = true;
+        ('#p6BackToGameSelect').hide();
 
         this.players = players;
         this.setPlayersText(this.players, 0);
@@ -353,6 +354,7 @@ class ClientSideTelephone
         currentlyPlayingGame = false;
         allowedToChangeRoom = true;
         DataReciever.closeAllLocalGameReceivers();
+        ('#p6BackToGameSelect').show();
     }
 	
 }
@@ -387,7 +389,7 @@ class ClientSideCollabDraw
         var bottomCanvas = new VisualDisplay('p8displayBottom', [0, 75]);
         var leftCanvas = new VisualDisplay('p8displayLeft', [-75, 0]);
         var rightCanvas = new VisualDisplay('p8displayRight', [75, 0]);
-        var finalCanvas = new VisualDisplay('p8finalDisplay', [0, 0]);
+		    var finalCanvas = new VisualDisplay('p9finalDisplay', [0, 0]);
 
         drawingPad.reset();
         topCanvas.reset();
