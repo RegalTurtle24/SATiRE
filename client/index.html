@@ -23,7 +23,10 @@
 				<div>
 					<body onload="initializeSocket()">
 					</body>
-					<button onClick="slide('next')">Continue</button>
+                    <div class = "button" id="button1">
+                        <div id="circle"></div>
+					    <button onClick="slide('next')">Continue</button>
+                    </div>
 				</div>
 			</div>
 			
@@ -102,7 +105,7 @@
 			<div class="page six">
 				<h2 id="p6playerOrder" align="center">[Player Order Here]</h2>
                 <div id="p6BackToGameSelect">
-					    <button type ="button" onclick="jumpTo('lobby')" hidden>Back to Lobby</button>
+					    <button onclick="jumpTo('lobby')">Back to Lobby</button>
                     </div>
 				
 				<h5 id="p6subtitle" align="center">Waiting for turn</h5>
