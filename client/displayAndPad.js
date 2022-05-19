@@ -92,6 +92,11 @@ class DrawingPad {
 			this.onStrokeEnd();
 		}
 	}
+
+	reset() {
+		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+    }
 }
 
 // purpose: give a button the capability to change the color used on a canvas
@@ -136,7 +141,7 @@ class VisualDisplay {
 		this.context = this.canvas.getContext("2d");
 
 		this.setCutOff(cutOff);
-		
+		this.extraOffset = [0, 0];
 	}
 	
 	// purpose:
@@ -168,9 +173,11 @@ class VisualDisplay {
 		this.context.lineCap = "round";
 		this.context.strokeStyle = color;
 		
-		var offset = [this.cutOffRight - this.cutOffLeft, this.cutOffBottom - this.cutOffTop];
+		var offset = [this.cutOffRight - this.cutOffLeft + this.extraOffset[0],
+			this.cutOffBottom - this.cutOffTop + this.extraOffset[1]];
 		this.context.moveTo(drawPathCoor[0] + offset[0], drawPathCoor[1] + offset[1]);
 		this.context.lineTo(drawPathCoor[2] + offset[0], drawPathCoor[3] + offset[1]);
+		console.log(`${this.canvas.id} : (x: ${drawPathCoor[0] + offset[0]}, y: ${drawPathCoor[1] + offset[1]})`);
 		this.context.stroke();
 	}
 
@@ -184,11 +191,15 @@ class VisualDisplay {
 			let color = changes[i][0];
 			let line = changes[i][1];
 
-			console.log(line[0][0] + " : " + line[0][1] + " -> " + line[1][0] + " : " + line[1][1]);
+			//console.log(line[0][0] + " : " + line[0][1] + " -> " + line[1][0] + " : " + line[1][1]);
 			for (var j = 1; j < line.length; j++) {
 				this.drawData(color, line[j][2] * scale, [line[j - 1][0] * scale, line[j - 1][1] * scale, line[j][0] * scale, line[j][1] * scale]);
 
 			}
 		}
+	}
+
+	reset() {
+		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 	}
 }

@@ -361,12 +361,12 @@ class ClientSideTelephone
 
 class ClientSideCollabDraw
 {
-    constructor(numPlayers, x, y, timeLimit)
+    constructor(numPlayers, x, y, timeLimit, gridWidth, gridHeight, lastRowWidth)
     {
         this.tilePos = [x, y];
-        this.gridWidth = Math.floor(Math.sqrt(numPlayers));
-        this.gridHeight = Math.ceil(numPlayers / this.gridWidth);
-        this.lastRowWidth = numPlayers % this.gridWidth;
+        this.gridWidth = gridWidth;
+        this.gridHeight = gridHeight;
+        this.lastRowWidth = lastRowWidth;
         this.timeLimit = timeLimit;
     }
 
@@ -389,7 +389,14 @@ class ClientSideCollabDraw
         var bottomCanvas = new VisualDisplay('p8displayBottom', [0, 75]);
         var leftCanvas = new VisualDisplay('p8displayLeft', [-75, 0]);
         var rightCanvas = new VisualDisplay('p8displayRight', [75, 0]);
-		var finalCanvas = new VisualDisplay('p9finalDisplay', [0, 0]);
+		    var finalCanvas = new VisualDisplay('p9finalDisplay', [0, 0]);
+
+        drawingPad.reset();
+        topCanvas.reset();
+        bottomCanvas.reset();
+        leftCanvas.reset();
+        rightCanvas.reset();
+        finalCanvas.reset();
 
         var buttonBlack = new padColorSetting('p8BlackColor', drawingPad, '#000000');
         var buttonRed = new padColorSetting('p8RedColor', drawingPad, '#FF0000');
@@ -449,18 +456,21 @@ class ClientSideCollabDraw
                     rightCanvas.drawAllData(lastChanges, 1);
                     break;
             }
-			finalCanvas.drawAllData(lastChanges, 1.0 / this.gridWidth);
         });
-		
-		/*var completeDisplayReceiver = new DataReceiver('draw-game-finaldisplay', DataReciever.LOCAL_GAME, (changes, x, y) => {
-			finalCanvas.drawAllData(changes, );
-		});*/
 		
         var gameEndReceiver = new DataReciever('draw-game-end', DataReciever.LOCAL_GAME,
             (finalImage) => {
-            // Shows the user the masterpiece they helped build 
-            // Not yet implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            
+            // Shows the user the masterpiece they helped build
+			for (var i = 0; i < finalImage.length; i++) {
+				var offSetX = (finalCanvas.bounds.width / this.gridWidth) * finalImage[i][1];
+				var offSetY = (finalCanvas.bounds.height / this.gridHeight) * finalImage[i][2];
+				finalCanvas.extraOffset = [offSetX, offSetY];
+                console.log(`Offset: [${offSetX},${offSetY}], Final Bounds:
+                    [${finalCanvas.bounds.width},${finalCanvas.bounds.height}], TilePos: [${finalImage[i][1]},${finalImage[i][2]}]`);
+				finalCanvas.drawAllData(finalImage[i][0],
+                    finalCanvas.bounds.width / (drawingPad.bounds.width * this.gridWidth));
+			}
+
             this.endGame();
             lobbyButton.hidden = false;
 
