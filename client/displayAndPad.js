@@ -141,7 +141,7 @@ class VisualDisplay {
 		this.context = this.canvas.getContext("2d");
 
 		this.setCutOff(cutOff);
-		
+		this.extraOffset = [0, 0];
 	}
 	
 	// purpose:
@@ -173,10 +173,11 @@ class VisualDisplay {
 		this.context.lineCap = "round";
 		this.context.strokeStyle = color;
 		
-		var offset = [this.cutOffRight - this.cutOffLeft, this.cutOffBottom - this.cutOffTop];
+		var offset = [this.cutOffRight - this.cutOffLeft + this.extraOffset[0],
+			this.cutOffBottom - this.cutOffTop + this.extraOffset[1]];
 		this.context.moveTo(drawPathCoor[0] + offset[0], drawPathCoor[1] + offset[1]);
 		this.context.lineTo(drawPathCoor[2] + offset[0], drawPathCoor[3] + offset[1]);
-		console.log("" + this.canvas.id + " : " + drawPathCoor[0] + offset[0]);
+		console.log(`${this.canvas.id} : (x: ${drawPathCoor[0] + offset[0]}, y: ${drawPathCoor[1] + offset[1]})`);
 		this.context.stroke();
 	}
 

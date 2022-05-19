@@ -359,12 +359,12 @@ class ClientSideTelephone
 
 class ClientSideCollabDraw
 {
-    constructor(numPlayers, x, y, timeLimit)
+    constructor(numPlayers, x, y, timeLimit, gridWidth, gridHeight, lastRowWidth)
     {
         this.tilePos = [x, y];
-        this.gridWidth = Math.floor(Math.sqrt(numPlayers));
-        this.gridHeight = Math.ceil(numPlayers / this.gridWidth);
-        this.lastRowWidth = numPlayers % this.gridWidth;
+        this.gridWidth = gridWidth;
+        this.gridHeight = gridHeight;
+        this.lastRowWidth = lastRowWidth;
         this.timeLimit = timeLimit;
     }
 
@@ -458,15 +458,15 @@ class ClientSideCollabDraw
 		
         var gameEndReceiver = new DataReciever('draw-game-end', DataReciever.LOCAL_GAME,
             (finalImage) => {
-            // Shows the user the masterpiece they helped build 
-            // Not yet implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-            //console.log("" + finalImage[0]);
+            // Shows the user the masterpiece they helped build
 			for (var i = 0; i < finalImage.length; i++) {
-				var offSetX = finalCanvas.bounds.width / this.gridWidth * finalImage[i][1];
-				var offSetY = finalCanvas.bounds.height / this.gridHeight * finalImage[i][2];
-				finalCanvas.setCutOff([offSetX, offSetY]);
-				finalCanvas.drawAllData(finalImage[i][0], finalCanvas.bounds.width / this.gridWidth);
+				var offSetX = (finalCanvas.bounds.width / this.gridWidth) * finalImage[i][1];
+				var offSetY = (finalCanvas.bounds.height / this.gridHeight) * finalImage[i][2];
+				finalCanvas.extraOffset = [offSetX, offSetY];
+                console.log(`Offset: [${offSetX},${offSetY}], Final Bounds:
+                    [${finalCanvas.bounds.width},${finalCanvas.bounds.height}], TilePos: [${finalImage[i][1]},${finalImage[i][2]}]`);
+				finalCanvas.drawAllData(finalImage[i][0],
+                    finalCanvas.bounds.width / (drawingPad.bounds.width * this.gridWidth));
 			}
 
             this.endGame();
