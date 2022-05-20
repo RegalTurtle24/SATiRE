@@ -133,10 +133,6 @@
 
 			<div class="page eight">
 				<h2 id="p8title">Drawing Game</h2>
-                <div>
-					<button id="p8BackToGameSelect" type ="button" onclick="jumpTo('lobby')" hidden>Back to Lobby</button>
-				</div>
-
 				<!-- Left side is space for drawing pad & adjacent ones -->
 				<!-- Right side is prompt/chat -->
 				<label id="p8drawTimer" style="border:2px solid #000000">(timer)</label>
@@ -149,7 +145,6 @@
 				<canvas id="p8displayLeft" width="75" height="150" style="border:2px dashed #484848"></canvas>
 				<canvas id="p8displayRight" width="75" height="150" style="border:2px dashed #484848"></canvas>
 				
-
 				<br>
 
 				<div id="p8colors">
@@ -168,9 +163,13 @@
 			</div>
 
 			<div class="page nine">
-				<h2>Drawing Game Result</h2>
+				<h2>Drawing Game Results</h2>
+				<label>A modern masterpiece!</label>
 				<div>
 					<canvas id="p9finalDisplay" width="300" height="300" style="border:2px dashed #484848"></canvas>
+				</div>
+                <div>
+					<button id="p8BackToGameSelect" type ="button" onclick="jumpTo('lobby')">Back to Lobby</button>
 				</div>
 			</div>
 		</div>

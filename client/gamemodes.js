@@ -168,7 +168,6 @@ class ClientSideTelephone
         chatEnabled = false;
         allowedToChangeRoom = false;
         currentlyPlayingGame = true;
-        ('#p6BackToGameSelect').hide();
 
         this.players = players;
         this.setPlayersText(this.players, 0);
@@ -354,7 +353,6 @@ class ClientSideTelephone
         currentlyPlayingGame = false;
         allowedToChangeRoom = true;
         DataReciever.closeAllLocalGameReceivers();
-        ('#p6BackToGameSelect').show();
     }
 	
 }
@@ -379,17 +377,29 @@ class ClientSideCollabDraw
 
         // Initializes and fetches the GUI for the game
         var lobbyButton = document.getElementById('p8BackToGameSelect');
-        lobbyButton.hidden = true;
 
         var drawTimer = document.getElementById('p8drawTimer');
         drawTimer.textContent = this.timeLimit;
         
         var drawingPad = new DrawingPad('p8drawingPad');
+        this.drawingPad = drawingPad;
         var topCanvas = new VisualDisplay('p8displayTop', [0, -75]);
+        if (this.tilePos[1] <= 0) topCanvas.canvas.hidden = true;
+        else topCanvas.canvas.hidden = false;
         var bottomCanvas = new VisualDisplay('p8displayBottom', [0, 75]);
+        if (this.tilePos[1] >= this.gridHeight - 1 ||
+            (this.tilePos[1] == this.gridHeight - 2 && this.tilePos[0] >= this.lastRowWidth))
+                bottomCanvas.canvas.hidden = true;
+        else bottomCanvas.canvas.hidden = false;
         var leftCanvas = new VisualDisplay('p8displayLeft', [-75, 0]);
+        if (this.tilePos[0] <= 0) leftCanvas.canvas.hidden = true;
+        else leftCanvas.canvas.hidden = false;
         var rightCanvas = new VisualDisplay('p8displayRight', [75, 0]);
-		    var finalCanvas = new VisualDisplay('p9finalDisplay', [0, 0]);
+        if (this.tilePos[0] >= this.gridWidth - 1 ||
+            (this.tilePos[1] == this.gridHeight - 1 && this.tilePos[0] >= this.lastRowWidth - 1))
+                rightCanvas.canvas.hidden = true;
+        else rightCanvas.canvas.hidden = false;
+		var finalCanvas = new VisualDisplay('p9finalDisplay', [0, 0]);
 
         drawingPad.reset();
         topCanvas.reset();
@@ -472,7 +482,7 @@ class ClientSideCollabDraw
 			}
 
             this.endGame();
-            lobbyButton.hidden = false;
+            jumpTo('drawing_game_complete');
 
             console.log('The game of collaborative drawing in room has ended :)');
         });
@@ -482,10 +492,10 @@ class ClientSideCollabDraw
         {
             setTimeout(() =>
             {
-                timeLeft -= 1.0;
-                drawTimer.textContent = timeLeft;
                 if (timeLeft > 0 && currentlyPlayingGame)
                 {
+                    timeLeft -= 1.0;
+                    drawTimer.textContent = timeLeft;
                     pollTimer(timeLeft);
                 }
             }, 1000.0);
@@ -495,6 +505,8 @@ class ClientSideCollabDraw
 
     endGame()
     {
+        this.drawingPad.remove();
+
         chatEnabled = true;
         currentlyPlayingGame = false;
         allowedToChangeRoom = true;
