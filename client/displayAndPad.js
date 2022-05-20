@@ -18,6 +18,7 @@ class DrawingPad {
 		this.color = '#000000'; // when messing with this always use hex
 		this.lineWidth = 2;
 		this.isCurrentlyDrawing = false;
+		this.isDrawingOffCanvas = false;
 		
 		// creating eventListener so we can draw
 		this.canvas = document.getElementById(canvasID);
@@ -25,7 +26,8 @@ class DrawingPad {
 		this.canvas.onmousedown = (event) => this.startDraw(event);
 		this.canvas.onmousemove = (event) => this.draw(event);
 		this.canvas.onmouseup = (event) => this.cancelDraw(event);
-		this.canvas.onmouseout = (event) => this.cancelDraw(event);
+		this.canvas.onmouseout = (event) => this.attemptToDrawOffCanvas(event);
+		this.canvas.onmouseover = (event) => this.enterCanvas(event);
 		
 		this.context = this.canvas.getContext("2d");
 
@@ -97,6 +99,21 @@ class DrawingPad {
 		}
 	}
 
+	attemptToDrawOffCanvas(event) {
+		if (this.isCurrentlyDrawing)
+		{
+			this.cancelDraw(event);
+			this.isDrawingOffCanvas = true;
+		}
+	}
+
+	enterCanvas(event) {
+		if (this.isDrawingOffCanvas && mouseDown)
+		{
+			this.startDraw(event);
+		}
+	}
+
 	reset() {
 		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -107,6 +124,7 @@ class DrawingPad {
 		this.canvas.onmousemove = null;
 		this.canvas.onmouseup = null;
 		this.canvas.onmouseout = null;
+		this.canvas.onmouseover = null;
 	}
 }
 
