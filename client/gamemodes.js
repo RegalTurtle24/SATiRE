@@ -386,10 +386,18 @@ class ClientSideCollabDraw
         
         var drawingPad = new DrawingPad('p8drawingPad');
         var topCanvas = new VisualDisplay('p8displayTop', [0, -75]);
+        if (this.tilePos[1] <= 0) topCanvas.canvas.hidden = true;
         var bottomCanvas = new VisualDisplay('p8displayBottom', [0, 75]);
+        if (this.tilePos[1] >= this.gridHeight - 1 ||
+            (this.tilePos[1] == this.gridHeight - 2 && this.tilePos[0] >= this.lastRowWidth - 1))
+                bottomCanvas.canvas.hidden = true;
         var leftCanvas = new VisualDisplay('p8displayLeft', [-75, 0]);
+        if (this.tilePos[0] <= 0) leftCanvas.canvas.hidden = true;
         var rightCanvas = new VisualDisplay('p8displayRight', [75, 0]);
-		    var finalCanvas = new VisualDisplay('p9finalDisplay', [0, 0]);
+        if (this.tilePos[0] >= this.gridWidth - 1 ||
+            (this.tilePos[1] == this.gridHeight - 1 && this.tilePos[0] >= this.lastRowWidth - 1))
+                rightCanvas.canvas.hidden = true;
+		var finalCanvas = new VisualDisplay('p9finalDisplay', [0, 0]);
 
         drawingPad.reset();
         topCanvas.reset();
