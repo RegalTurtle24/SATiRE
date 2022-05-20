@@ -33,6 +33,9 @@ jumpTo = (page) => {
     case "drawing_game_now_playing":
       translate = -700;
       break;
+    case "drawing_game_complete":
+      translate = -800;
+      break;
   }
 
   pages.forEach(

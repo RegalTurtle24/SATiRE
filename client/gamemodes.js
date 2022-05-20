@@ -377,7 +377,6 @@ class ClientSideCollabDraw
 
         // Initializes and fetches the GUI for the game
         var lobbyButton = document.getElementById('p8BackToGameSelect');
-        lobbyButton.hidden = true;
 
         var drawTimer = document.getElementById('p8drawTimer');
         drawTimer.textContent = this.timeLimit;
@@ -478,7 +477,7 @@ class ClientSideCollabDraw
 			}
 
             this.endGame();
-            lobbyButton.hidden = false;
+            jumpTo('drawing_game_complete');
 
             console.log('The game of collaborative drawing in room has ended :)');
         });
@@ -488,10 +487,10 @@ class ClientSideCollabDraw
         {
             setTimeout(() =>
             {
-                timeLeft -= 1.0;
-                drawTimer.textContent = timeLeft;
                 if (timeLeft > 0 && currentlyPlayingGame)
                 {
+                    timeLeft -= 1.0;
+                    drawTimer.textContent = timeLeft;
                     pollTimer(timeLeft);
                 }
             }, 1000.0);
