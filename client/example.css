@@ -14,10 +14,10 @@ h1
    
   background-image: linear-gradient(
     -225deg,
-    #231557 0%,
-    #44107a 29%,
-    #ff1361 67%,
-    #fff800 100%
+    #6AB155 0%,
+    #A0E989 29%,
+    #BDFFA4 67%,
+    #FFFFFF 100%
   );
   background-size: auto auto;
   background-clip: border-box;
@@ -26,7 +26,7 @@ h1
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: textclip 2s linear infinite;
+  animation: textclip 4s linear infinite;
   display: inline-block;
       font-size: 190px;
 }
@@ -37,34 +37,11 @@ h1
   }
 }
 
-.button {
-  display: inline-flex;
-  height: 40px;
-  width: 150px;
-  border: 2px solid #BFC0C0;
-  margin: 20px 20px 20px 20px;
-  color: #BFC0C0;
-  text-transform: uppercase;
-  text-decoration: none;
-  font-size: .8em;
-  letter-spacing: 1.5px;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-
 #button1 a {
   position: relative;
-  transition: all .45s ease-Out;
+  transition: all .85s ease-Out;
 }
 
-
-
-
-#button1:hover a {
-  color: #2D3142;
-}
 h1{
 	font-size: 12vw;
 }
@@ -138,39 +115,39 @@ input{
 }
 
 .one{
-  	background: orangered;
+  	background: #0b6623;
 }
 
 .two{
-  	background: dodgerblue;
+  	background: #064E42;
 }
 
 .three{
-  	background: indigo;
+  	background: #4A2619;
 }
 
 .four{
-  	background: limegreen;
+  	background: #16720F;
 }
 
 .five{
-  	background: teal;
+  	background: #CF9817;
 }
 
 .six{
-	background: #EF09D1; 
+	background: #6E3B2E; 
 }
 
 .seven{
-	background: #1ac233
+	background: #CF9817;
 }
 
 .eight{
-	background: #13b285
+	background: #dda15e;
 }
 
 .nine{
-    background: #F55806;
+    background: #bc6c25;
 }
 #p4chatGroup{
 	align-self: end;
