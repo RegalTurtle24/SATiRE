@@ -440,7 +440,18 @@ class GameMode
                 socket.emit('error-display', 'Game has ended. ' + reason);
             }
         })
-        this.endGame();
+        if (this instanceof Telephone)
+        {
+            this.endDraw(this.room);
+        }
+        else if (this instanceof CollabDraw)
+        {
+            this.finalizeCanvas(this);
+        }
+        else
+        {
+            this.endGame();
+        }
     }
 }
 
@@ -925,6 +936,7 @@ class CollabDraw extends GameMode
         }
         
         game.hasBeenFinalized = true;
+        console.log(`Things finzlied and set over: ${fullCanvas.length}`);
 
         // Informs players of the game having ended and sends the full image to everybody in the room
         getSocketsInRoom(game.room).forEach((item) => item.emit('draw-game-end', fullCanvas));
