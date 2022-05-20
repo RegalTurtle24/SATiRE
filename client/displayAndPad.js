@@ -22,10 +22,10 @@ class DrawingPad {
 		// creating eventListener so we can draw
 		this.canvas = document.getElementById(canvasID);
 		this.bounds = this.canvas.getBoundingClientRect();
-		this.canvas.addEventListener("mousedown", (event) => this.startDraw(event));
-		this.canvas.addEventListener("mousemove", (event) => this.draw(event));
-		this.canvas.addEventListener("mouseup", (event) => this.cancelDraw(event));
-		this.canvas.addEventListener("mouseout", (event) => this.cancelDraw(event));
+		this.canvas.onmousedown = (event) => this.startDraw(event);
+		this.canvas.onmousemove = (event) => this.draw(event);
+		this.canvas.onmouseup = (event) => this.cancelDraw(event);
+		this.canvas.onmouseout = (event) => this.cancelDraw(event);
 		
 		this.context = this.canvas.getContext("2d");
 
@@ -66,10 +66,11 @@ class DrawingPad {
 			// Updates the changes array
 			if (this.mostRecentChanges.length === 0)
 			{
-				console.log(this.previousX + " : " + this.previousY);
+				//console.log(`Cut in middle of line. Previous: (${this.previousX},${this.previousY}), Current: (${this.mouseCooridinatesX},${this.mouseCooridinatesY})`);
 				this.mostRecentChanges.push([this.color, [[this.previousX, this.previousY, this.lineWidth]]]);
 				//this.mostRecentChanges[0][1].push([this.mouseCooridinatesX, this.mouseCooridinatesY, this.lineWidth]);
 			}
+			//console.log(`PreviousX: ${this.previousX}, Previous Y: ${this.previousY}`);
 			this.mostRecentChanges[this.mostRecentChanges.length - 1][1].push(
 				[this.mouseCooridinatesX, this.mouseCooridinatesY, this.lineWidth]);
 		}
@@ -80,7 +81,7 @@ class DrawingPad {
 	setCooridinates(event) {
 		if (this.mouseCooridinatesX != null && this.mouseCooridinatesY != null) {
 			this.previousX = this.mouseCooridinatesX;
-			this.previousY = this.mouseCorridinatesY;
+			this.previousY = this.mouseCooridinatesY;
         }
 		this.mouseCooridinatesX = event.pageX - (this.bounds.left);
 		this.mouseCooridinatesY = event.pageY - this.bounds.top;
@@ -187,7 +188,7 @@ class VisualDisplay {
 			this.cutOffBottom - this.cutOffTop + this.extraOffset[1]];
 		this.context.moveTo(drawPathCoor[0] + offset[0], drawPathCoor[1] + offset[1]);
 		this.context.lineTo(drawPathCoor[2] + offset[0], drawPathCoor[3] + offset[1]);
-		console.log(`${this.canvas.id} : (x: ${drawPathCoor[0] + offset[0]}, y: ${drawPathCoor[1] + offset[1]})`);
+		//console.log(`${this.canvas.id} : (x: ${drawPathCoor[0] + offset[0]}, y: ${drawPathCoor[1] + offset[1]})`);
 		this.context.stroke();
 	}
 
