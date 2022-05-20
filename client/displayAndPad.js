@@ -100,6 +100,13 @@ class DrawingPad {
 		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     }
+
+	remove() {
+		this.canvas.onmousedown = null;
+		this.canvas.onmousemove = null;
+		this.canvas.onmouseup = null;
+		this.canvas.onmouseout = null;
+	}
 }
 
 // purpose: give a button the capability to change the color used on a canvas

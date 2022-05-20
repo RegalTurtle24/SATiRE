@@ -822,6 +822,7 @@ class CollabDraw extends GameMode
             playerSockets.push(item.socket);
             playerNames.push(item.name);
         })
+        this.hasBeenFinalized = false;
 
         // Initializes data receiver for relaying canvas updates between adjacent players
         let canvasGridScopeGetArounder = this.canvasGrid;
@@ -869,7 +870,10 @@ class CollabDraw extends GameMode
         if (timeLimit > 0)
         {
             setTimeout(() => {
-                this.finalizeCanvas(this)
+                if (!this.hasBeenFinalized)
+                {
+                    this.finalizeCanvas(this)
+                }
             }, timeLimit * 1000);
         }
     }
@@ -919,8 +923,8 @@ class CollabDraw extends GameMode
                 fullCanvas.push(tileContents);
             }
         }
-
-        console.log(`Number of tiles sent over: ${fullCanvas.length}. canvasGrid.length: ${game.canvasGrid.length}. canvasGrid[0].length: ${game.canvasGrid[0].length}`);
+        
+        game.hasBeenFinalized = true;
 
         // Informs players of the game having ended and sends the full image to everybody in the room
         getSocketsInRoom(game.room).forEach((item) => item.emit('draw-game-end', fullCanvas));

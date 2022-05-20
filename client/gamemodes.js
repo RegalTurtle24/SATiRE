@@ -382,18 +382,23 @@ class ClientSideCollabDraw
         drawTimer.textContent = this.timeLimit;
         
         var drawingPad = new DrawingPad('p8drawingPad');
+        this.drawingPad = drawingPad;
         var topCanvas = new VisualDisplay('p8displayTop', [0, -75]);
         if (this.tilePos[1] <= 0) topCanvas.canvas.hidden = true;
+        else topCanvas.canvas.hidden = false;
         var bottomCanvas = new VisualDisplay('p8displayBottom', [0, 75]);
         if (this.tilePos[1] >= this.gridHeight - 1 ||
             (this.tilePos[1] == this.gridHeight - 2 && this.tilePos[0] >= this.lastRowWidth))
                 bottomCanvas.canvas.hidden = true;
+        else bottomCanvas.canvas.hidden = false;
         var leftCanvas = new VisualDisplay('p8displayLeft', [-75, 0]);
         if (this.tilePos[0] <= 0) leftCanvas.canvas.hidden = true;
+        else leftCanvas.canvas.hidden = false;
         var rightCanvas = new VisualDisplay('p8displayRight', [75, 0]);
         if (this.tilePos[0] >= this.gridWidth - 1 ||
             (this.tilePos[1] == this.gridHeight - 1 && this.tilePos[0] >= this.lastRowWidth - 1))
                 rightCanvas.canvas.hidden = true;
+        else rightCanvas.canvas.hidden = false;
 		var finalCanvas = new VisualDisplay('p9finalDisplay', [0, 0]);
 
         drawingPad.reset();
@@ -500,6 +505,8 @@ class ClientSideCollabDraw
 
     endGame()
     {
+        this.drawingPad.remove();
+
         chatEnabled = true;
         currentlyPlayingGame = false;
         allowedToChangeRoom = true;
