@@ -36,15 +36,18 @@ class DrawingPad {
 	
 	// purpose: starting drawing when click down, get intial cooridinates 
 	startDraw(event) {
-		this.isCurrentlyDrawing = true;
-		this.setCooridinates(event);
-		this.mostRecentChanges.push([this.color, [[this.mouseCooridinatesX, this.mouseCooridinatesY, this.lineWidth]]]);
+		if (currentlyPlayingGame)
+		{
+			this.isCurrentlyDrawing = true;
+			this.setCooridinates(event);
+			this.mostRecentChanges.push([this.color, [[this.mouseCooridinatesX, this.mouseCooridinatesY, this.lineWidth]]]);
+		}
 	}
 	
 	// purpose: draw a line for one cooridinate to another, typically when the mouse moves.
 	draw(event) {
 
-		if (this.isCurrentlyDrawing) {
+		if (this.isCurrentlyDrawing && currentlyPlayingGame) {
 			//get components set up
 			this.context.lineWidth = this.lineWidth;
 			this.context.lineCap = "round";

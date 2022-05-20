@@ -41,4 +41,3 @@ jumpTo = (page) => {
 }
 
 jumpTo('title');
-('#p6BackToGameSelect').hide();
