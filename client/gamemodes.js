@@ -168,7 +168,6 @@ class ClientSideTelephone
         chatEnabled = false;
         allowedToChangeRoom = false;
         currentlyPlayingGame = true;
-        ('#p6BackToGameSelect').hide();
 
         this.players = players;
         this.setPlayersText(this.players, 0);
@@ -354,19 +353,18 @@ class ClientSideTelephone
         currentlyPlayingGame = false;
         allowedToChangeRoom = true;
         DataReciever.closeAllLocalGameReceivers();
-        ('#p6BackToGameSelect').show();
     }
 	
 }
 
 class ClientSideCollabDraw
 {
-    constructor(numPlayers, x, y, timeLimit)
+    constructor(numPlayers, x, y, timeLimit, gridWidth, gridHeight, lastRowWidth)
     {
         this.tilePos = [x, y];
-        this.gridWidth = Math.floor(Math.sqrt(numPlayers));
-        this.gridHeight = Math.ceil(numPlayers / this.gridWidth);
-        this.lastRowWidth = numPlayers % this.gridWidth;
+        this.gridWidth = gridWidth;
+        this.gridHeight = gridHeight;
+        this.lastRowWidth = lastRowWidth;
         this.timeLimit = timeLimit;
     }
 
@@ -379,17 +377,36 @@ class ClientSideCollabDraw
 
         // Initializes and fetches the GUI for the game
         var lobbyButton = document.getElementById('p8BackToGameSelect');
-        lobbyButton.hidden = true;
 
         var drawTimer = document.getElementById('p8drawTimer');
         drawTimer.textContent = this.timeLimit;
         
         var drawingPad = new DrawingPad('p8drawingPad');
+        this.drawingPad = drawingPad;
         var topCanvas = new VisualDisplay('p8displayTop', [0, -75]);
+        if (this.tilePos[1] <= 0) topCanvas.canvas.hidden = true;
+        else topCanvas.canvas.hidden = false;
         var bottomCanvas = new VisualDisplay('p8displayBottom', [0, 75]);
+        if (this.tilePos[1] >= this.gridHeight - 1 ||
+            (this.tilePos[1] == this.gridHeight - 2 && this.tilePos[0] >= this.lastRowWidth))
+                bottomCanvas.canvas.hidden = true;
+        else bottomCanvas.canvas.hidden = false;
         var leftCanvas = new VisualDisplay('p8displayLeft', [-75, 0]);
+        if (this.tilePos[0] <= 0) leftCanvas.canvas.hidden = true;
+        else leftCanvas.canvas.hidden = false;
         var rightCanvas = new VisualDisplay('p8displayRight', [75, 0]);
-		var finalCanvas = new VisualDisplay('p8finalDisplay', [0, 0]);
+        if (this.tilePos[0] >= this.gridWidth - 1 ||
+            (this.tilePos[1] == this.gridHeight - 1 && this.tilePos[0] >= this.lastRowWidth - 1))
+                rightCanvas.canvas.hidden = true;
+        else rightCanvas.canvas.hidden = false;
+		var finalCanvas = new VisualDisplay('p9finalDisplay', [0, 0]);
+
+        drawingPad.reset();
+        topCanvas.reset();
+        bottomCanvas.reset();
+        leftCanvas.reset();
+        rightCanvas.reset();
+        finalCanvas.reset();
 
         var buttonBlack = new padColorSetting('p8BlackColor', drawingPad, '#000000');
         var buttonRed = new padColorSetting('p8RedColor', drawingPad, '#FF0000');
@@ -449,20 +466,23 @@ class ClientSideCollabDraw
                     rightCanvas.drawAllData(lastChanges, 1);
                     break;
             }
-			finalCanvas.drawAllData(lastChanges, 1.0 / this.gridWidth);
         });
-		
-		/*var completeDisplayReceiver = new DataReceiver('draw-game-finaldisplay', DataReciever.LOCAL_GAME, (changes, x, y) => {
-			finalCanvas.drawAllData(changes, );
-		});*/
 		
         var gameEndReceiver = new DataReciever('draw-game-end', DataReciever.LOCAL_GAME,
             (finalImage) => {
-            // Shows the user the masterpiece they helped build 
-            // Not yet implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            
+            // Shows the user the masterpiece they helped build
+			for (var i = 0; i < finalImage.length; i++) {
+				var offSetX = (finalCanvas.bounds.width / this.gridWidth) * finalImage[i][1];
+				var offSetY = (finalCanvas.bounds.height / this.gridHeight) * finalImage[i][2];
+				finalCanvas.extraOffset = [offSetX, offSetY];
+                console.log(`Offset: [${offSetX},${offSetY}], Final Bounds:
+                    [${finalCanvas.bounds.width},${finalCanvas.bounds.height}], TilePos: [${finalImage[i][1]},${finalImage[i][2]}]`);
+				finalCanvas.drawAllData(finalImage[i][0],
+                    finalCanvas.bounds.width / (drawingPad.bounds.width * this.gridWidth));
+			}
+
             this.endGame();
-            lobbyButton.hidden = false;
+            jumpTo('drawing_game_complete');
 
             console.log('The game of collaborative drawing in room has ended :)');
         });
@@ -472,10 +492,10 @@ class ClientSideCollabDraw
         {
             setTimeout(() =>
             {
-                timeLeft -= 1.0;
-                drawTimer.textContent = timeLeft;
                 if (timeLeft > 0 && currentlyPlayingGame)
                 {
+                    timeLeft -= 1.0;
+                    drawTimer.textContent = timeLeft;
                     pollTimer(timeLeft);
                 }
             }, 1000.0);
@@ -485,6 +505,8 @@ class ClientSideCollabDraw
 
     endGame()
     {
+        this.drawingPad.remove();
+
         chatEnabled = true;
         currentlyPlayingGame = false;
         allowedToChangeRoom = true;

@@ -18,14 +18,16 @@ class DrawingPad {
 		this.color = '#000000'; // when messing with this always use hex
 		this.lineWidth = 2;
 		this.isCurrentlyDrawing = false;
+		this.isDrawingOffCanvas = false;
 		
 		// creating eventListener so we can draw
 		this.canvas = document.getElementById(canvasID);
 		this.bounds = this.canvas.getBoundingClientRect();
-		this.canvas.addEventListener("mousedown", (event) => this.startDraw(event));
-		this.canvas.addEventListener("mousemove", (event) => this.draw(event));
-		this.canvas.addEventListener("mouseup", (event) => this.cancelDraw(event));
-		this.canvas.addEventListener("mouseout", (event) => this.cancelDraw(event));
+		this.canvas.onmousedown = (event) => this.startDraw(event);
+		this.canvas.onmousemove = (event) => this.draw(event);
+		this.canvas.onmouseup = (event) => this.cancelDraw(event);
+		this.canvas.onmouseout = (event) => this.attemptToDrawOffCanvas(event);
+		this.canvas.onmouseover = (event) => this.enterCanvas(event);
 		
 		this.context = this.canvas.getContext("2d");
 
@@ -36,15 +38,18 @@ class DrawingPad {
 	
 	// purpose: starting drawing when click down, get intial cooridinates 
 	startDraw(event) {
-		this.isCurrentlyDrawing = true;
-		this.setCooridinates(event);
-		this.mostRecentChanges.push([this.color, [[this.mouseCooridinatesX, this.mouseCooridinatesY, this.lineWidth]]]);
+		if (currentlyPlayingGame)
+		{
+			this.isCurrentlyDrawing = true;
+			this.setCooridinates(event);
+			this.mostRecentChanges.push([this.color, [[this.mouseCooridinatesX, this.mouseCooridinatesY, this.lineWidth]]]);
+		}
 	}
 	
 	// purpose: draw a line for one cooridinate to another, typically when the mouse moves.
 	draw(event) {
 
-		if (this.isCurrentlyDrawing) {
+		if (this.isCurrentlyDrawing && currentlyPlayingGame) {
 			//get components set up
 			this.context.lineWidth = this.lineWidth;
 			this.context.lineCap = "round";
@@ -63,10 +68,11 @@ class DrawingPad {
 			// Updates the changes array
 			if (this.mostRecentChanges.length === 0)
 			{
-				console.log(this.previousX + " : " + this.previousY);
+				//console.log(`Cut in middle of line. Previous: (${this.previousX},${this.previousY}), Current: (${this.mouseCooridinatesX},${this.mouseCooridinatesY})`);
 				this.mostRecentChanges.push([this.color, [[this.previousX, this.previousY, this.lineWidth]]]);
 				//this.mostRecentChanges[0][1].push([this.mouseCooridinatesX, this.mouseCooridinatesY, this.lineWidth]);
 			}
+			//console.log(`PreviousX: ${this.previousX}, Previous Y: ${this.previousY}`);
 			this.mostRecentChanges[this.mostRecentChanges.length - 1][1].push(
 				[this.mouseCooridinatesX, this.mouseCooridinatesY, this.lineWidth]);
 		}
@@ -77,7 +83,7 @@ class DrawingPad {
 	setCooridinates(event) {
 		if (this.mouseCooridinatesX != null && this.mouseCooridinatesY != null) {
 			this.previousX = this.mouseCooridinatesX;
-			this.previousY = this.mouseCorridinatesY;
+			this.previousY = this.mouseCooridinatesY;
         }
 		this.mouseCooridinatesX = event.pageX - (this.bounds.left);
 		this.mouseCooridinatesY = event.pageY - this.bounds.top;
@@ -91,6 +97,34 @@ class DrawingPad {
 		{
 			this.onStrokeEnd();
 		}
+	}
+
+	attemptToDrawOffCanvas(event) {
+		if (this.isCurrentlyDrawing)
+		{
+			this.cancelDraw(event);
+			this.isDrawingOffCanvas = true;
+		}
+	}
+
+	enterCanvas(event) {
+		if (this.isDrawingOffCanvas && mouseDown)
+		{
+			this.startDraw(event);
+		}
+	}
+
+	reset() {
+		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+    }
+
+	remove() {
+		this.canvas.onmousedown = null;
+		this.canvas.onmousemove = null;
+		this.canvas.onmouseup = null;
+		this.canvas.onmouseout = null;
+		this.canvas.onmouseover = null;
 	}
 }
 
@@ -136,7 +170,7 @@ class VisualDisplay {
 		this.context = this.canvas.getContext("2d");
 
 		this.setCutOff(cutOff);
-		
+		this.extraOffset = [0, 0];
 	}
 	
 	// purpose:
@@ -168,9 +202,11 @@ class VisualDisplay {
 		this.context.lineCap = "round";
 		this.context.strokeStyle = color;
 		
-		var offset = [this.cutOffRight - this.cutOffLeft, this.cutOffBottom - this.cutOffTop];
+		var offset = [this.cutOffRight - this.cutOffLeft + this.extraOffset[0],
+			this.cutOffBottom - this.cutOffTop + this.extraOffset[1]];
 		this.context.moveTo(drawPathCoor[0] + offset[0], drawPathCoor[1] + offset[1]);
 		this.context.lineTo(drawPathCoor[2] + offset[0], drawPathCoor[3] + offset[1]);
+		//console.log(`${this.canvas.id} : (x: ${drawPathCoor[0] + offset[0]}, y: ${drawPathCoor[1] + offset[1]})`);
 		this.context.stroke();
 	}
 
@@ -184,11 +220,15 @@ class VisualDisplay {
 			let color = changes[i][0];
 			let line = changes[i][1];
 
-			console.log(line[0][0] + " : " + line[0][1] + " -> " + line[1][0] + " : " + line[1][1]);
+			//console.log(line[0][0] + " : " + line[0][1] + " -> " + line[1][0] + " : " + line[1][1]);
 			for (var j = 1; j < line.length; j++) {
 				this.drawData(color, line[j][2] * scale, [line[j - 1][0] * scale, line[j - 1][1] * scale, line[j][0] * scale, line[j][1] * scale]);
 
 			}
 		}
+	}
+
+	reset() {
+		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 	}
 }

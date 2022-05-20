@@ -1,6 +1,7 @@
 var playerOrder;
 /** The current game (if one is running) */
 var game = null;
+var mouseDown = false;
 
 // purpose: this is an abstractable button used for buttons that start game modes
 // input: the HTML ID of the button, the message the button should emit, any other information the gamemode needs
@@ -32,7 +33,7 @@ class GameStartButton {
 // purpose: A class that handles starting gamemode or applying settings to gamemodes.
 function gameLogicInit() {
 	
-	console.log('game logic init is running');
+	console.log('Game logic is being initialized');
 
 	// ------------------------------- Telephone --------------------------- //
 	policies = [];
@@ -126,4 +127,12 @@ function gameLogicInit() {
 			console.log('Collaborative drawing game initialized');
 		}
     })
+
+	// Starts tracking the global mouse button state
+	document.body.onmousedown = (event) => {
+		mouseDown = true;
+	}
+	document.body.onmouseup = (event) => {
+		mouseDown = false;
+	}
 }

@@ -440,7 +440,18 @@ class GameMode
                 socket.emit('error-display', 'Game has ended. ' + reason);
             }
         })
-        this.endGame();
+        if (this instanceof Telephone)
+        {
+            this.endDraw(this.room);
+        }
+        else if (this instanceof CollabDraw)
+        {
+            this.finalizeCanvas(this);
+        }
+        else
+        {
+            this.endGame();
+        }
     }
 }
 
@@ -786,7 +797,7 @@ class CollabDraw extends GameMode
 
         // Initializes the gridboard and assigns each player a space
         var gridWidth = Math.ceil(Math.sqrt(this.players.length));
-        var gridHeight = Math.floor(this.players.length / gridWidth);
+        var gridHeight = Math.ceil(this.players.length / gridWidth);
         var lastRowWidth = this.players.length % gridWidth;
         if (lastRowWidth === 0) lastRowWidth = gridWidth;
         this.canvasGrid = new Array(gridHeight);
@@ -812,6 +823,7 @@ class CollabDraw extends GameMode
             this.canvasGrid[y][x] = new CanvasTile(x, y, this.players[pIndex]);
             pIndex++;
         }
+        console.log(`Height: ${this.canvasGrid.length}, Width: ${this.canvasGrid[0].length}`);
 
         // Initializes some local variables
         let playerSockets = [];
@@ -821,6 +833,7 @@ class CollabDraw extends GameMode
             playerSockets.push(item.socket);
             playerNames.push(item.name);
         })
+        this.hasBeenFinalized = false;
 
         // Initializes data receiver for relaying canvas updates between adjacent players
         let canvasGridScopeGetArounder = this.canvasGrid;
@@ -860,7 +873,7 @@ class CollabDraw extends GameMode
         for (var i = 0; i < this.players.length; i++)
         {
             playerSockets[i].emit('game-init', playerNames, mode, Math.floor(i % gridWidth),
-                Math.floor(i / gridWidth), timeLimit);
+                Math.floor(i / gridWidth), timeLimit, gridWidth, gridHeight, lastRowWidth);
         }
 
         // Starts a timer for given number of seconds (and/or listens for more than half of players requesting
@@ -868,7 +881,10 @@ class CollabDraw extends GameMode
         if (timeLimit > 0)
         {
             setTimeout(() => {
-                this.finalizeCanvas(this)
+                if (!this.hasBeenFinalized)
+                {
+                    this.finalizeCanvas(this)
+                }
             }, timeLimit * 1000);
         }
     }
@@ -906,16 +922,21 @@ class CollabDraw extends GameMode
      */
     finalizeCanvas(game)
     {
-        var fullCanvas;
+        var fullCanvas = new Array();
+		
+		
         // Adds each canvas tile to the full canvas image
         for (var y = 0; y < game.canvasGrid.length; y++)
         {
-            for (var x = 0; x < game.canvasGrid[y].length; x++)
+			for (var x = 0; x < game.canvasGrid[y].length; x++)
             {
-                // Has yet to be implemented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-				
+                var tileContents = [game.canvasGrid[y][x].allChanges, x, y];
+                fullCanvas.push(tileContents);
             }
         }
+        
+        game.hasBeenFinalized = true;
+        console.log(`Things finzlied and set over: ${fullCanvas.length}`);
 
         // Informs players of the game having ended and sends the full image to everybody in the room
         getSocketsInRoom(game.room).forEach((item) => item.emit('draw-game-end', fullCanvas));

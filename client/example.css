@@ -24,7 +24,6 @@ h1
   background-size: 200% auto;
   color: #fff;
   background-clip: text;
-  text-fill-color: transparent;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: textclip 4s linear infinite;
@@ -213,4 +212,79 @@ input{
     top: 10vh;
     right: 190vh;
     
+}
+
+#p8drawingPad{
+	position: fixed;
+	left: 50%;
+	top: 50%;
+	margin-left: -75px;
+	margin-top: -75px;
+}
+
+#p8displayTop{
+	position: fixed;
+	left: 50%;
+	top: 50%;
+	margin-left: -75px;
+	margin-top: -160px;
+}
+
+#p8displayBottom{
+	position: fixed;
+	left: 50%;
+	top: 50%;
+	margin-left: -75px;
+	margin-top: 85px;
+}
+
+#p8displayLeft{
+	position: fixed;
+	left: 50%;
+	top: 50%;
+	margin-left: -160px;
+	margin-top: -75px;
+}
+
+#p8displayRight{
+	position: fixed;
+	left: 50%;
+	top: 50%;
+	margin-left: 85px;
+	margin-top: -75px;
+}
+
+#p8title{
+	position: fixed;
+	top: 5%;
+}
+
+#p8endGameReq{
+	position: fixed;
+	top: 5%;
+	left: 5%;
+}
+
+#p8colors{
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	margin-top: 170px;
+	margin-left: -80px;
+}
+
+#p8widthSlider{
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	margin-top: 195px;
+	margin-left: -70px;
+}
+
+#p8drawTimer{
+	position: fixed;
+	bottom: 50%;
+	right: 50%;
+	margin-bottom: 81px;
+	margin-right: 81px;
 }
