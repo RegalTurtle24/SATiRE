@@ -266,6 +266,8 @@ class ClientSideTelephone
             // Teaches the user patience
             this.playerMessage.textContent = "It's not your turn yet";
 
+            this.callBox.value = '';
+
             console.log('The current turn has ended');
         })
         let callErrorReceiver = new DataReciever('telephone-message-error', DataReciever.LOCAL_GAME,
@@ -314,6 +316,7 @@ class ClientSideTelephone
             this.playerMessage.textContent = "Telephone game ended. The complete telephone chain was: " + completeChain;
             
             this.messageErrorBox.textContent = "";
+            this.callBox.value = '';
 
             this.callSubmit.removeEventListener('click', () => { submitCall(this.callBox); this.myTurn = false; });
             this.callBox.removeEventListener('input', () => updateCharacterCount(this));
