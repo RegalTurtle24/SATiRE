@@ -447,11 +447,7 @@ class GameMode
                 socket.emit('error-display', 'Game has ended. ' + reason);
             }
         })
-        if (this instanceof Telephone)
-        {
-            this.endDraw(this.room);
-        }
-        else if (this instanceof CollabDraw)
+        if (this instanceof CollabDraw)
         {
             this.finalizeCanvas(this);
         }
