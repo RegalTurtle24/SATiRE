@@ -232,17 +232,24 @@ let nameReceiver = new DataReceiver('name-req', null, null, (socket, newName) =>
     allPlayers.forEach((item) => {
         if (item.name === newName)
         {
-            nameInUse = true;
+            if (item.socket.id != socket.id)
+            {
+                nameInUse = true;
+            }
+            else
+            {
+                socket.emit('error-display', 'You literally already have that name but okay');
+            }
         }
     })
     if (nameInUse)
     {
-        socket.emit('error-display', 'Failed to change name: \"' + '\" is already in use');
+        socket.emit('error-display', 'Failed to change name: \"' + newName + '\" is already in use');
         return;
     }
-    if (newName.trim() === 0)
+    if (newName.trim().length === 0)
     {
-        socket.emit('error-display', 'Failed to change name: You cannot have empty name');
+        socket.emit('error-display', 'Failed to change name: You cannot have an empty name');
         return;
     }
     let player = getPlayer(socket.id);
