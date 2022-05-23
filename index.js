@@ -606,7 +606,17 @@ class Telephone extends GameMode
 
     getCharMin()
     {
-        return 1;
+		if (this.currPlayerIn === 0 || this.currPlayerIn === this.players.legnth - 1) {
+			if (this.isFinish) {
+				return 0; // know that the game ended.
+			} else {
+				return 17;
+			} 
+		} else if (this.currPlayerIn % 2 === 1) {
+			return 1;
+		} else {
+			return 9;
+		}
     }
 	
 	/**
@@ -614,7 +624,7 @@ class Telephone extends GameMode
 	*/
     getCharMax()
 	{
-		if (this.currPlayerIn === 0) {
+		if (this.currPlayerIn === 0 || this.currPlayerIn === this.players.legnth - 1) {
 			if (this.isFinish) {
 				return 0; // know that the game ended.
 			} else {
