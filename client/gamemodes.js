@@ -476,7 +476,7 @@ class ClientSideCollabDraw
             // Shows the user the masterpiece they helped build
 			for (var i = 0; i < finalImage.length; i++) {
 				var offSetX = (finalCanvas.bounds.width / this.gridWidth) * finalImage[i][1];
-				var offSetY = (finalCanvas.bounds.height / this.gridHeight) * finalImage[i][2];
+				var offSetY = (finalCanvas.bounds.height / this.gridWidth) * finalImage[i][2];
 				finalCanvas.extraOffset = [offSetX, offSetY];
                 console.log(`Offset: [${offSetX},${offSetY}], Final Bounds:
                     [${finalCanvas.bounds.width},${finalCanvas.bounds.height}], TilePos: [${finalImage[i][1]},${finalImage[i][2]}]`);
