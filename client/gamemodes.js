@@ -181,6 +181,8 @@ class ClientSideTelephone
         this.callSubmit = document.getElementById('p6callSubmit');
         this.messageErrorBox = document.getElementById('p6teleError');
 
+        document.getElementById('p6endGameReq').hidden = false;
+
         this.charMin = -1;
         this.charMax = -1;
         this.policies = [ ];
@@ -317,6 +319,7 @@ class ClientSideTelephone
             
             this.messageErrorBox.textContent = "";
             this.callBox.value = '';
+            document.getElementById('p6endGameReq').hidden = true;
 
             this.callSubmit.removeEventListener('click', () => { submitCall(this.callBox); this.myTurn = false; });
             this.callBox.removeEventListener('input', () => updateCharacterCount(this));
@@ -418,13 +421,6 @@ class ClientSideCollabDraw
         var buttonBlue = new padColorSetting('p8BlueColor', drawingPad, '#1356E4');
         var buttonPurple = new padColorSetting('p8PurpleColor', drawingPad, '#9D41FF');
         var buttonCyan = new padColorSetting('p8CyanColor', drawingPad, '#21FFF5');
-
-        var endEarlyButton = document.getElementById('p8endGameReq');
-        endEarlyButton.addEventListener('click', () => {
-            // Asks the server nicely to end the game early
-            socket.emit('draw-finalize-req');
-        });
-
 
         var widthSlider = new padWidthSetting('p8widthSlider', drawingPad);
 

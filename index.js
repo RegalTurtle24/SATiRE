@@ -416,6 +416,26 @@ class GameMode
         this.dataReceivers = [];
         allCurrentGames.push(this);
 
+        // Initializes the data receiver for if players wish to end the game early
+        const PORTION_OF_PLAYERS_NEEDED_TO_FINISH_GAME_EARLY = 3.0 / 5.0;
+        var socketsRequestingEnd = [];
+        let playerSockets = [];
+        this.players.forEach((item) => playerSockets.push(item.socket));
+        var gameEndReqReceiver = new DataReceiver('game-end-req', this, playerSockets,
+                (socket) => {
+            if (!socketsRequestingEnd.includes(socket))
+            {
+                socketsRequestingEnd.push(socket);
+                let playersNeededToFinishEarly = this.players.length * PORTION_OF_PLAYERS_NEEDED_TO_FINISH_GAME_EARLY;
+                console.log(socketsRequestingEnd.length +  ' of ' + playersNeededToFinishEarly +
+                    ' requesting to end game in room [' + room + ']');
+                if (socketsRequestingEnd.length >= playersNeededToFinishEarly)
+                {
+                    this.endGame(this.room);
+                }
+            }
+        });
+
         this.onEnd = [];
 	}
 	
@@ -447,14 +467,7 @@ class GameMode
                 socket.emit('error-display', 'Game has ended. ' + reason);
             }
         })
-        if (this instanceof CollabDraw)
-        {
-            this.finalizeCanvas(this);
-        }
-        else
-        {
-            this.endGame();
-        }
+        this.endGame();
     }
 }
 
@@ -791,9 +804,11 @@ class CollabDraw extends GameMode
     constructor(players, room, timeLimit)
     {
         super(GameMode.randomizePlayers(players), room);
-        this.onEnd.push(() => this.endDraw(room));
-
-        const PORTION_OF_PLAYERS_NEEDED_TO_FINISH_GAME_EARLY = 2.0 / 3.0; 
+        this.onEnd.push(() =>
+        {
+            this.finalizeCanvas(this);
+            this.endDraw(room);
+        });
 
         class CanvasTile
         {
@@ -865,23 +880,6 @@ class CollabDraw extends GameMode
             }
         });
 
-        // Initializes the data receiver for if players wish to end the drawing session early
-        var socketsRequestingEnd = [];
-        var drawEndReqReceiver = new DataReceiver('draw-finalize-req', this, playerSockets,
-                (socket) => {
-            if (!socketsRequestingEnd.includes(socket))
-            {
-                socketsRequestingEnd.push(socket);
-                let playersNeededToFinishEarly = this.players.length * PORTION_OF_PLAYERS_NEEDED_TO_FINISH_GAME_EARLY;
-                console.log(socketsRequestingEnd.length +  ' of ' + playersNeededToFinishEarly +
-                    ' requesting to end CollabDraw in room [' + room + ']');
-                if (socketsRequestingEnd.length >= playersNeededToFinishEarly)
-                {
-                    this.finalizeCanvas(this);
-                }
-            }
-        });
-
         // Tells each player that the game is starting, and optionally gives them a prompt
         for (var i = 0; i < this.players.length; i++)
         {
@@ -949,11 +947,9 @@ class CollabDraw extends GameMode
         }
         
         game.hasBeenFinalized = true;
-        console.log(`Things finzlied and set over: ${fullCanvas.length}`);
 
         // Informs players of the game having ended and sends the full image to everybody in the room
         getSocketsInRoom(game.room).forEach((item) => item.emit('draw-game-end', fullCanvas));
-        game.endGame();
     }
 
     /** Ends the game of collaborative draw in the given room */

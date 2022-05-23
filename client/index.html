@@ -111,6 +111,8 @@
 					<button id="p6callSubmit">Submit</button>
 				</div>
 				<p id="p6teleError">Not your turn</p>
+
+				<button id="p6endGameReq" type="button" onclick="socket.emit('game-end-req')">Vote to end early</button>
 			</div>
 
 			<div class="page seven">
@@ -165,7 +167,7 @@
 
 				<input type="range" id="p8widthSlider" min="1" max="40" step="1" value="2">
 
-				<button id="p8endGameReq" type="button">Vote to end early</button>
+				<button id="p8endGameReq" type="button" onclick="socket.emit('game-end-req')">Vote to end early</button>
 			</div>
 
 			<div class="page nine">
