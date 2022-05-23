@@ -12,9 +12,6 @@
 		<link rel="stylesheet" href="./example.css">
 	</head>
 
-	<button onclick="slide('prev')" id="p">Prev</button>
-	<button onclick="slide('next')" id="n">Next</button>
-
 	<div class="container" id="container">
 		<div class="pages">
 			<div class="page one">
@@ -133,10 +130,11 @@
 
 			<div class="page eight">
 
-				<h2>Collab Draw</h2>
+				<h2 id="p8header">Collab Draw</h2>
                 <div>
 					<button id="p8BackToGameSelect" type ="button" onclick="jumpTo('lobby')" hidden>Back to Lobby</button>
 				</div>
+
 				<div>
 					<!-- Left side is space for drawing pad & adjacent ones -->
 					<!-- Right side is prompt/chat -->
@@ -152,6 +150,8 @@
 					
 
 					<br>
+
+				</div>
 
 				<div id="p8colors">
 					<button id="p8BlackColor" style="background-color:black"></button>

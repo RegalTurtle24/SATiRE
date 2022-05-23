@@ -214,6 +214,11 @@ input{
     
 }
 
+#p8header{
+	position: fixed;
+	top: 5vh;
+}
+
 #p8drawingPad{
 	position: fixed;
 	left: 50%;
