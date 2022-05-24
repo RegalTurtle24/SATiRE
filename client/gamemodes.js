@@ -181,6 +181,8 @@ class ClientSideTelephone
         this.callSubmit = document.getElementById('p6callSubmit');
         this.messageErrorBox = document.getElementById('p6teleError');
 
+        document.getElementById('p6endGameReq').hidden = false;
+
         this.charMin = -1;
         this.charMax = -1;
         this.policies = [ ];
@@ -317,6 +319,7 @@ class ClientSideTelephone
             
             this.messageErrorBox.textContent = "";
             this.callBox.value = '';
+            document.getElementById('p6endGameReq').hidden = true;
 
             this.callSubmit.removeEventListener('click', () => { submitCall(this.callBox); this.myTurn = false; });
             this.callBox.removeEventListener('input', () => updateCharacterCount(this));
@@ -386,18 +389,18 @@ class ClientSideCollabDraw
         
         var drawingPad = new DrawingPad('p8drawingPad');
         this.drawingPad = drawingPad;
-        var topCanvas = new VisualDisplay('p8displayTop', [0, -75]);
+        var topCanvas = new VisualDisplay('p8displayTop', [0, -100]);
         if (this.tilePos[1] <= 0) topCanvas.canvas.hidden = true;
         else topCanvas.canvas.hidden = false;
-        var bottomCanvas = new VisualDisplay('p8displayBottom', [0, 75]);
+        var bottomCanvas = new VisualDisplay('p8displayBottom', [0, 0]);
         if (this.tilePos[1] >= this.gridHeight - 1 ||
             (this.tilePos[1] == this.gridHeight - 2 && this.tilePos[0] >= this.lastRowWidth))
                 bottomCanvas.canvas.hidden = true;
         else bottomCanvas.canvas.hidden = false;
-        var leftCanvas = new VisualDisplay('p8displayLeft', [-75, 0]);
+        var leftCanvas = new VisualDisplay('p8displayLeft', [-100, 0]);
         if (this.tilePos[0] <= 0) leftCanvas.canvas.hidden = true;
         else leftCanvas.canvas.hidden = false;
-        var rightCanvas = new VisualDisplay('p8displayRight', [75, 0]);
+        var rightCanvas = new VisualDisplay('p8displayRight', [0, 0]);
         if (this.tilePos[0] >= this.gridWidth - 1 ||
             (this.tilePos[1] == this.gridHeight - 1 && this.tilePos[0] >= this.lastRowWidth - 1))
                 rightCanvas.canvas.hidden = true;
@@ -413,18 +416,11 @@ class ClientSideCollabDraw
 
         var buttonBlack = new padColorSetting('p8BlackColor', drawingPad, '#000000');
         var buttonRed = new padColorSetting('p8RedColor', drawingPad, '#FF0000');
-        var buttonLime = new padColorSetting('p8LimeColor', drawingPad, '#53FF45');
-        var buttonGreen = new padColorSetting('p8GreenColor', drawingPad, '#198733');
+        var buttonYellow = new padColorSetting('p8YellowColor', drawingPad, '#D5E615');
+        var buttonGreen = new padColorSetting('p8GreenColor', drawingPad, '#0FC15F');
         var buttonBlue = new padColorSetting('p8BlueColor', drawingPad, '#1356E4');
         var buttonPurple = new padColorSetting('p8PurpleColor', drawingPad, '#9D41FF');
         var buttonCyan = new padColorSetting('p8CyanColor', drawingPad, '#21FFF5');
-
-        var endEarlyButton = document.getElementById('p8endGameReq');
-        endEarlyButton.addEventListener('click', () => {
-            // Asks the server nicely to end the game early
-            socket.emit('draw-finalize-req');
-        });
-
 
         var widthSlider = new padWidthSetting('p8widthSlider', drawingPad);
 
@@ -476,7 +472,7 @@ class ClientSideCollabDraw
             // Shows the user the masterpiece they helped build
 			for (var i = 0; i < finalImage.length; i++) {
 				var offSetX = (finalCanvas.bounds.width / this.gridWidth) * finalImage[i][1];
-				var offSetY = (finalCanvas.bounds.height / this.gridHeight) * finalImage[i][2];
+				var offSetY = (finalCanvas.bounds.height / this.gridWidth) * finalImage[i][2];
 				finalCanvas.extraOffset = [offSetX, offSetY];
                 console.log(`Offset: [${offSetX},${offSetY}], Final Bounds:
                     [${finalCanvas.bounds.width},${finalCanvas.bounds.height}], TilePos: [${finalImage[i][1]},${finalImage[i][2]}]`);

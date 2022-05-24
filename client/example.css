@@ -139,7 +139,7 @@ input{
 }
 
 .seven{
-	background: #CF9817;
+	background: #D75F30;
 }
 
 .eight{
@@ -147,7 +147,7 @@ input{
 }
 
 .nine{
-    background: #bc6c25;
+    background: #dda15e;
 }
 #p4chatGroup{
 	align-self: end;
@@ -223,40 +223,40 @@ input{
 	position: fixed;
 	left: 50%;
 	top: 50%;
-	margin-left: -75px;
-	margin-top: -75px;
+	margin-left: -100px;
+	margin-top: -100px;
 }
 
 #p8displayTop{
 	position: fixed;
 	left: 50%;
 	top: 50%;
-	margin-left: -75px;
-	margin-top: -160px;
+	margin-left: -100px;
+	margin-top: -210px;
 }
 
 #p8displayBottom{
 	position: fixed;
 	left: 50%;
 	top: 50%;
-	margin-left: -75px;
-	margin-top: 85px;
+	margin-left: -100px;
+	margin-top: 110px;
 }
 
 #p8displayLeft{
 	position: fixed;
 	left: 50%;
 	top: 50%;
-	margin-left: -160px;
-	margin-top: -75px;
+	margin-left: -210px;
+	margin-top: -100px;
 }
 
 #p8displayRight{
 	position: fixed;
 	left: 50%;
 	top: 50%;
-	margin-left: 85px;
-	margin-top: -75px;
+	margin-left: 110px;
+	margin-top: -100px;
 }
 
 #p8title{
@@ -274,7 +274,7 @@ input{
 	position: fixed;
 	top: 50%;
 	left: 50%;
-	margin-top: 170px;
+	margin-top: 220px;
 	margin-left: -80px;
 }
 
@@ -282,14 +282,14 @@ input{
 	position: fixed;
 	top: 50%;
 	left: 50%;
-	margin-top: 195px;
-	margin-left: -70px;
+	margin-top: 245px;
+	margin-left: -85px;
 }
 
 #p8drawTimer{
 	position: fixed;
 	bottom: 50%;
 	right: 50%;
-	margin-bottom: 81px;
-	margin-right: 81px;
+	margin-bottom: 111px;
+	margin-right: 111px;
 }

@@ -53,6 +53,7 @@ function initializeSocket()
 		nameChangeReciever = new DataReciever('name-change', DataReciever.BACKEND, (name) => {
 			console.log('Name successfully changed to: ' + name);
 			nameLabelUpdater.update(name);
+			slide('next');
 		})
 		errorReciever = new DataReciever('error-display', DataReciever.BACKEND, (error) => {
 			alert(error);
