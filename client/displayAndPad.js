@@ -192,6 +192,12 @@ class VisualDisplay {
 				this.cutOffBottom = -cutOff[1];
         }
 	}
+
+	getFullOffset()
+	{
+		return [this.cutOffRight - this.cutOffLeft + this.extraOffset[0],
+			this.cutOffBottom - this.cutOffTop + this.extraOffset[1]];
+	}
 	
 	// purpose: draw a line on the canvas from one point the other
 	// input: set of cooridinate, lineWidth, and color of line
@@ -202,8 +208,7 @@ class VisualDisplay {
 		this.context.lineCap = "round";
 		this.context.strokeStyle = color;
 		
-		var offset = [this.cutOffRight - this.cutOffLeft + this.extraOffset[0],
-			this.cutOffBottom - this.cutOffTop + this.extraOffset[1]];
+		var offset = this.getFullOffset();
 		this.context.moveTo(drawPathCoor[0] + offset[0], drawPathCoor[1] + offset[1]);
 		this.context.lineTo(drawPathCoor[2] + offset[0], drawPathCoor[3] + offset[1]);
 		//console.log(`${this.canvas.id} : (x: ${drawPathCoor[0] + offset[0]}, y: ${drawPathCoor[1] + offset[1]})`);
@@ -225,6 +230,40 @@ class VisualDisplay {
 				this.drawData(color, line[j][2] * scale, [line[j - 1][0] * scale, line[j - 1][1] * scale, line[j][0] * scale, line[j][1] * scale]);
 
 			}
+		}
+	}
+
+	drawHashMarks(rectSize, numHashes)
+	{
+		let offset = this.getFullOffset();
+		let hashSize = [(rectSize[0] / numHashes) * 0.5, (rectSize[1] / numHashes) * 0.5];
+		let bottomRight = [offset[0] + rectSize[0], offset[1] + rectSize[1]];
+
+		this.context.clearRect(offset[0], offset[1], rectSize[0], rectSize[1]);
+		this.context.fillStyle = 'rgb(72,72,72)';
+
+		// Loops through each pair of hash marks drawn
+		for (var i = 0; i < numHashes; i++)
+		{
+			let hashStart = [rectSize[0] * (i / numHashes) + offset[0], rectSize[1] * (i / numHashes) + offset[1]];
+
+			// The top-left hash
+			this.context.beginPath();
+			this.context.moveTo(offset[0], hashStart[1]); // Left top
+			this.context.lineTo(offset[0], hashStart[1] + hashSize[1]); // To left bottom
+			this.context.lineTo(hashStart[0] + hashSize[0], offset[1]); // To top right
+			this.context.lineTo(hashStart[0], offset[1]); // To top left
+			this.context.lineTo(offset[0], hashStart[1]); // Back to left top
+			this.context.fill();
+
+			// The bottom-right hash
+			this.context.beginPath();
+			this.context.moveTo(hashStart[0] + hashSize[0], bottomRight[1]); // Bottom right
+			this.context.lineTo(hashStart[0], bottomRight[1]); // To bottom left
+			this.context.lineTo(bottomRight[0], hashStart[1]); // To right top
+			this.context.lineTo(bottomRight[0], hashStart[1] + hashSize[1]); // To right bottom
+			this.context.lineTo(hashStart[0] + hashSize[0], bottomRight[1]); // Back to bottom right
+			this.context.fill();
 		}
 	}
 

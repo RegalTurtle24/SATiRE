@@ -474,17 +474,34 @@ class ClientSideCollabDraw
         });
 		
         var gameEndReceiver = new DataReciever('draw-game-end', DataReciever.LOCAL_GAME,
-            (finalImage) => {
+                (finalImage) => {
+            let pixelWidth = finalCanvas.bounds.width / this.gridWidth;
+            let pixelHeight = finalCanvas.bounds.height / this.gridWidth;
+
             // Shows the user the masterpiece they helped build
 			for (var i = 0; i < finalImage.length; i++) {
-				var offSetX = (finalCanvas.bounds.width / this.gridWidth) * finalImage[i][1];
-				var offSetY = (finalCanvas.bounds.height / this.gridWidth) * finalImage[i][2];
+				var offSetX = pixelWidth * finalImage[i][1];
+				var offSetY = pixelHeight * finalImage[i][2];
 				finalCanvas.extraOffset = [offSetX, offSetY];
-                console.log(`Offset: [${offSetX},${offSetY}], Final Bounds:
-                    [${finalCanvas.bounds.width},${finalCanvas.bounds.height}], TilePos: [${finalImage[i][1]},${finalImage[i][2]}]`);
+                // console.log(`Offset: [${offSetX},${offSetY}], Final Bounds:
+                //     [${finalCanvas.bounds.width},${finalCanvas.bounds.height}], TilePos: [${finalImage[i][1]},${finalImage[i][2]}]`);
 				finalCanvas.drawAllData(finalImage[i][0],
                     finalCanvas.bounds.width / (drawingPad.bounds.width * this.gridWidth));
 			}
+
+            // Greys out the tiles that nobody was assigned
+            var x = this.lastRowWidth;
+            for (var y = this.gridHeight - 1; y < this.gridWidth; y++)
+            {
+                for (; x < this.gridWidth; x++)
+                {
+                    var offSetX = pixelWidth * x;
+                    var offSetY = pixelHeight * y;
+                    finalCanvas.extraOffset = [offSetX, offSetY];
+                    finalCanvas.drawHashMarks([pixelWidth, pixelHeight], 4);
+                }
+                x = 0;
+            }
 
             this.endGame();
             jumpTo('drawing_game_complete');
