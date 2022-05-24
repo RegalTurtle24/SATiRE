@@ -170,7 +170,6 @@ class ClientSideTelephone
         currentlyPlayingGame = true;
 
         this.players = players;
-        this.setPlayersText(this.players, 0);
 
         // Variable setup/HTML integration
         var lobbyButton = document.getElementById('p6BackToGameSelect');
@@ -182,6 +181,16 @@ class ClientSideTelephone
         this.messageErrorBox = document.getElementById('p6teleError');
 
         document.getElementById('p6endGameReq').hidden = false;
+
+        this.setPlayersText(this.players, 0);
+        function resetTextToDefault(startGameInstance)
+        {
+            // Teaches the user patience
+            startGameInstance.playerMessage.textContent = "It's not your turn yet";
+
+            startGameInstance.callBox.value = '';
+        }
+        resetTextToDefault(this);
 
         this.charMin = -1;
         this.charMax = -1;
@@ -265,10 +274,7 @@ class ClientSideTelephone
             }
             this.setPlayersText(this.players, this.playerIndex);
 
-            // Teaches the user patience
-            this.playerMessage.textContent = "It's not your turn yet";
-
-            this.callBox.value = '';
+            resetTextToDefault(this);
 
             console.log('The current turn has ended');
         })
