@@ -23,11 +23,11 @@ class DrawingPad {
 		// creating eventListener so we can draw
 		this.canvas = document.getElementById(canvasID);
 		this.bounds = this.canvas.getBoundingClientRect();
-		this.canvas.onmousedown = (event) => this.startDraw(event);
-		this.canvas.onmousemove = (event) => this.draw(event);
-		this.canvas.onmouseup = (event) => this.cancelDraw(event);
-		this.canvas.onmouseout = (event) => this.attemptToDrawOffCanvas(event);
-		this.canvas.onmouseover = (event) => this.enterCanvas(event);
+		this.canvas.onmousedown = (event) => this.startDraw([event.pageX, event.pageY]);
+		this.canvas.onmousemove = (event) => this.draw([event.pageX, event.pageY]);
+		this.canvas.onmouseup = (event) => this.cancelDraw();
+		this.canvas.onmouseout = (event) => this.attemptToDrawOffCanvas([event.pageX, event.pageY]);
+		this.canvas.onmouseover = (event) => this.enterCanvas([event.pageX, event.pageY]);
 		
 		this.context = this.canvas.getContext("2d");
 
@@ -37,17 +37,17 @@ class DrawingPad {
 	}
 	
 	// purpose: starting drawing when click down, get intial cooridinates 
-	startDraw(event) {
+	startDraw(pageCoords) {
 		if (currentlyPlayingGame)
 		{
 			this.isCurrentlyDrawing = true;
-			this.setCooridinates(event);
+			this.setCooridinates(pageCoords);
 			this.mostRecentChanges.push([this.color, [[this.mouseCooridinatesX, this.mouseCooridinatesY, this.lineWidth]]]);
 		}
 	}
 	
 	// purpose: draw a line for one cooridinate to another, typically when the mouse moves.
-	draw(event) {
+	draw(pageCoords) {
 
 		if (this.isCurrentlyDrawing && currentlyPlayingGame) {
 			//get components set up
@@ -58,9 +58,9 @@ class DrawingPad {
 			// actually drawing
 			this.context.beginPath();			
 			this.context.moveTo(this.mouseCooridinatesX, this.mouseCooridinatesY);
-			this.setCooridinates(event);
+			this.setCooridinates(pageCoords);
 			if (this.mouseCooridinatesX > this.bounds.width || this.mouseCooridinatesX < 0 || this.mouseCooridinatesY > this.bounds.height || this.mouseCooridinatesY < 0) {
-				this.cancelDraw(event);
+				this.cancelDraw();
 			}
 			this.context.lineTo(this.mouseCooridinatesX, this.mouseCooridinatesY);
 			this.context.stroke();
@@ -80,17 +80,17 @@ class DrawingPad {
 
 	// purpose: sets new cooridinate based on mouse position relative to canvas
 	// store previous position, if needed to be used.
-	setCooridinates(event) {
+	setCooridinates(pageCoords) {
 		if (this.mouseCooridinatesX != null && this.mouseCooridinatesY != null) {
 			this.previousX = this.mouseCooridinatesX;
 			this.previousY = this.mouseCooridinatesY;
         }
-		this.mouseCooridinatesX = event.pageX - (this.bounds.left);
-		this.mouseCooridinatesY = event.pageY - this.bounds.top;
+		this.mouseCooridinatesX = pageCoords[0] - (this.bounds.left);
+		this.mouseCooridinatesY = pageCoords[1] - this.bounds.top;
 	}
 
 	// purpose: cancels drawing, usual when mouse is released
-	cancelDraw(event) {
+	cancelDraw() {
 		this.isCurrentlyDrawing = false;
 
 		if (this.onStrokeEnd != null)
@@ -99,19 +99,34 @@ class DrawingPad {
 		}
 	}
 
-	attemptToDrawOffCanvas(event) {
+	attemptToDrawOffCanvas(pageCoords) {
 		if (this.isCurrentlyDrawing)
 		{
-			this.cancelDraw(event);
+			let newCoords = this.clipCoordsToCanvas(pageCoords);
+			this.draw(newCoords);
+			this.cancelDraw();
 			this.isDrawingOffCanvas = true;
 		}
 	}
 
-	enterCanvas(event) {
+	enterCanvas(pageCoords) {
 		if (this.isDrawingOffCanvas && mouseDown)
 		{
-			this.startDraw(event);
+			let startCoords = this.clipCoordsToCanvas(previousMousePos);
+			this.startDraw(startCoords);
+			this.draw(startCoords);
+			this.draw(pageCoords);
 		}
+		
+		this.isDrawingOffCanvas = false;
+	}
+
+	clipCoordsToCanvas(pageCoords)
+	{
+		let newCoords = new Array(2);
+		newCoords[0] = Math.min(Math.max(this.bounds.left, pageCoords[0]), this.bounds.right);
+		newCoords[1] = Math.min(Math.max(this.bounds.top, pageCoords[1]), this.bounds.bottom);
+		return newCoords;
 	}
 
 	reset() {
@@ -253,7 +268,7 @@ class VisualDisplay {
 			this.context.lineTo(offset[0], hashStart[1] + hashSize[1]); // To left bottom
 			this.context.lineTo(hashStart[0] + hashSize[0], offset[1]); // To top right
 			this.context.lineTo(hashStart[0], offset[1]); // To top left
-			this.context.lineTo(offset[0], hashStart[1]); // Back to left top
+			this.context.closePath(); // Back to left top
 			this.context.fill();
 
 			// The bottom-right hash
@@ -262,7 +277,7 @@ class VisualDisplay {
 			this.context.lineTo(hashStart[0], bottomRight[1]); // To bottom left
 			this.context.lineTo(bottomRight[0], hashStart[1]); // To right top
 			this.context.lineTo(bottomRight[0], hashStart[1] + hashSize[1]); // To right bottom
-			this.context.lineTo(hashStart[0] + hashSize[0], bottomRight[1]); // Back to bottom right
+			this.context.closePath(); // Back to bottom right
 			this.context.fill();
 		}
 	}
