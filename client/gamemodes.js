@@ -429,6 +429,7 @@ class ClientSideCollabDraw
         var buttonCyan = new padColorSetting('p8CyanColor', drawingPad, '#21FFF5');
 
         var widthSlider = new padWidthSetting('p8widthSlider', drawingPad);
+        widthSlider.widthSlider.value = drawingPad.lineWidth;
 
         // Data sender to update other players on tile updates
         var tileUpdateSender = new DataSender('draw-canvas-update', () => {
