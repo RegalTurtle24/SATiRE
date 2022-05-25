@@ -264,19 +264,19 @@ class VisualDisplay {
 
 			// The top-left hash
 			this.context.beginPath();
-			this.context.moveTo(offset[0], hashStart[1]); // Left top
-			this.context.lineTo(offset[0], hashStart[1] + hashSize[1]); // To left bottom
-			this.context.lineTo(hashStart[0] + hashSize[0], offset[1]); // To top right
-			this.context.lineTo(hashStart[0], offset[1]); // To top left
+			this.context.moveTo(offset[0] - 1, hashStart[1] + 1); // Left top
+			this.context.lineTo(offset[0] - 1, hashStart[1] + hashSize[1] + 1); // To left bottom
+			this.context.lineTo(hashStart[0] + hashSize[0] + 1, offset[1] - 1); // To top right
+			this.context.lineTo(hashStart[0] + 1, offset[1] - 1); // To top left
 			this.context.closePath(); // Back to left top
 			this.context.fill();
 
 			// The bottom-right hash
 			this.context.beginPath();
-			this.context.moveTo(hashStart[0] + hashSize[0], bottomRight[1]); // Bottom right
-			this.context.lineTo(hashStart[0], bottomRight[1]); // To bottom left
-			this.context.lineTo(bottomRight[0], hashStart[1]); // To right top
-			this.context.lineTo(bottomRight[0], hashStart[1] + hashSize[1]); // To right bottom
+			this.context.moveTo(hashStart[0] + hashSize[0] -  1, bottomRight[1] + 1); // Bottom right
+			this.context.lineTo(hashStart[0] - 1, bottomRight[1] + 1); // To bottom left
+			this.context.lineTo(bottomRight[0] + 1, hashStart[1] - 1); // To right top
+			this.context.lineTo(bottomRight[0] + 1, hashStart[1] + hashSize[1] - 1); // To right bottom
 			this.context.closePath(); // Back to bottom right
 			this.context.fill();
 		}
