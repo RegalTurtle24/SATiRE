@@ -2,6 +2,8 @@ var playerOrder;
 /** The current game (if one is running) */
 var game = null;
 var mouseDown = false;
+var previousMousePos = new Array(2);
+var mousePos = new Array(2);
 
 // purpose: this is an abstractable button used for buttons that start game modes
 // input: the HTML ID of the button, the message the button should emit, any other information the gamemode needs
@@ -129,6 +131,12 @@ function gameLogicInit() {
     })
 
 	// Starts tracking the global mouse button state
+	document.body.onmousemove = (event) => {
+		previousMousePos[0] = mousePos[0];
+		previousMousePos[1] = mousePos[1];
+		mousePos[0] = event.pageX;
+		mousePos[1] = event.pageY;
+	}
 	document.body.onmousedown = (event) => {
 		mouseDown = true;
 	}

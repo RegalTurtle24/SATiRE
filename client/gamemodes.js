@@ -170,7 +170,6 @@ class ClientSideTelephone
         currentlyPlayingGame = true;
 
         this.players = players;
-        this.setPlayersText(this.players, 0);
 
         // Variable setup/HTML integration
         var lobbyButton = document.getElementById('p6BackToGameSelect');
@@ -182,6 +181,16 @@ class ClientSideTelephone
         this.messageErrorBox = document.getElementById('p6teleError');
 
         document.getElementById('p6endGameReq').hidden = false;
+
+        this.setPlayersText(this.players, 0);
+        function resetTextToDefault(startGameInstance)
+        {
+            // Teaches the user patience
+            startGameInstance.playerMessage.textContent = "It's not your turn yet";
+
+            startGameInstance.callBox.value = '';
+        }
+        resetTextToDefault(this);
 
         this.charMin = -1;
         this.charMax = -1;
@@ -265,10 +274,7 @@ class ClientSideTelephone
             }
             this.setPlayersText(this.players, this.playerIndex);
 
-            // Teaches the user patience
-            this.playerMessage.textContent = "It's not your turn yet";
-
-            this.callBox.value = '';
+            resetTextToDefault(this);
 
             console.log('The current turn has ended');
         })
@@ -423,6 +429,7 @@ class ClientSideCollabDraw
         var buttonCyan = new padColorSetting('p8CyanColor', drawingPad, '#21FFF5');
 
         var widthSlider = new padWidthSetting('p8widthSlider', drawingPad);
+        widthSlider.widthSlider.value = drawingPad.lineWidth;
 
         // Data sender to update other players on tile updates
         var tileUpdateSender = new DataSender('draw-canvas-update', () => {
@@ -468,17 +475,34 @@ class ClientSideCollabDraw
         });
 		
         var gameEndReceiver = new DataReciever('draw-game-end', DataReciever.LOCAL_GAME,
-            (finalImage) => {
+                (finalImage) => {
+            let pixelWidth = finalCanvas.bounds.width / this.gridWidth;
+            let pixelHeight = finalCanvas.bounds.height / this.gridWidth;
+
             // Shows the user the masterpiece they helped build
 			for (var i = 0; i < finalImage.length; i++) {
-				var offSetX = (finalCanvas.bounds.width / this.gridWidth) * finalImage[i][1];
-				var offSetY = (finalCanvas.bounds.height / this.gridWidth) * finalImage[i][2];
+				var offSetX = pixelWidth * finalImage[i][1];
+				var offSetY = pixelHeight * finalImage[i][2];
 				finalCanvas.extraOffset = [offSetX, offSetY];
-                console.log(`Offset: [${offSetX},${offSetY}], Final Bounds:
-                    [${finalCanvas.bounds.width},${finalCanvas.bounds.height}], TilePos: [${finalImage[i][1]},${finalImage[i][2]}]`);
+                // console.log(`Offset: [${offSetX},${offSetY}], Final Bounds:
+                //     [${finalCanvas.bounds.width},${finalCanvas.bounds.height}], TilePos: [${finalImage[i][1]},${finalImage[i][2]}]`);
 				finalCanvas.drawAllData(finalImage[i][0],
                     finalCanvas.bounds.width / (drawingPad.bounds.width * this.gridWidth));
 			}
+
+            // Greys out the tiles that nobody was assigned
+            var x = this.lastRowWidth;
+            for (var y = this.gridHeight - 1; y < this.gridWidth; y++)
+            {
+                for (; x < this.gridWidth; x++)
+                {
+                    var offSetX = pixelWidth * x;
+                    var offSetY = pixelHeight * y;
+                    finalCanvas.extraOffset = [offSetX, offSetY];
+                    finalCanvas.drawHashMarks([pixelWidth, pixelHeight], 4);
+                }
+                x = 0;
+            }
 
             this.endGame();
             jumpTo('drawing_game_complete');

@@ -1,6 +1,7 @@
 ﻿// The main server side script
 
 const port = 8000;
+const { all } = require("express/lib/application");
 const { toNamespacedPath } = require("path");
 const { Server, Socket, Namespace, BroadcastOperator } = require("socket.io");
 var io;
@@ -406,8 +407,7 @@ class GameMode
         if (allCurrentGames.find((item) => item.room == room))
         {
             // Don't start the game if a game is already running in that room
-            console.log("Couldn't start Game in room [" + room + "], there's one already running");
-            return;
+            throw Error("Couldn't start Game in room [" + room + "], there's one already running");
         }
         this.room = room;
         if (players == null || players.length == 0)
@@ -894,7 +894,7 @@ class CollabDraw extends GameMode
             setTimeout(() => {
                 if (!this.hasBeenFinalized)
                 {
-                    this.finalizeCanvas(this)
+                    this.endGame();
                 }
             }, timeLimit * 1000);
         }
