@@ -177,7 +177,7 @@ input{
 #p4leaveRoom{
     position: fixed;
     top: 10vh;
-    right: 180vh;
+    left: 10vh;
     align-self: end;
     
 }
@@ -185,32 +185,32 @@ input{
 #p2backToTitle{
     position: fixed;
     top: 10vh;
-    right: 190vh;
+    left: 10vh;
     align-self: end;
 }
 
 #p3backToName{
     position: fixed;
     top: 10vh;
-    right: 180vh;
+    left: 10vh;
 }
 
 #p5BackToGameSelect{
     position: fixed;
     top: 10vh;
-    right: 190vh;
+    left: 10vh;
 }
 
 #p7BackToGameSelect{
     position: fixed;
     top: 10vh;
-    right: 190vh;
+    left: 10vh;
 }
 
 #p6BackToGameSelect{
     position: fixed;
     top: 10vh;
-    right: 190vh;
+    left: 10vh;
     
 }
 
